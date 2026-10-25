@@ -18,6 +18,20 @@ export interface FakeUser {
   password: string;
   displayName: string;
   roles: FakeRole[];
+  activeEvent: FakeActiveEvent | null;
+}
+
+export interface FakeActiveEvent {
+  id: string;
+  slug: string;
+  name: string;
+  status: string;
+  startsAt: string;
+  endsAt: string;
+  venueName: string | null;
+  venue: string | null;
+  city: string | null;
+  isSimulated?: boolean;
 }
 
 export interface RecordedCall {
@@ -28,6 +42,18 @@ export interface RecordedCall {
 }
 
 const GRANTED_AT = "2026-10-01T00:00:00.000Z";
+const DEFAULT_EVENT_ID = "e0000000-0000-4000-8000-000000000001";
+const DEFAULT_ACTIVE_EVENT: FakeActiveEvent = {
+  id: DEFAULT_EVENT_ID,
+  slug: "fipaz-2026",
+  name: "FIPAZ 2026",
+  status: "active",
+  startsAt: "2026-10-01T04:00:00.000Z",
+  endsAt: "2026-11-09T04:00:00.000Z",
+  venueName: "Campo Ferial Chuquiago Marka",
+  venue: "Campo Ferial Chuquiago Marka",
+  city: "La Paz",
+};
 let sequence = 0;
 const nextId = (prefix: string) => `${prefix}-${++sequence}`;
 
@@ -53,9 +79,21 @@ export class FakeBackend {
   private readonly refreshTokens = new Map<string, string>();
   private readonly companies = new Map<string, Record<string, unknown>>();
   private readonly stands = new Map<string, Record<string, unknown>>();
+  private readonly persistentFailures = new Map<string, { status: number; code: string }>();
+  private readonly oneShotFailures = new Map<string, { status: number; code: string }>();
+  private readonly delays = new Map<string, number>();
 
-  addUser(user: Omit<FakeUser, "id" | "roles"> & { roles?: FakeRole[] }): FakeUser {
-    const created: FakeUser = { id: nextId("user"), roles: [], ...user };
+  addUser(user: Omit<FakeUser, "id" | "roles" | "activeEvent"> & {
+    roles?: FakeRole[];
+    activeEvent?: FakeActiveEvent | null;
+  }): FakeUser {
+    const roles = user.roles ?? [];
+    const created: FakeUser = {
+      id: nextId("user"),
+      ...user,
+      roles,
+      activeEvent: user.activeEvent === undefined ? (roles.length > 0 ? DEFAULT_ACTIVE_EVENT : null) : user.activeEvent,
+    };
     this.users.push(created);
     for (const role of created.roles) {
       if (!role.companyId || this.companies.has(role.companyId)) continue;
@@ -66,13 +104,53 @@ export class FakeBackend {
       const standId = "5a000000-0000-4000-8000-000000000001";
       this.stands.set(standId, {
         id: standId, companyId: role.companyId,
-        eventId: "e0000000-0000-4000-8000-000000000001", eventName: "FIPAZ 2026",
+        eventId: DEFAULT_EVENT_ID, eventName: "FIPAZ 2026",
         boothCode: "A-01", displayName: role.companyName, description: "Stand de prueba",
         tags: ["tecnología"], activityHighlight: null, promotionHighlight: null,
         visitPoints: 50, status: "active",
       });
     }
     return created;
+  }
+
+  removeStandsForCompany(companyId: string): void {
+    for (const [standId, stand] of this.stands) {
+      if (stand.companyId === companyId) this.stands.delete(standId);
+    }
+  }
+
+  addStand(stand: Record<string, unknown>): void {
+    const id = String(stand.id ?? "");
+    if (!id) throw new Error("El stand simulado necesita id.");
+    this.stands.set(id, { ...stand });
+  }
+
+  setActiveEvent(email: string, eventId: string, name: string): void {
+    const user = this.users.find((candidate) => candidate.email === email);
+    if (!user) throw new Error(`No existe el usuario simulado ${email}.`);
+    user.activeEvent = {
+      ...DEFAULT_ACTIVE_EVENT,
+      id: eventId,
+      slug: name.toLocaleLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
+      name,
+    };
+  }
+
+  fail(method: string, path: string, status = 503, code = "DATABASE_UNAVAILABLE"): void {
+    this.persistentFailures.set(`${method.toUpperCase()} ${path}`, { status, code });
+  }
+
+  clearFailures(): void {
+    this.persistentFailures.clear();
+    this.oneShotFailures.clear();
+  }
+
+  failNext(method: string, path: string, status = 503, code = "DATABASE_UNAVAILABLE"): void {
+    this.oneShotFailures.set(`${method.toUpperCase()} ${path}`, { status, code });
+  }
+
+  delay(method: string, path: string, milliseconds: number): void {
+    this.delays.set(`${method.toUpperCase()} ${path}`, milliseconds);
   }
 
   /** Simula que el servidor revocó todas las sesiones (p. ej. logout-all desde otro equipo). */
@@ -106,6 +184,40 @@ export class FakeBackend {
     return this.users.find((user) => user.id === userId);
   }
 
+  /** Proyecta el registro de gestión al contrato público de GET /events/:id/stands y /stands/:id. */
+  private publicStand(stand: Record<string, unknown>, includeRelevance = false) {
+    const companyId = String(stand.companyId ?? "");
+    const company = this.companies.get(companyId);
+    const categories = Array.isArray(stand.categories)
+      ? stand.categories.filter((category) =>
+          typeof category === "object"
+          && category !== null
+          && typeof (category as Record<string, unknown>).id === "string"
+          && typeof (category as Record<string, unknown>).slug === "string"
+          && typeof (category as Record<string, unknown>).label === "string")
+      : [];
+    const tags = Array.isArray(stand.tags) ? stand.tags.filter((tag): tag is string => typeof tag === "string") : [];
+    const location = typeof stand.location === "object" && stand.location !== null ? stand.location : null;
+
+    return {
+      id: String(stand.id ?? ""),
+      boothCode: String(stand.boothCode ?? ""),
+      displayName: String(stand.displayName ?? company?.displayName ?? ""),
+      description: typeof stand.description === "string" ? stand.description : null,
+      company: {
+        id: companyId,
+        displayName: String(company?.displayName ?? stand.displayName ?? ""),
+      },
+      categories,
+      tags,
+      featured: stand.featured === true,
+      activityHighlight: typeof stand.activityHighlight === "string" ? stand.activityHighlight : null,
+      promotionHighlight: typeof stand.promotionHighlight === "string" ? stand.promotionHighlight : null,
+      location,
+      ...(includeRelevance ? { relevance: 1 } : {}),
+    };
+  }
+
   private async handle(route: Route): Promise<void> {
     const request = route.request();
     const url = new URL(request.url());
@@ -121,6 +233,15 @@ export class FakeBackend {
       route.fulfill(payload === undefined
         ? { status }
         : { status, contentType: "application/json", body: JSON.stringify(payload) });
+
+    const requestKey = `${method} ${path}`;
+    const delay = this.delays.get(requestKey) ?? 0;
+    if (delay > 0) await new Promise((resolve) => setTimeout(resolve, delay));
+    const forcedFailure = this.persistentFailures.get(requestKey) ?? this.oneShotFailures.get(requestKey);
+    if (forcedFailure) {
+      this.oneShotFailures.delete(requestKey);
+      return reply(forcedFailure.status, fail(forcedFailure.code));
+    }
 
     if (method === "POST" && path === "/auth/login") {
       const user = this.users.find((candidate) => candidate.email.toLowerCase() === String(input.email).toLowerCase());
@@ -152,6 +273,7 @@ export class FakeBackend {
         email: user.email,
         profile: { displayName: user.displayName, avatarUrl: null },
         roles: user.roles,
+        activeEvent: user.activeEvent,
       }));
     }
 
@@ -175,6 +297,50 @@ export class FakeBackend {
       user.roles.push(companyRole("company_admin", company.id, company.displayName));
       this.companies.set(company.id, { ...company, description: input.description ?? null, logoPath: null, website: null, contactEmail: null });
       return reply(201, ok(company));
+    }
+
+    // Estos dos endpoints son públicos en el backend real. Se resuelven antes de exigir Bearer
+    // para que el directorio de /panel/expositores pruebe el mismo contrato que producción.
+    const publicStandListMatch = path.match(/^\/events\/([^/]+)\/stands$/);
+    if (method === "GET" && publicStandListMatch) {
+      const eventId = publicStandListMatch[1];
+      const query = (url.searchParams.get("query") ?? "").trim().toLocaleLowerCase();
+      const categoryId = url.searchParams.get("categoryId");
+      const featured = url.searchParams.get("featured");
+      const floorId = url.searchParams.get("floorId");
+      const zoneId = url.searchParams.get("zoneId");
+      const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
+      const limit = Math.min(100, Math.max(1, Number(url.searchParams.get("limit")) || 20));
+
+      const matching = [...this.stands.values()]
+        .filter((stand) => stand.eventId === eventId && stand.status === "active")
+        .map((stand) => this.publicStand(stand, true))
+        .filter((stand) => {
+          const searchable = [stand.displayName, stand.company.displayName, stand.description ?? "", ...stand.tags]
+            .join(" ")
+            .toLocaleLowerCase();
+          if (query && !searchable.includes(query)) return false;
+          if (categoryId && !stand.categories.some((category) => (category as Record<string, unknown>).id === categoryId)) return false;
+          if (featured !== null && String(stand.featured) !== featured) return false;
+          if (floorId && (stand.location as Record<string, unknown> | null)?.floorId !== floorId) return false;
+          if (zoneId && (stand.location as Record<string, unknown> | null)?.zoneId !== zoneId) return false;
+          return true;
+        })
+        .sort((left, right) => Number(right.featured) - Number(left.featured) || left.displayName.localeCompare(right.displayName));
+      const total = matching.length;
+      const items = matching.slice((page - 1) * limit, page * limit);
+      return reply(200, {
+        success: true,
+        data: items,
+        meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+      });
+    }
+
+    const publicStandDetailMatch = path.match(/^\/stands\/([^/]+)$/);
+    if (method === "GET" && publicStandDetailMatch) {
+      const stand = this.stands.get(publicStandDetailMatch[1]);
+      if (!stand || stand.status !== "active") return reply(404, fail("STAND_NOT_FOUND"));
+      return reply(200, ok(this.publicStand(stand)));
     }
 
     const user = this.userFromBearer(authorization);

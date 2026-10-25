@@ -24,6 +24,18 @@ globalThis.window = { localStorage: globalThis.localStorage, sessionStorage: glo
 const { useCompanyAuthStore } = require("@/store/company-auth-store");
 const { usePanelStore } = require("@/store/panel-store");
 
+const ACTIVE_EVENT = {
+  id: "event-1",
+  slug: "fipaz-2026",
+  name: "FIPAZ 2026",
+  status: "active",
+  startsAt: "2026-10-01T12:00:00.000Z",
+  endsAt: "2026-10-05T22:00:00.000Z",
+  venueName: "Campo Ferial",
+  venue: "Campo Ferial",
+  city: "La Paz",
+  isSimulated: false,
+};
 const ME = {
   id: "user-1",
   email: "ana@example.com",
@@ -31,6 +43,7 @@ const ME = {
   roles: [
     { id: "role-1", role: "company_admin", companyId: "company-1", companyName: "Cafe Altiplano", eventId: null, eventName: null, grantedAt: "2026-10-01T00:00:00.000Z" },
   ],
+  activeEvent: ACTIVE_EVENT,
 };
 
 function json(status, body) {
@@ -71,9 +84,24 @@ test("loginWithPassword guarda la sesión con los roles de /auth/me y el primero
   assert.equal(session.accessToken, "access-1");
   assert.equal(session.refreshToken, "refresh-1");
   assert.equal(session.activeRoleId, "role-1");
+  assert.deepEqual(session.activeEvent, ACTIVE_EVENT);
   assert.ok(Date.parse(session.expiresAt) > Date.now());
   // Persiste en sessionStorage para sobrevivir a una recarga.
   assert.match(globalThis.sessionStorage.getItem("expovia-company-auth:v4"), /refresh-1/);
+  assert.match(globalThis.sessionStorage.getItem("expovia-company-auth:v4"), /event-1/);
+});
+
+test("verifySession actualiza activeEvent y vuelve a persistirlo", async () => {
+  mockFetch(LOGIN_ROUTES);
+  await useCompanyAuthStore.getState().loginWithPassword("ana@example.com", "secreto123");
+  const nextEvent = { ...ACTIVE_EVENT, id: "event-2", slug: "fipaz-2027", name: "FIPAZ 2027" };
+  mockFetch({
+    "GET /auth/me": () => json(200, { success: true, data: { ...ME, activeEvent: nextEvent } }),
+  });
+
+  assert.equal(await useCompanyAuthStore.getState().verifySession(), "valid");
+  assert.deepEqual(useCompanyAuthStore.getState().session.activeEvent, nextEvent);
+  assert.match(globalThis.sessionStorage.getItem("expovia-company-auth:v4"), /event-2/);
 });
 
 test("loginWithPassword usa siempre el mismo id de dispositivo del navegador", async () => {
@@ -107,11 +135,12 @@ test("un login fallido no deja sesión", async () => {
 });
 
 test("registerWithPassword deja la sesión iniciada aunque todavía no tenga roles", async () => {
-  mockFetch({ ...LOGIN_ROUTES, "GET /auth/me": () => json(200, { success: true, data: { ...ME, roles: [] } }) });
+  mockFetch({ ...LOGIN_ROUTES, "GET /auth/me": () => json(200, { success: true, data: { ...ME, roles: [], activeEvent: null } }) });
   await useCompanyAuthStore.getState().registerWithPassword({ email: "ana@example.com", password: "secreto123", displayName: "Ana" });
   const session = useCompanyAuthStore.getState().session;
   assert.equal(session.email, "ana@example.com");
   assert.deepEqual(session.roles, []);
+  assert.equal(session.activeEvent, null);
   assert.equal(session.activeRoleId, null);
 });
 

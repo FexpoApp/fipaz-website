@@ -19,8 +19,6 @@ import {
   PANEL_LABELS,
 } from "@/lib/panel-access";
 import { useCompanyAuthStore } from "@/store/company-auth-store";
-// Registra el vaciado del estado del panel al terminar la sesión (logout o refresh fallido).
-import "@/store/panel-store";
 
 const COPY: Record<PanelRole | "any", { title: string; description: string }> = {
   expositor: {
@@ -38,6 +36,7 @@ const COPY: Record<PanelRole | "any", { title: string; description: string }> = 
 };
 
 const PANEL_ICONS: Record<PanelRole, typeof Store> = { expositor: Store, organizador: Building2 };
+const panelLanding = (panel: PanelRole) => panel === "expositor" ? "/panel/mi-stand" : "/panel";
 
 /** Retraso de entrada escalonado (ver `.access-rise` en globals.css). */
 const rise = (delayMs: number) => ({ style: { "--access-delay": `${delayMs}ms` } as React.CSSProperties });
@@ -96,7 +95,7 @@ export function AccessScreen({ panel }: AccessScreenProps) {
     if (!checked || !session || !target) return;
     const role = getRolesForPanel(session, target)[0];
     if (role) setActiveRole(role.id);
-    router.replace("/panel");
+    router.replace(panelLanding(target));
   }, [checked, session, target, setActiveRole, router]);
 
   async function handleCredential(idToken: string) {
@@ -122,7 +121,7 @@ export function AccessScreen({ panel }: AccessScreenProps) {
   function enter(destination: PanelRole) {
     const role = getRolesForPanel(session, destination)[0];
     if (role) setActiveRole(role.id);
-    router.replace("/panel");
+    router.replace(panelLanding(destination));
   }
 
   async function retrySessionVerification() {

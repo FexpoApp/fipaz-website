@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 
 import type { AsyncResource } from "@/hooks/use-async-resource";
-import { getActiveRole } from "@/lib/panel-access";
+import { getOrganizerEvent } from "@/lib/panel-access";
 import { useCompanyAuthStore } from "@/store/company-auth-store";
 
 export interface OrganizerEvent {
@@ -12,13 +12,13 @@ export interface OrganizerEvent {
 }
 
 /**
- * Evento que administra el rol activo. `event_admin` trae su evento en el rol; `super_admin` no
- * está acotado a ninguno, así que usa el evento configurado del despliegue.
+ * Evento que administra el rol activo. `event_admin` trae su evento en el rol; `super_admin` usa
+ * el evento activo que el backend resolvió para la sesión.
  */
 export function useOrganizerEvent(): OrganizerEvent {
-  const role = useCompanyAuthStore((state) => getActiveRole(state.session));
-  const eventId = role?.eventId ?? (role?.role === "super_admin" ? process.env.NEXT_PUBLIC_FIPAZ_EVENT_ID ?? null : null);
-  return { eventId, eventName: role?.eventName ?? "el evento" };
+  const session = useCompanyAuthStore((state) => state.session);
+  const event = getOrganizerEvent(session);
+  return event ?? { eventId: null, eventName: "el evento" };
 }
 
 export function errorMessage(cause: unknown, fallback: string): string {

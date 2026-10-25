@@ -9,6 +9,7 @@ import { defineConfig, devices } from "@playwright/test";
  */
 const port = Number(process.env.E2E_PORT ?? 3001);
 const baseURL = `http://localhost:${port}`;
+const realBackend = process.env.E2E_REAL_BACKEND === "1";
 
 export default defineConfig({
   testDir: "./e2e",
@@ -28,8 +29,15 @@ export default defineConfig({
   webServer: {
     command: `pnpm exec next dev -p ${port}`,
     url: baseURL,
-    reuseExistingServer: true,
+    // La prueba real no debe reutilizar un Next iniciado con variables públicas de otro entorno.
+    reuseExistingServer: !realBackend,
     timeout: 180_000,
-    env: { NEXT_PUBLIC_PASSWORD_LOGIN_ENABLED: "true" },
+    env: {
+      NEXT_PUBLIC_PASSWORD_LOGIN_ENABLED: "true",
+      NEXT_PUBLIC_API_MODE: "http",
+      NEXT_PUBLIC_AGENT_BACKEND_URL: "",
+      NEXT_PUBLIC_API_BASE_URL: "/api/v1",
+      BACKEND_URL: realBackend ? (process.env.BACKEND_URL?.trim() || "http://localhost:3000") : "",
+    },
   },
 });

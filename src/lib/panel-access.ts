@@ -1,10 +1,17 @@
 import { PANEL_NAVIGATION, type PanelRole } from "@/config/panel-navigation";
-import type { AppRole, RoleAssignment } from "@/lib/api/company-auth";
+import type { ActiveEventSummary, AppRole, RoleAssignment } from "@/lib/api/company-auth";
 
 /** Lo mínimo que estas funciones necesitan de una sesión (evita acoplarlas al store). */
 export interface SessionRoles {
   roles: readonly RoleAssignment[];
   activeRoleId: string | null;
+  /** Opcional para aceptar sesiones v4 persistidas antes de que `/auth/me` incluyera el campo. */
+  activeEvent?: ActiveEventSummary | null;
+}
+
+export interface OrganizerEventScope {
+  eventId: string;
+  eventName: string;
 }
 
 /** Panel al que da acceso cada rol del backend. */
@@ -53,6 +60,22 @@ export function getAvailablePanels(session: SessionRoles | null | undefined): Pa
 export function getActiveCompany(session: SessionRoles | null | undefined): { id: string; name: string } | null {
   const role = getActiveRole(session);
   return role?.companyId ? { id: role.companyId, name: role.companyName ?? "Mi empresa" } : null;
+}
+
+/**
+ * Evento administrado por el rol activo. Un `event_admin` siempre conserva el alcance de su rol;
+ * un `super_admin`, que no trae `eventId` en el rol, usa el evento activo resuelto por `/auth/me`.
+ */
+export function getOrganizerEvent(session: SessionRoles | null | undefined): OrganizerEventScope | null {
+  const role = getActiveRole(session);
+  if (role?.role === "event_admin" && role.eventId) {
+    const activeName = session?.activeEvent?.id === role.eventId ? session.activeEvent.name : null;
+    return { eventId: role.eventId, eventName: role.eventName ?? activeName ?? "el evento" };
+  }
+  if (role?.role === "super_admin" && session?.activeEvent) {
+    return { eventId: session.activeEvent.id, eventName: session.activeEvent.name };
+  }
+  return null;
 }
 
 /**

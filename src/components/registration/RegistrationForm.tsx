@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -35,7 +35,6 @@ import {
   type PasswordAuthValues,
 } from "@/components/auth/password-auth-form";
 import { categories } from "@/data/demo-data";
-import { usePanelStore } from "@/store/panel-store";
 import { useCompanyAuthStore } from "@/store/company-auth-store";
 import { createCompany } from "@/lib/api/companies";
 import { isPasswordLoginEnabled, type RoleAssignment } from "@/lib/api/company-auth";
@@ -435,7 +434,6 @@ function CardHeading({ title, description }: { title: string; description: strin
 
 export function RegistrationForm() {
   const router = useRouter();
-  const registerCompany = usePanelStore((s) => s.registerCompany);
   const loginWithGoogle = useCompanyAuthStore((s) => s.loginWithGoogle);
   const loginWithPassword = useCompanyAuthStore((s) => s.loginWithPassword);
   const registerWithPassword = useCompanyAuthStore((s) => s.registerWithPassword);
@@ -474,12 +472,7 @@ export function RegistrationForm() {
   ) / 4;
 
   // Mientras el campo de contraseña del paso 2 tiene el foco, el personaje se tapa los ojos.
-  // El onBlur del propio campo ya lo apaga; este efecto es una red de seguridad si el
-  // paso cambia por otra vía (por ejemplo, "Atrás") mientras el campo seguía enfocado.
   const [passwordFocused, setPasswordFocused] = useState(false);
-  useEffect(() => {
-    if (step !== 1) setPasswordFocused(false);
-  }, [step]);
 
   // ── Validación paso 1 ──────────────────────────────────────────────────────
   function handleNextStep() {
@@ -499,22 +492,17 @@ export function RegistrationForm() {
   async function completeRegistration(roles: readonly RoleAssignment[]) {
     // La cuenta ya administra una empresa: se entra a su panel en lugar de crear otra por accidente.
     if (roles.some((role) => role.role === "company_admin" || role.role === "company_staff")) {
-      router.push("/panel");
+      router.push("/panel/mi-stand");
       return;
     }
 
-    const newCompany = await createCompany({
+    await createCompany({
       name: name.trim(),
       category: category!,
       customCategory: category === "other" ? customCategory.trim() : undefined,
       contactEmail: email.trim(),
       description: description.trim(),
     });
-    registerCompany({
-      name: name.trim(), category: category!,
-      customCategory: category === "other" ? customCategory.trim() : undefined,
-      contactEmail: email.trim(), description: description.trim(),
-    }, newCompany.id);
     // El rol nuevo solo aparece después de consultar /auth/me otra vez.
     const verification = await verifySession();
     if (verification === "unavailable") {
@@ -523,8 +511,9 @@ export function RegistrationForm() {
     if (verification === "invalid" || !hasPanelAccess(useCompanyAuthStore.getState().session, "expositor")) {
       throw new Error("La empresa se registró, pero el backend no confirmó el rol de expositor para esta cuenta. Inicia sesión de nuevo.");
     }
+    setPasswordFocused(false);
     setStep(2);
-    window.setTimeout(() => router.push("/panel"), 900);
+    window.setTimeout(() => router.push("/panel/mi-stand"), 900);
   }
 
   /** Correo y contraseña: el propio formulario muestra los errores que se lancen aquí. */
@@ -617,7 +606,7 @@ export function RegistrationForm() {
                     setParticipation={setParticipation}
                     loading={loading}
                     error={error}
-                    onBack={() => { setError(""); setStep(0); }}
+                    onBack={() => { setError(""); setPasswordFocused(false); setStep(0); }}
                     onCredential={handleGoogleCredential}
                     contactEmail={email.trim()}
                     onPasswordSubmit={isPasswordLoginEnabled() ? handlePasswordAuth : undefined}

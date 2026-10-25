@@ -11,6 +11,7 @@ import {
   registerWithPassword,
   revokeAllServerSessions,
   revokeServerSession,
+  type ActiveEventSummary,
   type AuthMe,
   type CompanyAuthTokens,
   type RoleAssignment,
@@ -23,6 +24,7 @@ export interface CompanySession {
   email: string;
   displayName: string;
   roles: RoleAssignment[];
+  activeEvent: ActiveEventSummary | null;
   activeRoleId: string | null;
   accessToken: string;
   refreshToken: string;
@@ -81,6 +83,7 @@ function sessionFrom(me: AuthMe, tokens: CompanyAuthTokens): CompanySession {
     email: me.email,
     displayName: me.displayName,
     roles: me.roles,
+    activeEvent: me.activeEvent,
     activeRoleId: me.roles[0]?.id ?? null,
     accessToken: tokens.accessToken,
     refreshToken: tokens.refreshToken,
@@ -103,6 +106,7 @@ export const useCompanyAuthStore = create<CompanyAuthStore>()(
             email: me.email,
             displayName: me.displayName,
             roles: me.roles,
+            activeEvent: me.activeEvent,
             activeRoleId: stillActive ? current.activeRoleId : (me.roles[0]?.id ?? null),
           },
         });

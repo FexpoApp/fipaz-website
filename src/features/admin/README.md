@@ -103,16 +103,15 @@ Además:
 
 - **Ids UUID.** El backend valida `standId`/`eventId` con `ParseUUIDPipe`. Los ids de la demo
   (`stand-altura-labs`, `event-fipaz-2026`) darán 400 en modo `http`; hay que navegar con UUID reales.
-  `adminScopeService.getEvent` sigue usando el catálogo estático (no existe `GET /events/:id`).
+  En modo HTTP, `adminScopeService` no sustituye un fallo al cargar el stand por datos estáticos.
 - **Autenticación.** El frontend obtiene tokens con Google, verifica `/auth/me` y renueva una vez tras un
   `401`; el refresh envía solo `{ refreshToken }`, como exige el DTO backend. El servicio HTTP toma el JWT
   desde la sesión persistida.
 - **Bloqueo pendiente de backend.** En el commit `2435b6f`, `/auth/me` todavía devuelve `roles: []` y no
   existe `POST /companies`; por ello no se puede completar ni verificar el flujo `company_admin` y registro
   de empresa contra producción.
-- **Stands del evento.** El directorio llama `GET /events/:eventId/stands`; configura
-  `NEXT_PUBLIC_FIPAZ_EVENT_ID` con el UUID real. El id demostrativo `event-fipaz-2026` no es un UUID y no
-  debe enviarse a la API.
+- **Stands del evento.** El directorio llama `GET /events/:eventId/stands` con el evento que el rol
+  organizador recibe en su sesión. Si no hay un evento asignado, muestra un estado vacío y no llama a la API.
 - **Cambiar estado.** `toggleDynamicStatus` / `toggleRewardStatus` leen el estado vigente (`GET`) y envían el
   contrario en `PATCH …/status { status }`. Si backend prefiere alternar por su cuenta, se simplifica en
   `*.http-service.ts`.

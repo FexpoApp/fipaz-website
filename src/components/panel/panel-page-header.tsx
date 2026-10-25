@@ -4,11 +4,11 @@ interface PanelPageHeaderProps {
   eyebrow?: string;
   title: string;
   description?: string;
-  /** Toda pantalla del panel muestra datos de ejemplo salvo que se indique lo contrario. */
+  /** Solo las superficies que declaran explícitamente datos de demostración muestran la insignia. */
   demo?: boolean;
 }
 
-export function PanelPageHeader({ eyebrow, title, description, demo = true }: PanelPageHeaderProps) {
+export function PanelPageHeader({ eyebrow, title, description, demo = false }: PanelPageHeaderProps) {
   return (
     <div className="mb-7">
       <div className="flex flex-wrap items-center gap-2">

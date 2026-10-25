@@ -4,6 +4,8 @@ import { companyRole, eventAdminRole, FakeBackend } from "./support/fake-backend
 
 const PASSWORD = "Prueba1234!";
 const SEED_COMPANY_ID = "c0000000-0000-4000-8000-000000000001";
+const EXHIBITOR_HOME = /\/panel\/mi-stand$/;
+const ORGANIZER_HOME = /\/panel$/;
 
 function createBackend() {
   const backend = new FakeBackend();
@@ -42,10 +44,10 @@ test.describe("acceso con correo y contraseña", () => {
   test("el expositor entra a su panel y ve su empresa", async ({ page }) => {
     await loginWithPassword(page, "expositor@fexpo.test");
 
-    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
     await expect(page.getByRole("button", { name: /Expositor · Altura Labs/ })).toBeVisible();
     await expect(page.getByText("Datos de demostración.")).toHaveCount(0);
-    await expect(page.getByText("Check-ins", { exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Altura Labs" })).toBeVisible();
     await expect(page.getByRole("complementary", { name: "Navegación del panel" }).getByRole("link", { name: "Mi stand", exact: true })).toBeVisible();
 
     const login = backend.calls.find((call) => call.path === "/auth/login");
@@ -81,11 +83,11 @@ test.describe("acceso con correo y contraseña", () => {
 
   test("recargar la página mantiene la sesión", async ({ page }) => {
     await loginWithPassword(page, "expositor@fexpo.test");
-    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
 
     await page.reload();
     await expect(page.getByRole("button", { name: /Expositor · Altura Labs/ })).toBeVisible();
-    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
   });
 });
 
@@ -93,7 +95,7 @@ test.describe("paneles separados por rol", () => {
   test("el organizador entra a su panel con su propia navegación", async ({ page }) => {
     await loginWithPassword(page, "organizador@fexpo.test", PASSWORD, "organizador");
 
-    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page).toHaveURL(ORGANIZER_HOME);
     const nav = page.getByRole("complementary", { name: "Navegación del panel" });
     await expect(nav.getByRole("link", { name: "Expositores" })).toBeVisible();
     await expect(nav.getByRole("link", { name: "Mi stand", exact: true })).toHaveCount(0);
@@ -101,31 +103,31 @@ test.describe("paneles separados por rol", () => {
 
   test("el organizador vuelve a su panel al abrir una ruta del expositor", async ({ page }) => {
     await loginWithPassword(page, "organizador@fexpo.test", PASSWORD, "organizador");
-    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page).toHaveURL(ORGANIZER_HOME);
 
     await page.goto("/panel/mi-stand");
-    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page).toHaveURL(ORGANIZER_HOME);
     await expect(page.getByRole("complementary", { name: "Navegación del panel" }).getByRole("link", { name: "Expositores" })).toBeVisible();
   });
 
   test("el expositor vuelve a su panel al abrir una ruta del organizador", async ({ page }) => {
     await loginWithPassword(page, "expositor@fexpo.test");
-    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
 
     await page.goto("/panel/expositores");
-    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
     await expect(page.getByRole("complementary", { name: "Navegación del panel" }).getByRole("link", { name: "Mi stand", exact: true })).toBeVisible();
   });
 
   test("al iniciar sesión desde el enlace del otro panel entra al suyo", async ({ page }) => {
     await loginWithPassword(page, "expositor@fexpo.test", PASSWORD, "organizador");
-    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
     await expect(page.getByRole("button", { name: /Expositor · Altura Labs/ })).toBeVisible();
   });
 
   test("el organizador también entra al suyo desde el enlace de expositor", async ({ page }) => {
     await loginWithPassword(page, "organizador@fexpo.test", PASSWORD, "expositor");
-    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page).toHaveURL(ORGANIZER_HOME);
     await expect(page.getByRole("complementary", { name: "Navegación del panel" }).getByRole("link", { name: "Expositores" })).toBeVisible();
   });
 
@@ -144,11 +146,15 @@ test.describe("paneles separados por rol", () => {
 
   test("el personal de la empresa ve el perfil en solo lectura", async ({ page }) => {
     await loginWithPassword(page, "personal@fexpo.test");
-    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
 
     await page.goto("/panel/mi-stand");
     await expect(page.getByRole("link", { name: "Gestionar QR" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Editar perfil" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Editar perfil" })).toBeDisabled();
+
+    await page.goto("/panel/mi-stand/editar");
+    await expect(page.getByRole("note")).toContainText("no modificarla");
+    await expect(page.getByRole("button", { name: "Guardar cambios" })).toHaveCount(0);
 
     await page.goto("/admin/company/profile");
     await expect(page.getByRole("note")).toContainText("Solo lectura");
@@ -158,7 +164,7 @@ test.describe("paneles separados por rol", () => {
 
   test("el admin de la empresa sí puede editar el perfil", async ({ page }) => {
     await loginWithPassword(page, "expositor@fexpo.test");
-    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
 
     await page.goto("/panel/mi-stand");
     await expect(page.getByRole("link", { name: "Editar perfil" })).toBeVisible();
@@ -168,9 +174,69 @@ test.describe("paneles separados por rol", () => {
 });
 
 test.describe("panel real de expositor", () => {
+  test("muestra un esqueleto mientras carga datos reales, sin fixtures", async ({ page }) => {
+    backend.delay("GET", `/companies/${SEED_COMPANY_ID}/stands`, 700);
+
+    await loginWithPassword(page, "expositor@fexpo.test");
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
+    await expect(page.getByRole("status")).toContainText("Cargando datos del expositor");
+    await expect(page.getByText("Datos de demostración.")).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Altura Labs" })).toBeVisible();
+  });
+
+  test("muestra el estado vacío cuando la empresa aún no tiene stand", async ({ page }) => {
+    backend.removeStandsForCompany(SEED_COMPANY_ID);
+
+    await loginWithPassword(page, "expositor@fexpo.test");
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
+    await expect(page.getByRole("heading", { name: "Aún no tienes un stand asignado" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Gestionar QR" })).toHaveCount(0);
+  });
+
+  test("prioriza activeEvent y permite elegir entre varios stands", async ({ page }) => {
+    const secondStandId = "5a000000-0000-4000-8000-000000000002";
+    const secondEventId = "e0000000-0000-4000-8000-000000000002";
+    backend.addStand({
+      id: secondStandId,
+      companyId: SEED_COMPANY_ID,
+      eventId: secondEventId,
+      eventName: "Expocruz 2026",
+      boothCode: "B-12",
+      displayName: "Altura Labs Oriente",
+      description: "Stand de Santa Cruz",
+      tags: ["tecnología"],
+      activityHighlight: null,
+      promotionHighlight: null,
+      visitPoints: 60,
+      status: "active",
+    });
+    backend.setActiveEvent("expositor@fexpo.test", secondEventId, "Expocruz 2026");
+
+    await loginWithPassword(page, "expositor@fexpo.test");
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
+    const selector = page.getByLabel("Stand activo");
+    await expect(selector).toHaveValue(secondStandId);
+    await expect(page.getByRole("heading", { name: "Altura Labs Oriente" })).toBeVisible();
+
+    await selector.selectOption("5a000000-0000-4000-8000-000000000001");
+    await expect(page.getByRole("heading", { name: "Altura Labs" })).toBeVisible();
+  });
+
+  test("muestra error del stand y se recupera al reintentar", async ({ page }) => {
+    backend.fail("GET", `/companies/${SEED_COMPANY_ID}/stands`);
+
+    await loginWithPassword(page, "expositor@fexpo.test");
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
+    await expect(page.getByRole("heading", { name: "No pudimos cargar tu stand" })).toBeVisible();
+
+    backend.clearFailures();
+    await page.getByRole("button", { name: "Reintentar" }).click();
+    await expect(page.getByRole("heading", { name: "Altura Labs" })).toBeVisible();
+  });
+
   test("el stand se guarda en el backend y persiste tras recargar", async ({ page }) => {
     await loginWithPassword(page, "expositor@fexpo.test");
-    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
 
     await page.goto("/panel/mi-stand/editar");
     await page.getByLabel("Nombre visible").fill("Altura Labs Renovado");
@@ -182,6 +248,9 @@ test.describe("panel real de expositor", () => {
     await expect(page.getByText("Nuevo texto del stand")).toBeVisible();
     expect(backend.calls.find((call) => call.method === "PATCH" && call.path === "/stands/5a000000-0000-4000-8000-000000000001")?.body)
       .toMatchObject({ displayName: "Altura Labs Renovado", description: "Nuevo texto del stand" });
+    const patchIndex = backend.calls.findIndex((call) => call.method === "PATCH" && call.path === "/stands/5a000000-0000-4000-8000-000000000001");
+    const rereadIndex = backend.calls.findIndex((call, index) => index > patchIndex && call.method === "GET" && call.path === `/companies/${SEED_COMPANY_ID}/stands`);
+    expect(rereadIndex).toBeGreaterThan(patchIndex);
 
     await page.reload();
     await expect(page.getByRole("heading", { name: "Altura Labs Renovado" })).toBeVisible();
@@ -189,7 +258,7 @@ test.describe("panel real de expositor", () => {
 
   test("la empresa se guarda en el backend y persiste tras recargar", async ({ page }) => {
     await loginWithPassword(page, "expositor@fexpo.test");
-    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
 
     await page.goto("/panel/empresa");
     await page.getByLabel("Nombre de la empresa").fill("Altura Labs Bolivia");
@@ -205,7 +274,7 @@ test.describe("panel real de expositor", () => {
 
   test("el QR se emite y revoca usando el backend", async ({ page }) => {
     await loginWithPassword(page, "expositor@fexpo.test");
-    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
 
     await page.goto("/panel/mi-stand/qr");
     await page.getByRole("button", { name: "Generar QR" }).click();
@@ -225,16 +294,31 @@ test.describe("panel real de organizador", () => {
 
   async function enterAsOrganizer(page: Page) {
     await loginWithPassword(page, "organizador@fexpo.test", PASSWORD, "organizador");
-    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page).toHaveURL(ORGANIZER_HOME);
   }
 
   test("el resumen muestra KPIs y empresas del backend, sin aviso de demostración", async ({ page }) => {
     await enterAsOrganizer(page);
-    await expect(page.getByRole("heading", { name: "Panorama del evento" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Panorama de/ })).toBeVisible();
     await expect(page.getByText("Participantes", { exact: true })).toBeVisible();
     await expect(page.getByText("Cafe Altiplano")).toBeVisible();
     await expect(page.getByText("Datos de demostración.")).toHaveCount(0);
     expect(backend.calls.some((call) => call.path === `${EVENT_PATH}/kpis` && call.authorization?.startsWith("Bearer "))).toBe(true);
+  });
+
+  test("el directorio y el detalle de expositores usan los endpoints públicos", async ({ page }) => {
+    await enterAsOrganizer(page);
+    await page.goto("/panel/expositores");
+
+    const standLink = page.getByRole("link", { name: /Altura Labs.*A-01/ });
+    await expect(standLink).toBeVisible();
+    const listCall = backend.calls.find((call) => call.method === "GET" && call.path === `${EVENT_PATH}/stands`);
+    expect(listCall?.authorization).toBeNull();
+
+    await standLink.click();
+    await expect(page.getByRole("heading", { name: "Altura Labs" })).toBeVisible();
+    const detailCall = backend.calls.find((call) => call.method === "GET" && call.path === "/stands/5a000000-0000-4000-8000-000000000001");
+    expect(detailCall?.authorization).toBeNull();
   });
 
   test("las métricas muestran stands por zona y el ranking", async ({ page }) => {
@@ -313,7 +397,7 @@ test.describe("panel real de organizador", () => {
 test.describe("cierre de sesión", () => {
   test("cerrar sesión invalida el refresh token en el servidor y vacía el estado guardado", async ({ page }) => {
     await loginWithPassword(page, "expositor@fexpo.test");
-    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
     expect(backend.liveRefreshTokens()).toHaveLength(1);
 
     await page.getByRole("button", { name: /Expositor · Altura Labs/ }).click();
@@ -328,7 +412,7 @@ test.describe("cierre de sesión", () => {
 
   test("cerrar sesión en todos los dispositivos usa /auth/logout-all", async ({ page }) => {
     await loginWithPassword(page, "expositor@fexpo.test");
-    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
 
     await page.getByRole("button", { name: /Expositor · Altura Labs/ }).click();
     await page.getByRole("menuitem", { name: "Cerrar sesión en todos los dispositivos" }).click();
@@ -340,7 +424,7 @@ test.describe("cierre de sesión", () => {
   test("el drawer móvil también permite cerrar sesión", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await loginWithPassword(page, "organizador@fexpo.test", PASSWORD, "organizador");
-    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page).toHaveURL(ORGANIZER_HOME);
 
     await page.getByRole("button", { name: "Abrir navegación del panel" }).click();
     await page.getByRole("dialog").getByRole("button", { name: "Cerrar sesión", exact: true }).click();
@@ -351,7 +435,7 @@ test.describe("cierre de sesión", () => {
 
   test("si el servidor rechaza el refresh, la sesión vencida vuelve a la pantalla de acceso", async ({ page }) => {
     await loginWithPassword(page, "expositor@fexpo.test");
-    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
 
     // Access token vencido en el navegador y sesiones revocadas en el servidor.
     await page.evaluate(() => {
@@ -389,7 +473,7 @@ test.describe("registro de empresa con correo y contraseña", () => {
     await form.getByRole("button", { name: "Crear cuenta y registrar empresa" }).click();
 
     await expect(page.getByRole("heading", { name: "¡Empresa registrada!" })).toBeVisible();
-    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
     await expect(page.getByRole("button", { name: /Expositor · Mi Empresa Nueva/ })).toBeVisible();
 
     const paths = backend.calls.map((call) => `${call.method} ${call.path}`);
@@ -431,7 +515,7 @@ test.describe("registro de empresa con correo y contraseña", () => {
     await form.getByLabel("Contraseña", { exact: true }).fill(PASSWORD);
     await form.getByRole("button", { name: "Iniciar sesión y registrar empresa" }).click();
 
-    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
     expect(backend.calls.some((call) => call.path === "/auth/login")).toBe(true);
     expect(backend.calls.some((call) => call.path === "/companies")).toBe(true);
   });

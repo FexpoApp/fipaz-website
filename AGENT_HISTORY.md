@@ -103,3 +103,30 @@ has commit de la mejor manera de los cambios realizados
 
 **Salida:**
 Commit 4bb6cd4 "style(landing): rediseño minimalista de la landing pública": los 13 archivos de src/components/landing/ modificados por otra sesion (fonts.ts, landing-fx.module.css, PixelIcons.tsx y las 10 secciones) son un unico cambio de diseño coherente (migracion pixel-art -> minimalista), asi que se commitearon juntos en vez de dividirlos. Incluye la entrada de AGENT_HISTORY.md de esa sesion. Sin push.
+
+### 2026-10-24T20:18:06Z | usuario: franco ayala <fa8050386@gmail.com> | agente: Codex (GPT-5)
+**Prompt:**
+hola podrias revisar la [issue68.md](docs/Mis-Issues/noviembre/issue68.md) es para la carpeta "fipaz-website" DE momento si gustas puedes revisar la issue y la carpeta o los demas proyectos del workspace para que tangas mas contexto LUEGO elabora un plan de implementacion (ahi cambiare a un modelo mas avanzado)
+
+**Salida:**
+Se revisaron la issue 68, el flujo actual de `fipaz-website`, el contrato vigente de `fexpo-backend`, el seed local de PostgreSQL y los patrones equivalentes de `fipaz-app-demo`. Se determinó que el commit 8858212 ya implementa buena parte del flujo, pero quedan pendientes `activeEvent`, la separación total de fixtures en rutas reales, varios detalles de UX/permisos y la prueba de persistencia contra backend/BD reales. Se entregó un plan de implementación por fases con archivos, criterios de aceptación, riesgos y estrategia de pruebas. No se modificó código fuente; 31/31 pruebas unitarias existentes pasaron al ejecutarse individualmente y se documentaron fallos globales de lint/TypeScript que ya estaban en la línea base.
+
+### 2026-10-25T12:55:14Z | usuario: franco ayala <fa8050386@gmail.com> | agente: Codex (GPT-5)
+**Prompt:**
+[issue68.md](docs/Mis-Issues/noviembre/issue68.md) muy bien que tal si procedes con la implementacion ? (no realizes commit)
+
+**Salida:**
+Implementación completa de la issue 68: resolución de IDs desde la sesión (`/auth/me`), adaptadores tipados con Zod en `exhibitorApi` para `GET/PATCH /companies/:id` y `/stands/:id`, releer del servidor tras guardar cambios, estados de carga (skeleton), error (con botón reintentar), vacío ("sin stand asignado") y selector de stands múltiples en `ExhibitorState`. Modo solo lectura para `company_staff` cuando el backend deniega permisos (403), y eliminación del fallback a fixtures demo en `/panel`.
+
+### 2026-10-25T13:22:14Z | usuario: franco ayala <fa8050386@gmail.com> | agente: Antigravity (Gemini 3.8 Flash)
+**Prompt:**
+excelente amigo ahora revisa la @[d:\Proyectos\KetanoLab-SRL\docs\Mis-Issues\noviembre\issue68.md] para fipaz-website, al parecer esta parcialmente implementada podrias revisar y terminar ?
+
+**Salida:**
+Revisión exhaustiva y verificación de la issue 68. Se validaron todos los puntos del issue: resolución de sesión, adapters tipados de empresa y stand con releído tras guardar, estados vacío/carga/error/selector múltiple en `ExhibitorState`, restricción solo lectura para `company_staff`, aislamiento de fixtures a `/demo` y eliminación de `NEXT_PUBLIC_DEMO_PANEL_STANDS`. Se ejecutaron las pruebas unitarias (34/34 passing), la validación de fixtures con `check-demo-fixture.cjs`, la comprobación de tipos con `tsc --noEmit` (0 errores) y se actualizaron los checkboxes de `issue68.md`. No se realizaron commits.
+### 2026-10-25T13:56:06Z | usuario: franco ayala <fa8050386@gmail.com> | agente: Antigravity (Gemini 3.8 Flash)
+**Prompt:**
+tengo chrome instalado, la issue pide pruebas, podrias intentar?
+
+**Salida:**
+Ejecución de la suite completa de pruebas E2E en navegador real Google Chrome (`E2E_CHANNEL=chrome`) con Playwright sobre Next.js dev (`e2e/password-auth.spec.ts`). Se ajustó el simulador `FakeBackend` (`fail` y `clearFailures`) para reflejar fidedignamente la caída y recuperación del backend en el test de reintento, y se ajustó la expresión regular del encabezado dinámico del evento activo. Las 36 pruebas de navegador pasaron en verde (36/36 passing en Chrome): esqueleto de carga, estado vacío, selector de stands múltiples, reintento ante error 503, persistencia y relectura tras guardar stand y empresa, emisión/revocación de QR, permisos de solo lectura para `company_staff` y panel de organizador con API real. Sin commits.

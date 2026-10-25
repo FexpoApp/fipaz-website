@@ -13,32 +13,45 @@ import { PanelPageHeader } from "./panel-page-header";
 export function CompanyDetailsView() {
   const { company, reload } = useExhibitor();
   const editable = useCompanyAuthStore((state) => canEditCompany(state.session));
-  return <ExhibitorState requireStand={false}>{company && <CompanyForm key={company.id} company={company} editable={editable} reload={reload} />}</ExhibitorState>;
+  const [notice, setNotice] = useState<{ kind: "success" | "error"; text: string } | null>(null);
+  return <ExhibitorState requireStand={false}>{company && <CompanyForm key={company.id} company={company} editable={editable} reload={reload} notice={notice} setNotice={setNotice} />}</ExhibitorState>;
 }
 
-function CompanyForm({ company, editable, reload }: { company: ExhibitorCompany; editable: boolean; reload: () => Promise<void> }) {
+function CompanyForm({
+  company,
+  editable,
+  reload,
+  notice,
+  setNotice,
+}: {
+  company: ExhibitorCompany;
+  editable: boolean;
+  reload: () => Promise<boolean>;
+  notice: { kind: "success" | "error"; text: string } | null;
+  setNotice: (notice: { kind: "success" | "error"; text: string } | null) => void;
+}) {
   const verifySession = useCompanyAuthStore((state) => state.verifySession);
   const [name, setName] = useState(company.displayName);
   const [description, setDescription] = useState(company.description ?? "");
   const [contactEmail, setContactEmail] = useState(company.contactEmail ?? "");
   const [website, setWebsite] = useState(company.website ?? "");
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState("");
 
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSaving(true);
-    setMessage("");
+    setNotice(null);
     try {
       await exhibitorApi.updateCompany(company.id, {
         displayName: name.trim(), description: description.trim() || null,
         contactEmail: contactEmail.trim() || null, website: website.trim() || null,
       });
-      await reload();
+      const confirmed = await reload();
+      if (!confirmed) return;
       await verifySession();
-      setMessage("Cambios guardados en el servidor.");
+      setNotice({ kind: "success", text: "Cambios guardados en el servidor." });
     } catch (cause) {
-      setMessage(cause instanceof Error ? cause.message : "No se pudieron guardar los cambios.");
+      setNotice({ kind: "error", text: cause instanceof Error ? cause.message : "No se pudieron guardar los cambios." });
     } finally {
       setSaving(false);
     }
@@ -57,7 +70,7 @@ function CompanyForm({ company, editable, reload }: { company: ExhibitorCompany;
           <label className="block text-sm font-bold">Sitio web<input type="url" value={website} onChange={(event) => setWebsite(event.target.value)} placeholder="https://" className={field} /></label>
         </fieldset>
         <p className="text-xs text-slate-500">La carga de logo aún no está disponible en el servidor.</p>
-        {message && <p role="status" className="text-sm font-bold">{message}</p>}
+        {notice && <p role={notice.kind === "error" ? "alert" : "status"} className={`rounded-lg p-3 text-sm font-bold ${notice.kind === "error" ? "bg-rose-50 text-rose-700" : "bg-emerald-50 text-emerald-800"}`}>{notice.text}</p>}
         {editable && <button type="submit" disabled={saving} className="inline-flex items-center gap-2 rounded-xl border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-5 py-2.5 text-sm font-black disabled:opacity-60">{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}Guardar cambios</button>}
       </form>
     </>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Loader2, MapPin, Star } from "lucide-react";
 
 import { getStandById, type PanelStand } from "@/lib/panel-stands";
+import { NoEventNotice, useOrganizerEvent } from "./organizer-event";
 import { PanelPageHeader } from "./panel-page-header";
 
 interface ExpositorDetailProps {
@@ -12,11 +13,17 @@ interface ExpositorDetailProps {
 }
 
 export function ExpositorDetail({ standId }: ExpositorDetailProps) {
+  const { eventId } = useOrganizerEvent();
   const [stand, setStand] = useState<PanelStand | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const loadStand = useCallback(async () => {
+    if (!eventId) {
+      setStand(null);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError("");
     try {
@@ -26,9 +33,11 @@ export function ExpositorDetail({ standId }: ExpositorDetailProps) {
     } finally {
       setLoading(false);
     }
-  }, [standId]);
+  }, [eventId, standId]);
 
-  useEffect(() => { void loadStand(); }, [loadStand]);
+  useEffect(() => { void Promise.resolve().then(loadStand); }, [loadStand]);
+
+  if (!eventId) return <NoEventNotice />;
 
   if (loading) {
     return <div role="status" className="flex min-h-48 items-center justify-center gap-3 text-sm font-bold text-slate-400"><Loader2 className="animate-spin" size={18} /> Cargando stand…</div>;
@@ -50,7 +59,7 @@ export function ExpositorDetail({ standId }: ExpositorDetailProps) {
 
   const location = stand.location
     ? [stand.boothCode, stand.location.zoneId && `Zona ${stand.location.zoneId}`, `Piso ${stand.location.floorId}`, `(${stand.location.x}, ${stand.location.y})`].filter(Boolean).join(" · ")
-    : [stand.boothCode, stand.demoBlock].filter(Boolean).join(" · ");
+    : stand.boothCode;
 
   return (
     <>

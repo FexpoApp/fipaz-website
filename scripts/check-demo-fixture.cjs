@@ -1,4 +1,5 @@
 // Run with: node scripts/check-demo-fixture.cjs
+/* eslint-disable @typescript-eslint/no-require-imports -- Script Node autocontenido para comprobar los módulos TS reales. */
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -12,8 +13,8 @@ function loader() {
     file = path.resolve(file);
     if (!path.extname(file)) file += '.ts';
     if (cache.has(file)) return cache.get(file).exports;
-    const module = { exports: {} };
-    cache.set(file, module);
+    const loadedModule = { exports: {} };
+    cache.set(file, loadedModule);
     const code = ts.transpileModule(fs.readFileSync(file, 'utf8'), {
       compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, esModuleInterop: true },
     }).outputText;
@@ -23,32 +24,15 @@ function loader() {
       if (id.startsWith('.')) return load(path.resolve(path.dirname(file), id), base);
       return require(id);
     };
-    new Function('require', 'module', 'exports', code)(localRequire, module, module.exports);
-    return module.exports;
+    new Function('require', 'module', 'exports', code)(localRequire, loadedModule, loadedModule.exports);
+    return loadedModule.exports;
   }
   return load;
 }
 
 async function main() {
-  process.env.NEXT_PUBLIC_DEMO_PANEL_STANDS = 'true';
   const load = loader();
   const fixture = load(path.join(root, 'src/data/demo-fixture.ts')).DEMO_FIXTURE;
-  const panel = load(path.join(root, 'src/lib/panel-stands.ts'));
-  global.fetch = async () => { throw new Error('Demo must not call the backend'); };
-  assert.equal((await panel.listStands()).total, 3);
-  for (const stand of fixture.stands) {
-    const detail = await panel.getStandById(stand.id);
-    assert.equal(detail.displayName, stand.name);
-    assert.equal(detail.boothCode, stand.boothCode);
-    assert.equal(detail.categories[0].id, stand.category);
-    assert.equal(detail.activityHighlight, stand.activity);
-    assert.equal(detail.promotionHighlight, stand.promotion);
-    assert.ok(detail.demoBlock);
-  }
-  assert.equal((await panel.listStands({ query: 'Kawsay' })).items[0].id, 'stand-kawsay-salud');
-  assert.equal((await panel.listStands({ page: 2, limit: 2 })).items.length, 1);
-  assert.equal((await panel.listStands({ categoryId: 'health' })).total, 1);
-  await assert.rejects(panel.getStandById('missing'), { status: 404 });
 
   const web = load(path.join(root, 'src/store/demo-store.ts')).useDemoStore;
   web.getState().resetDemo();
@@ -89,19 +73,56 @@ async function main() {
   assert.equal(mobile.getState().points, 50);
   assert.equal(mobile.getState().recentVisits[0].pending, false);
 
-  process.env.NEXT_PUBLIC_DEMO_PANEL_STANDS = 'false';
+  process.env.NEXT_PUBLIC_API_MODE = 'mock';
+  const mockScope = loader()(path.join(root, 'src/features/admin/admin-scope.ts')).adminScopeService;
+  assert.equal((await mockScope.getStand('stand-altura-labs')).name, 'Altura Labs');
+
+  process.env.NEXT_PUBLIC_API_MODE = 'http';
+  process.env.BACKEND_URL = 'https://example.invalid';
+  const httpScope = loader()(path.join(root, 'src/features/admin/admin-scope.ts')).adminScopeService;
+  global.fetch = async () => { throw new Error('offline'); };
+  await assert.rejects(httpScope.getStand('5a000000-0000-4000-8000-000000000001'));
+
   process.env.NEXT_PUBLIC_AGENT_BACKEND_URL = 'https://example.invalid';
   const backendPanel = loader()(path.join(root, 'src/lib/panel-stands.ts'));
+  const eventId = 'e0000000-0000-4000-8000-000000000001';
+  const standId = '5a000000-0000-4000-8000-000000000001';
   let calls = 0;
   global.fetch = async (url) => {
     calls++;
-    assert.ok(url.startsWith('https://example.invalid/api/v1/stands'));
-    return new Response(JSON.stringify({ items: [], total: 0 }), { status: 200 });
+    if (url.startsWith(`https://example.invalid/api/v1/events/${eventId}/stands`)) {
+      return new Response(JSON.stringify({
+        success: true,
+        data: [],
+        meta: { page: 1, limit: 20, total: 0, totalPages: 0 },
+      }), { status: 200 });
+    }
+    assert.equal(url, `https://example.invalid/api/v1/stands/${standId}`);
+    return new Response(JSON.stringify({
+      success: true,
+      data: {
+        id: standId,
+        boothCode: 'A-01',
+        displayName: 'Stand servido por API',
+        description: null,
+        company: { id: 'c0000000-0000-4000-8000-000000000001', displayName: 'Empresa API' },
+        categories: [],
+        tags: [],
+        featured: false,
+        activityHighlight: null,
+        promotionHighlight: null,
+        location: null,
+      },
+      meta: null,
+    }), { status: 200 });
   };
-  assert.equal((await backendPanel.listStands()).total, 0);
-  assert.equal(calls, 1);
+  assert.equal((await backendPanel.listStands(eventId)).total, 0);
+  assert.equal((await backendPanel.getStandById(standId)).displayName, 'Stand servido por API');
+  assert.equal(calls, 2);
+  await assert.rejects(backendPanel.listStands(''));
   global.fetch = async () => { throw new Error('offline'); };
-  await assert.rejects(backendPanel.listStands());
-  console.log('PASS: panel demo/API separation, shared fixture, web/mobile points, duplicate and pending visits.');
+  await assert.rejects(backendPanel.listStands(eventId));
+  await assert.rejects(backendPanel.getStandById(standId));
+  console.log('PASS: /demo isolation, /panel HTTP adapter, explicit admin mock, HTTP error propagation, web/mobile fixture parity.');
 }
 main().catch((error) => { console.error(error); process.exitCode = 1; });

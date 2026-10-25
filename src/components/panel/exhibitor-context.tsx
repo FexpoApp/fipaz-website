@@ -13,12 +13,21 @@ interface ExhibitorContextValue {
   error: string | null;
   kpisError: string | null;
   selectStand: (standId: string) => void;
-  reload: () => Promise<void>;
+  /** Vuelve a leer empresa, stands y métricas. `false` significa que la fuente de verdad no pudo confirmarse. */
+  reload: () => Promise<boolean>;
 }
 
 const ExhibitorContext = createContext<ExhibitorContextValue | null>(null);
 
-export function ExhibitorProvider({ companyId, children }: { companyId: string | null; children: ReactNode }) {
+export function ExhibitorProvider({
+  companyId,
+  preferredEventId,
+  children,
+}: {
+  companyId: string | null;
+  preferredEventId: string | null;
+  children: ReactNode;
+}) {
   const [company, setCompany] = useState<ExhibitorCompany | null>(null);
   const [stands, setStands] = useState<ExhibitorStand[]>([]);
   const [selectedStandId, setSelectedStandId] = useState<string | null>(null);
@@ -27,48 +36,62 @@ export function ExhibitorProvider({ companyId, children }: { companyId: string |
   const [loading, setLoading] = useState(Boolean(companyId));
   const [error, setError] = useState<string | null>(null);
   const [kpisError, setKpisError] = useState<string | null>(null);
-  const initiallyLoaded = useRef(false);
+  const requestIdRef = useRef(0);
+  const initiallyLoadedRef = useRef(false);
 
   const reload = useCallback(async () => {
-    if (!companyId) return;
-    if (!initiallyLoaded.current) setLoading(true);
-    setError(null);
+    if (!companyId) return false;
+    const requestId = ++requestIdRef.current;
+    const showInitialLoading = !initiallyLoadedRef.current;
+    if (showInitialLoading) setLoading(true);
     try {
       const [nextCompany, nextStands] = await Promise.all([
         exhibitorApi.getCompany(companyId),
         exhibitorApi.getStands(companyId),
       ]);
-      setCompany(nextCompany);
-      setStands(nextStands);
-      const preferredEventId = process.env.NEXT_PUBLIC_FIPAZ_EVENT_ID;
+      if (requestId !== requestIdRef.current) return false;
       const selected = nextStands.find((item) => item.id === selectedStandIdRef.current)
         ?? nextStands.find((item) => item.eventId === preferredEventId)
         ?? nextStands[0];
+      setCompany(nextCompany);
+      setStands(nextStands);
+      setError(null);
       selectedStandIdRef.current = selected?.id ?? null;
       setSelectedStandId(selected?.id ?? null);
       setKpis(null);
       setKpisError(null);
       if (selected) {
         try {
-          setKpis(await exhibitorApi.getKpis(companyId, selected.eventId));
+          const nextKpis = await exhibitorApi.getKpis(companyId, selected.eventId);
+          if (requestId === requestIdRef.current) setKpis(nextKpis);
         } catch (cause) {
-          setKpisError(cause instanceof Error ? cause.message : "No se pudieron cargar las métricas.");
+          if (requestId === requestIdRef.current) {
+            setKpisError(cause instanceof Error ? cause.message : "No se pudieron cargar las métricas.");
+          }
         }
       }
+      return requestId === requestIdRef.current;
     } catch (cause) {
+      if (requestId !== requestIdRef.current) return false;
       setCompany(null);
       setStands([]);
       selectedStandIdRef.current = null;
       setSelectedStandId(null);
       setKpis(null);
       setError(cause instanceof Error ? cause.message : "No se pudieron cargar los datos de la empresa.");
+      return false;
     } finally {
-      initiallyLoaded.current = true;
-      setLoading(false);
+      if (requestId === requestIdRef.current) {
+        initiallyLoadedRef.current = true;
+        if (showInitialLoading) setLoading(false);
+      }
     }
-  }, [companyId]);
+  }, [companyId, preferredEventId]);
 
-  useEffect(() => { void Promise.resolve().then(reload); }, [reload]);
+  useEffect(() => {
+    void Promise.resolve().then(reload);
+    return () => { requestIdRef.current += 1; };
+  }, [reload]);
 
   const selectStand = useCallback((standId: string) => {
     selectedStandIdRef.current = standId;

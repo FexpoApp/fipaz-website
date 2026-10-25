@@ -2,15 +2,17 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Loader2, MapPin, Search, Star } from "lucide-react";
+import { MapPin, Search, Star } from "lucide-react";
 
-import { DEMO_PANEL_STANDS, listStands, type PanelStand } from "@/lib/panel-stands";
+import { listStands } from "@/lib/panel-stands";
 import type { StandListResponseDto } from "@/types/stands-api";
+import { NoEventNotice, useOrganizerEvent } from "./organizer-event";
 import { PanelPageHeader } from "./panel-page-header";
 
 const PAGE_SIZE = 20;
 
 export function ExpositoresList() {
+  const { eventId, eventName } = useOrganizerEvent();
   const [stands, setStands] = useState<StandListResponseDto | null>(null);
   const [searchInput, setSearchInput] = useState("");
   const [query, setQuery] = useState("");
@@ -19,18 +21,23 @@ export function ExpositoresList() {
   const [error, setError] = useState("");
 
   const loadStands = useCallback(async () => {
+    if (!eventId) {
+      setStands(null);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError("");
     try {
-      setStands(await listStands({ query: query || undefined, page, limit: PAGE_SIZE }));
+      setStands(await listStands(eventId, { query: query || undefined, page, limit: PAGE_SIZE }));
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "No se pudo cargar el directorio de stands.");
     } finally {
       setLoading(false);
     }
-  }, [query, page]);
+  }, [eventId, query, page]);
 
-  useEffect(() => { void loadStands(); }, [loadStands]);
+  useEffect(() => { void Promise.resolve().then(loadStands); }, [loadStands]);
 
   function handleSearch(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -43,10 +50,10 @@ export function ExpositoresList() {
       <PanelPageHeader
         eyebrow="Organizador"
         title="Directorio de stands"
-        description={DEMO_PANEL_STANDS ? "FIPAZ 2026: tres stands ficticios del guion. Datos locales sin sincronización." : "Stands registrados en ExpoVia 2026, cargados desde el servicio de stands."}
+        description={`Stands registrados en ${eventName}, cargados desde el servicio de stands.`}
       />
 
-      <form onSubmit={handleSearch} className="mb-4 flex gap-2">
+      {!eventId ? <NoEventNotice /> : <><form onSubmit={handleSearch} className="mb-4 flex gap-2">
         <label htmlFor="stands-search" className="sr-only">Buscar stands</label>
         <input
           id="stands-search"
@@ -86,7 +93,6 @@ export function ExpositoresList() {
                   <p className="truncate text-xs text-slate-500">{stand.company.displayName}</p>
                   <p className="mt-1 flex items-center gap-1 font-mono text-xs text-slate-500">
                     <MapPin size={12} /> {stand.boothCode}
-                    {(stand as PanelStand).demoBlock && <span>· {(stand as PanelStand).demoBlock}</span>}
                     {stand.location?.zoneId && <span>· Zona {stand.location.zoneId}</span>}
                     {stand.location?.floorId && <span>· Piso {stand.location.floorId}</span>}
                     {stand.location && <span>· ({stand.location.x}, {stand.location.y})</span>}
@@ -115,7 +121,7 @@ export function ExpositoresList() {
         <div className="pixel-card px-6 py-12 text-center text-sm font-medium text-slate-500">
           No hay stands que coincidan con la búsqueda.
         </div>
-      )}
+      )}</>}
     </>
   );
 }

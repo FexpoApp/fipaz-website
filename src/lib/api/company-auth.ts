@@ -27,12 +27,27 @@ export interface RoleAssignment {
   eventName: string | null;
 }
 
+/** Resumen del evento activo que el backend resuelve para la sesión. */
+export interface ActiveEventSummary {
+  id: string;
+  slug: string;
+  name: string;
+  status: string;
+  startsAt: string;
+  endsAt: string;
+  venueName: string | null;
+  venue: string | null;
+  city: string | null;
+  isSimulated?: boolean;
+}
+
 /** Identidad devuelta por `GET /auth/me`. */
 export interface AuthMe {
   id: string;
   email: string;
   displayName: string;
   roles: RoleAssignment[];
+  activeEvent: ActiveEventSummary | null;
 }
 
 export class CompanyAuthError extends Error {
@@ -57,11 +72,26 @@ const roleSchema = z.object({
   eventName: z.string().nullable(),
 });
 
+const activeEventSchema = z.object({
+  id: z.string(),
+  slug: z.string(),
+  name: z.string(),
+  status: z.string(),
+  startsAt: z.string(),
+  endsAt: z.string(),
+  venueName: z.string().nullable(),
+  venue: z.string().nullable(),
+  city: z.string().nullable(),
+  isSimulated: z.boolean().optional(),
+});
+
 const meSchema = z.object({
   id: z.string(),
   email: z.string().nullable(),
   profile: z.object({ displayName: z.string().nullable() }),
   roles: z.array(roleSchema),
+  // `activeEvent` no existía en versiones anteriores del backend; ambas ausencias se normalizan.
+  activeEvent: activeEventSchema.nullish(),
 });
 
 async function postJson(path: string, body: unknown, accessToken?: string): Promise<Response> {
@@ -137,6 +167,7 @@ function toAuthMe(data: z.infer<typeof meSchema>): AuthMe {
     email: data.email ?? "",
     displayName: data.profile.displayName ?? data.email ?? "Usuario",
     roles,
+    activeEvent: data.activeEvent ?? null,
   };
 }
 

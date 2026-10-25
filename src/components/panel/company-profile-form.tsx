@@ -17,12 +17,21 @@ export function CompanyProfileForm() {
   const editable = useCompanyAuthStore((state) => canEditCompany(state.session));
   return (
     <ExhibitorState>
-      {!editable ? <p role="note" className="pixel-card p-5">Tu rol permite ver el stand, pero no editarlo.</p> : stand && <StandForm key={stand.id} stand={stand} reload={reload} />}
+      {!editable ? (
+        <>
+          <PanelPageHeader eyebrow="Mi stand" title="Editar stand" description="La edición está reservada a quienes administran la empresa." demo={false} />
+          <section role="note" className="pixel-card max-w-2xl p-6">
+            <h2 className="text-lg font-black text-[var(--expo-navy)]">Edición no disponible</h2>
+            <p className="mt-2 text-sm text-slate-600">Tu rol de personal permite consultar la información del stand, pero no modificarla.</p>
+            <Link href="/panel/mi-stand" className="mt-4 inline-flex text-sm font-bold text-[var(--expo-blue)] underline">Volver a Mi stand</Link>
+          </section>
+        </>
+      ) : stand && <StandForm key={stand.id} stand={stand} reload={reload} />}
     </ExhibitorState>
   );
 }
 
-function StandForm({ stand, reload }: { stand: ExhibitorStand; reload: () => Promise<void> }) {
+function StandForm({ stand, reload }: { stand: ExhibitorStand; reload: () => Promise<boolean> }) {
   const router = useRouter();
   const [name, setName] = useState(stand.displayName);
   const [description, setDescription] = useState(stand.description ?? "");
@@ -44,7 +53,8 @@ function StandForm({ stand, reload }: { stand: ExhibitorStand; reload: () => Pro
         activityHighlight: activity.trim() || null,
         promotionHighlight: promotion.trim() || null,
       });
-      await reload();
+      const confirmed = await reload();
+      if (!confirmed) return;
       router.replace("/panel/mi-stand");
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "No se pudieron guardar los cambios.");

@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page, type Request } from "@playwright/test";
 
 /**
  * Contra fexpo-backend real (puerto 3000, proxy /api/v1 de Next) y la BD local de
@@ -8,6 +8,8 @@ import { expect, test, type Page } from "@playwright/test";
 test.skip(process.env.E2E_REAL_BACKEND !== "1", "Requiere el backend y la BD local levantados.");
 
 const PASSWORD = process.env.E2E_PASSWORD ?? "Prueba1234!";
+const EXHIBITOR_HOME = /\/panel\/mi-stand$/;
+const ORGANIZER_HOME = /\/panel$/;
 
 async function login(page: Page, email: string, panel: "expositor" | "organizador") {
   await page.route("https://accounts.google.com/**", (route) => route.abort());
@@ -16,18 +18,75 @@ async function login(page: Page, email: string, panel: "expositor" | "organizado
   await form.getByLabel("Correo").fill(email);
   await form.getByLabel("Contraseña", { exact: true }).fill(PASSWORD);
   await form.getByRole("button", { name: "Iniciar sesión" }).click();
-  await expect(page).toHaveURL(/\/panel$/);
+  await expect(page).toHaveURL(panel === "expositor" ? EXHIBITOR_HOME : ORGANIZER_HOME);
 }
 
-function storedRefreshToken(page: Page): Promise<string> {
-  return page.evaluate(() => JSON.parse(sessionStorage.getItem("expovia-company-auth:v4") ?? "{}").state?.session?.refreshToken ?? "");
+function storedTokens(page: Page): Promise<{ accessToken: string; refreshToken: string }> {
+  return page.evaluate(() => {
+    const session = JSON.parse(sessionStorage.getItem("expovia-company-auth:v4") ?? "{}").state?.session;
+    return { accessToken: session?.accessToken ?? "", refreshToken: session?.refreshToken ?? "" };
+  });
 }
 
-test("expositor real: entra con contraseña y al cerrar sesión su refresh token deja de servir", async ({ page }) => {
+test("expositor real: edita su stand, confirma persistencia y revoca su sesión", async ({ page }) => {
+  test.setTimeout(90_000);
   await login(page, "expositor@fexpo.test", "expositor");
   await expect(page.getByRole("button", { name: /Expositor · / })).toBeVisible();
-  const refreshToken = await storedRefreshToken(page);
+  const { accessToken, refreshToken } = await storedTokens(page);
+  expect(accessToken).not.toBe("");
   expect(refreshToken).not.toBe("");
+
+  await page.goto("/panel/mi-stand/editar");
+  const description = page.getByLabel("Descripción");
+  const originalDescription = await description.inputValue();
+  const changedDescription = `Persistencia E2E ${Date.now()}`;
+  let changedOnServer = false;
+  let changedStandId = "";
+  const writeFlow: string[] = [];
+  const recordWriteFlow = (request: Request) => {
+    const pathname = new URL(request.url()).pathname;
+    if (
+      (request.method() === "PATCH" && /\/api\/v1\/stands\/[^/]+$/.test(pathname))
+      || (request.method() === "GET" && /\/api\/v1\/companies\/[^/]+\/stands$/.test(pathname))
+    ) {
+      writeFlow.push(`${request.method()} ${pathname}`);
+    }
+  };
+  page.on("request", recordWriteFlow);
+  try {
+    await description.fill(changedDescription);
+    const patchResponsePromise = page.waitForResponse((response) =>
+      response.request().method() === "PATCH" && /\/api\/v1\/stands\/[^/]+$/.test(new URL(response.url()).pathname));
+    const rereadResponsePromise = page.waitForResponse((response) =>
+      response.request().method() === "GET" && /\/api\/v1\/companies\/[^/]+\/stands$/.test(new URL(response.url()).pathname));
+    await page.getByRole("button", { name: "Guardar cambios" }).click();
+    const patchResponse = await patchResponsePromise;
+    changedStandId = new URL(patchResponse.url()).pathname.split("/").at(-1) ?? "";
+    changedOnServer = patchResponse.ok();
+    expect(patchResponse.ok()).toBe(true);
+    expect((await rereadResponsePromise).ok()).toBe(true);
+    const patchIndex = writeFlow.findIndex((request) => request.startsWith("PATCH "));
+    const rereadIndex = writeFlow.findIndex((request, index) => index > patchIndex && request.startsWith("GET "));
+    expect(patchIndex).toBeGreaterThanOrEqual(0);
+    expect(rereadIndex).toBeGreaterThan(patchIndex);
+
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
+    await expect(page.getByText(changedDescription)).toBeVisible();
+    await page.reload();
+    await expect(page.getByText(changedDescription)).toBeVisible();
+  } finally {
+    page.off("request", recordWriteFlow);
+    if (changedOnServer && changedStandId) {
+      const restoreResponse = await page.request.patch(`/api/v1/stands/${encodeURIComponent(changedStandId)}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        data: { description: originalDescription || null },
+      });
+      expect(
+        restoreResponse.ok(),
+        `No se pudo restaurar el stand real (${restoreResponse.status()}): ${await restoreResponse.text()}`,
+      ).toBe(true);
+    }
+  }
 
   await page.getByRole("button", { name: /Expositor · / }).click();
   await page.getByRole("menuitem", { name: "Cerrar sesión", exact: true }).click();
@@ -51,6 +110,7 @@ test("organizador real: cada pantalla de su panel carga datos del backend sin er
   const main = page.getByRole("main");
   const screens: [string, RegExp | string][] = [
     ["/panel", "Cafe Altiplano"],
+    ["/panel/expositores", "Cafe Altiplano"],
     ["/panel/metricas-evento", "Bloque Rojo"],
     ["/panel/mapa-evento", "Publicada"],
     ["/panel/zonas-categorias", "Bloque Rojo"],
@@ -62,6 +122,9 @@ test("organizador real: cada pantalla de su panel carga datos del backend sin er
     await expect(main.getByText(text).first(), path).toBeVisible();
     await expect(main.getByRole("alert"), path).toHaveCount(0);
   }
+  await page.goto("/panel/expositores/5a000000-0000-4000-8000-000000000001");
+  await expect(main.getByRole("heading", { name: "Cafe Altiplano" })).toBeVisible();
+  await expect(main.getByRole("alert")).toHaveCount(0);
   await expect(page.getByText("Datos de demostración.")).toHaveCount(0);
 });
 

@@ -6,15 +6,28 @@ const assert = require("node:assert/strict");
 
 const {
   authenticateWithPassword,
+  fetchAuthMe,
   registerWithPassword,
   passwordProblem,
   isPasswordLoginEnabled,
   CompanyAuthError,
 } = require("@/lib/api/company-auth");
-const { canEditCompany } = require("@/lib/panel-access");
+const { canEditCompany, getOrganizerEvent } = require("@/lib/panel-access");
 
 const DEVICE_ID = "11111111-1111-4111-8111-111111111111";
 const TOKENS = { accessToken: "access-1", refreshToken: "refresh-1", expiresIn: 900 };
+const ACTIVE_EVENT = {
+  id: "event-1",
+  slug: "fipaz-2026",
+  name: "FIPAZ 2026",
+  status: "active",
+  startsAt: "2026-10-01T12:00:00.000Z",
+  endsAt: "2026-10-05T22:00:00.000Z",
+  venueName: "Campo Ferial",
+  venue: "Campo Ferial",
+  city: "La Paz",
+  isSimulated: false,
+};
 const ME = {
   id: "user-1",
   email: "ana@example.com",
@@ -23,6 +36,7 @@ const ME = {
     { id: "role-1", role: "company_admin", companyId: "company-1", companyName: "Cafe Altiplano", eventId: null, eventName: null, grantedAt: "2026-10-01T00:00:00.000Z" },
     { id: "role-x", role: "visitor_plus", companyId: null, companyName: null, eventId: null, eventName: null, grantedAt: "2026-10-01T00:00:00.000Z" },
   ],
+  activeEvent: ACTIVE_EVENT,
 };
 
 function envelope(data) {
@@ -72,8 +86,19 @@ test("login con contraseña: envía credenciales y dispositivo web, y luego pide
   assert.equal(calls[1].headers.Authorization, "Bearer access-1");
   assert.deepEqual(tokens, TOKENS);
   assert.equal(me.displayName, "Ana Rojas");
+  assert.deepEqual(me.activeEvent, ACTIVE_EVENT);
   // Los roles salen de roles[] y un rol desconocido se ignora sin romper el login.
   assert.deepEqual(me.roles.map((role) => [role.role, role.companyId, role.companyName]), [["company_admin", "company-1", "Cafe Altiplano"]]);
+});
+
+test("GET /auth/me normaliza a null la ausencia de activeEvent de un backend anterior", async () => {
+  const legacyMe = { ...ME };
+  delete legacyMe.activeEvent;
+  mockFetch({ "GET /auth/me": () => json(200, envelope(legacyMe)) });
+
+  const me = await fetchAuthMe("access-1");
+
+  assert.equal(me.activeEvent, null);
 });
 
 test("login con contraseña: no envía espacios de más ni toca la contraseña", async () => {
@@ -131,7 +156,7 @@ test("login con contraseña: tokens incompletos se rechazan", async () => {
 test("registro con contraseña: envía nombre y correo sin espacios y devuelve la sesión sin roles", async () => {
   const calls = mockFetch({
     "POST /auth/register": () => json(201, envelope(TOKENS)),
-    "GET /auth/me": () => json(200, envelope({ ...ME, roles: [] })),
+    "GET /auth/me": () => json(200, envelope({ ...ME, roles: [], activeEvent: null })),
   });
 
   const { me } = await registerWithPassword({ email: " ana@example.com", password: "secreto123", displayName: " Ana Rojas " }, DEVICE_ID);
@@ -189,4 +214,33 @@ test("canEditCompany: el admin de la empresa edita, el personal no", () => {
   assert.equal(canEditCompany({ roles: [admin, staff], activeRoleId: "s" }), false);
   assert.equal(canEditCompany({ roles: [admin, staff], activeRoleId: "a" }), true);
   assert.equal(canEditCompany(null), false);
+});
+
+test("getOrganizerEvent usa el alcance del rol y activeEvent para super_admin", () => {
+  const eventAdmin = {
+    id: "event-role",
+    role: "event_admin",
+    companyId: null,
+    companyName: null,
+    eventId: "event-del-rol",
+    eventName: "Evento del rol",
+  };
+  const superAdmin = {
+    id: "super-role",
+    role: "super_admin",
+    companyId: null,
+    companyName: null,
+    eventId: null,
+    eventName: null,
+  };
+
+  assert.deepEqual(
+    getOrganizerEvent({ roles: [eventAdmin], activeRoleId: eventAdmin.id, activeEvent: ACTIVE_EVENT }),
+    { eventId: "event-del-rol", eventName: "Evento del rol" },
+  );
+  assert.deepEqual(
+    getOrganizerEvent({ roles: [superAdmin], activeRoleId: superAdmin.id, activeEvent: ACTIVE_EVENT }),
+    { eventId: ACTIVE_EVENT.id, eventName: ACTIVE_EVENT.name },
+  );
+  assert.equal(getOrganizerEvent({ roles: [superAdmin], activeRoleId: superAdmin.id }), null);
 });

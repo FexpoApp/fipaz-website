@@ -22,12 +22,12 @@ Los tres stands seleccionados son ficticios. Sus códigos, bloques, categorías,
 
 | Dato | Web `/demo` | Panel `/panel` | App móvil | ¿Se sincroniza en vivo? |
 | --- | --- | --- | --- | --- |
-| Evento e `eventId` | `event-fipaz-2026`, fixture local | Mismo ID como contexto local de panel | El ID comunicado para sus mocks es `event-fipaz-2026` | No |
-| Stands, códigos, categoría, actividad y promoción | Catálogo local `src/data/demo-fixture.ts` | Directorio y detalle usan el fixture con `NEXT_PUBLIC_DEMO_PANEL_STANDS=true`; sin el flag usan API. Otras vistas conservan su store propio | Mock móvil contrastado mediante pruebas locales | No |
-| Misión y puntos | Store de demo del navegador | Catálogo y métricas de panel de ejemplo | Store/backend simulado móvil según el contrato recibido | No |
-| Visitas y progreso | Estado persistido en el navegador | Check-ins y métricas del mock de panel | Estado local/mock de la app | No |
-| Premios | Catálogo ilustrativo; la acción de canje es una simulación local | Datos de panel de ejemplo | No verificado contra el repositorio móvil | No |
-| Fechas y recinto | No se anuncian como confirmados | Se marcan sujetos a confirmación | Portada con aviso de confirmación | No |
+| Evento e `eventId` | `event-fipaz-2026`, fixture local | Evento real resuelto desde la sesión del organizador | El ID comunicado para sus mocks es `event-fipaz-2026` | No |
+| Stands, códigos, categoría, actividad y promoción | Catálogo local `src/data/demo-fixture.ts` | Directorio y detalle consultan siempre la API; nunca importan este fixture | Mock móvil contrastado mediante pruebas locales | No |
+| Misión y puntos | Store de demo del navegador | Datos del backend del evento activo | Store/backend simulado móvil según el contrato recibido | No |
+| Visitas y progreso | Estado persistido en el navegador | Check-ins y métricas del backend | Estado local/mock de la app | No |
+| Premios | Catálogo ilustrativo; la acción de canje es una simulación local | Datos del backend | No verificado contra el repositorio móvil | No |
+| Fechas y recinto | No se anuncian como confirmados | Datos del evento asignado a la sesión | Portada con aviso de confirmación | No |
 
 El panel y la app tienen estados separados. Compartir el mismo identificador o copiar el fixture no transmite visitas, puntos, premios ni cambios de perfil entre superficies. No existe un puente web↔móvil implementado y probado en este alcance.
 
@@ -37,16 +37,15 @@ El panel y la app tienen estados separados. Compartir el mismo identificador o c
 
 ## Preparación y pruebas
 
-- Configurar `NEXT_PUBLIC_DEMO_PANEL_STANDS=true` en `.env.local` y reiniciar dev, o configurar antes del build. No activa simulación en autenticación, altas de empresa ni QR. Los errores de API no cambian automáticamente a mocks.
-- Abrir el panel en un perfil nuevo, sin sesión de empresa, conservando el perfil habitual y sus empresas editadas. Visitar `/panel/expositores` y las fichas de los tres stands.
+- `/demo` no requiere flags: carga únicamente sus módulos y fixtures locales.
+- Para revisar `/panel/expositores`, iniciar sesión como organizador con un evento asignado y levantar el backend. El panel no cambia a datos demo cuando la API falla.
 - Reiniciar `/demo`: dos visitas y 100 puntos; Sabor lleva a 150 y 3/3. Un navegador nuevo también inicia con dos visitas, no con cero.
 - En móvil mock, iniciar con cero. El check-in se confirma localmente; la cola pendiente del flujo API se prueba por separado y no acredita puntos antes de confirmar.
-- Ejecutar `node scripts/check-demo-fixture.cjs` desde la raíz web con dependencias instaladas y `../fexpo-expo-app` disponible. Verifica fixtures, panel demo/API, búsqueda, paginación, puntos, duplicados, misión y pendientes con almacenamiento de dispositivo simulado.
+- Ejecutar `node scripts/check-demo-fixture.cjs` desde la raíz web con dependencias instaladas y `../fexpo-expo-app` disponible. Verifica el fixture exclusivo de `/demo`, que el adaptador de `/panel` siempre use HTTP, puntos, duplicados, misión y pendientes con almacenamiento simulado.
 
 ## Resultado de la validación local
 
-- `node scripts/check-demo-fixture.cjs`: aprobado; fixtures, separación demo/API, duplicados, puntos, misión y pendientes.
+- `node scripts/check-demo-fixture.cjs`: verifica fixtures aislados, adaptador HTTP del panel, mock explícito de `/admin`, propagación de errores HTTP, duplicados, puntos, misión y pendientes.
 - TypeScript (`tsc --noEmit`): aprobado.
-- Edge sin ventana, 390 y 1440 px: directorio y fichas de los tres stands aprobados, sin errores JavaScript ni solicitudes al backend de stands. Capturas locales en `coverage/demo-fixture/`.
-- Para repetir navegador: instalar Playwright en `node_modules/.cache/map-verify`, iniciar Next en `127.0.0.1:3100` con el flag de demo y ejecutar `node scripts/check-demo-browser.cjs` (requiere Edge).
-- ESLint del adaptador nuevo: aprobado. Los componentes del directorio y detalle conservan dos errores preexistentes `react-hooks/set-state-in-effect`; no se presentan como un lint global aprobado.
+- Las capturas históricas del directorio con fixtures ya no representan `/panel`; la demostración local se valida exclusivamente en `/demo`.
+- Para repetir el navegador de `/demo`: iniciar Next en `127.0.0.1:3100` y ejecutar `node scripts/check-demo-browser.cjs` (requiere Edge).

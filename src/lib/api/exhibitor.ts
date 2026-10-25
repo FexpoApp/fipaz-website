@@ -50,6 +50,8 @@ const issuedQrSchema = z.object({
   expiresAt: z.string(),
 });
 
+const updatedRecordSchema = z.object({ id: z.string().uuid() }).passthrough();
+
 export type ExhibitorCompany = z.infer<typeof companySchema>;
 export type ExhibitorStand = z.infer<typeof standSchema>;
 export type CompanyKpis = z.infer<typeof kpisSchema>;
@@ -80,8 +82,8 @@ export const exhibitorApi = {
     tags?: string[];
     activityHighlight?: string | null;
     promotionHighlight?: string | null;
-  }): Promise<void> {
-    await apiPatch(`/stands/${encodeURIComponent(standId)}`, patch);
+  }): Promise<{ id: string }> {
+    return updatedRecordSchema.parse(await apiPatch(`/stands/${encodeURIComponent(standId)}`, patch));
   },
   async getCheckins(standId: string): Promise<StandCheckin[]> {
     return z.array(checkinSchema).parse(await apiGet(`/stands/${encodeURIComponent(standId)}/check-ins`));

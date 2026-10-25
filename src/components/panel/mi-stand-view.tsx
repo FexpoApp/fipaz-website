@@ -35,8 +35,20 @@ export function MiStandView() {
           </div>
           {(stand.activityHighlight || stand.promotionHighlight) && <div className="grid gap-3 border-t border-[#edf1f8] bg-[#fbfdff] px-5 py-4 sm:grid-cols-2 sm:px-7">{stand.activityHighlight && <p className="text-sm text-[#62779b]"><strong className="text-[#1e3159]">Actividad:</strong> {stand.activityHighlight}</p>}{stand.promotionHighlight && <p className="text-sm text-[#62779b]"><strong className="text-[#1e3159]">Promoción:</strong> {stand.promotionHighlight}</p>}</div>}
           <div className="flex flex-wrap gap-2 border-t border-[#edf1f8] px-5 py-4 sm:px-7">
-            {editable && <Link href="/panel/mi-stand/editar" className="inline-flex items-center gap-2 rounded-xl bg-[#0878f9] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#0067d9]"><Pencil aria-hidden="true" className="h-4 w-4" />Editar perfil</Link>}
+            {editable ? (
+              <Link href="/panel/mi-stand/editar" className="inline-flex items-center gap-2 rounded-xl bg-[#0878f9] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#0067d9]"><Pencil aria-hidden="true" className="h-4 w-4" />Editar perfil</Link>
+            ) : (
+              <button
+                type="button"
+                disabled
+                aria-describedby="stand-edit-permission-help"
+                className="inline-flex cursor-not-allowed items-center gap-2 rounded-xl bg-slate-200 px-4 py-2.5 text-sm font-bold text-slate-500"
+              >
+                <Pencil aria-hidden="true" className="h-4 w-4" />Editar perfil
+              </button>
+            )}
             <Link href="/panel/mi-stand/qr" className="inline-flex items-center gap-2 rounded-xl border border-[#d8e4f3] bg-white px-4 py-2.5 text-sm font-bold text-[#294671] hover:bg-[#f4f8fd]"><QrCode aria-hidden="true" className="h-4 w-4" />Gestionar QR</Link>
+            {!editable && <p id="stand-edit-permission-help" className="basis-full text-xs font-medium text-slate-600">Solo una persona administradora de la empresa puede editar el perfil del stand.</p>}
           </div>
         </section>
         <div className="mt-4 grid gap-3 sm:grid-cols-3">

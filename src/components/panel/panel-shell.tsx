@@ -18,8 +18,6 @@ import {
 } from "@/lib/panel-access";
 import { useCompanyAuthStore } from "@/store/company-auth-store";
 import { ExhibitorProvider } from "./exhibitor-context";
-// Registra el vaciado del estado del panel al terminar la sesión (logout o refresh fallido).
-import "@/store/panel-store";
 
 interface PanelShellProps {
   children: ReactNode;
@@ -89,9 +87,14 @@ export function PanelShell({ children }: PanelShellProps) {
 
   const ready = hydrated && !!session && verification === "verified" && allowed && (!required || activePanel === required);
   const exhibitorCompanyId = ready && activePanel === "expositor" ? getActiveCompany(session)?.id ?? null : null;
+  const preferredEventId = ready && activePanel === "expositor" ? session.activeEvent?.id ?? null : null;
 
   return (
-    <ExhibitorProvider key={exhibitorCompanyId ?? "organizador"} companyId={exhibitorCompanyId}>
+    <ExhibitorProvider
+      key={exhibitorCompanyId ? `${exhibitorCompanyId}:${preferredEventId ?? "sin-evento"}` : "organizador"}
+      companyId={exhibitorCompanyId}
+      preferredEventId={preferredEventId}
+    >
       <div className="fexpo-panel flex min-h-dvh">
         <PanelSidebar />
         <PanelMobileDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />

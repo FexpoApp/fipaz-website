@@ -5,7 +5,7 @@ import { API_MODE } from "@/lib/api/config";
 import { API_ENDPOINTS } from "@/lib/api/endpoints";
 import { apiGet } from "@/lib/api/http-client";
 
-/** Contexto por defecto del panel de empresa mientras no exista selección de cuenta real. */
+/** Contexto por defecto usado únicamente por el prototipo explícito (`NEXT_PUBLIC_API_MODE=mock`). */
 export const ADMIN_DEFAULT_STAND_ID = MOCK_EXHIBITOR_STAND_ID;
 export const ADMIN_DEFAULT_EVENT_ID = DEMO_FIXTURE.event.id;
 
@@ -45,24 +45,15 @@ interface StandApiResponse {
 }
 
 /**
- * Datos de contexto (nombre del stand/evento) para títulos y breadcrumbs. Con
- * `NEXT_PUBLIC_API_MODE=http` el stand sale de `GET /stands/:standId` (único endpoint de esta
- * pantalla que ya existe en el backend); el evento sigue saliendo del catálogo estático porque
- * el backend aún no tiene `GET /events/:id`.
- * Es asíncrono a propósito: las páginas ya hacen `await`, así que el cambio no las toca.
- * Un id desconocido no es un error (las empresas registradas en el panel no están en el
- * catálogo estático, y el backend exige UUID): se muestra un nombre derivado del id. Lo mismo
- * si el backend no responde: el título es decorativo y no debe impedir abrir la pantalla.
+ * Datos de contexto (nombre del stand/evento) para títulos y breadcrumbs. En modo HTTP, el
+ * stand se obtiene del backend y cualquier error se propaga a la ruta: nunca se sustituye por
+ * un fixture. Los catálogos locales solo participan cuando `NEXT_PUBLIC_API_MODE=mock`.
  */
 export const adminScopeService = {
   async getStand(standId: string): Promise<StandSummary> {
     if (API_MODE === "http") {
-      try {
-        const stand = await apiGet<StandApiResponse>(API_ENDPOINTS.stands.byId(standId));
-        return { id: stand.id, name: stand.displayName, boothCode: stand.boothCode };
-      } catch {
-        // Se usa el catálogo estático / nombre derivado del id.
-      }
+      const stand = await apiGet<StandApiResponse>(API_ENDPOINTS.stands.byId(standId));
+      return { id: stand.id, name: stand.displayName, boothCode: stand.boothCode };
     }
 
     const stand = stands.find((item) => item.id === standId);
@@ -72,6 +63,10 @@ export const adminScopeService = {
   },
 
   async getEvent(eventId: string): Promise<EventSummary> {
+    // Estas páginas de servidor no tienen el JWT del navegador. En HTTP usan el id real de la
+    // URL como rótulo estable; no leen PANEL_EVENTS ni convierten un fallo remoto en datos demo.
+    if (API_MODE === "http") return { id: eventId, name: humanizeId(eventId) };
+
     const event = PANEL_EVENTS.find((item) => item.id === eventId);
     return event
       ? { id: event.id, name: event.name, city: event.city }
