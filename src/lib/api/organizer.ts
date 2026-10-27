@@ -94,9 +94,13 @@ const missionSchema = z.object({
 const rewardSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
-  type: z.string(),
+  type: z.string().optional().default("physical"),
   costPoints: z.number(),
-  isActive: z.boolean(),
+  isActive: z.boolean().optional().default(true),
+  description: z.string().nullable().optional(),
+  onHand: z.number().optional().default(0),
+  available: z.number().optional().default(0),
+  inventoryTracked: z.boolean().optional().default(true),
 });
 
 const leaderboardSchema = z.object({
@@ -148,6 +152,27 @@ export interface AssignStandInput {
   description?: string | null;
   tags?: string[];
   status?: "draft" | "pending_review" | "active" | "inactive" | "archived";
+}
+
+export interface CreateZoneInput {
+  name: string;
+  shortCode?: string | null;
+  description?: string | null;
+  colorToken?: string | null;
+}
+
+export interface UpdateMapVersionInput {
+  notes?: string | null;
+  status?: "draft" | "published" | "retired";
+}
+
+export interface CreateRewardInput {
+  name: string;
+  type?: string;
+  costPoints: number;
+  initialStock?: number;
+  description?: string | null;
+  isActive?: boolean;
 }
 
 export interface FloorWithZones extends MapFloor {
@@ -210,6 +235,18 @@ export const organizerApi = {
   async updateZone(eventId: string, zoneId: string, patch: { name?: string; shortCode?: string | null; description?: string | null }): Promise<MapZone> {
     return zoneSchema.parse(await apiPatch(eventPath(eventId, `/map/zones/${encodeURIComponent(zoneId)}`), patch));
   },
+  async createZone(eventId: string, floorId: string, input: CreateZoneInput): Promise<MapZone> {
+    return zoneSchema.parse(await apiPost(eventPath(eventId, `/map/floors/${encodeURIComponent(floorId)}/zones`), input));
+  },
+  async deleteZone(eventId: string, zoneId: string): Promise<void> {
+    await apiDelete(eventPath(eventId, `/map/zones/${encodeURIComponent(zoneId)}`));
+  },
+  async updateMapVersion(eventId: string, versionId: string, patch: UpdateMapVersionInput): Promise<MapVersion> {
+    return mapVersionSchema.parse(await apiPatch(eventPath(eventId, `/map/versions/${encodeURIComponent(versionId)}`), patch));
+  },
+  async createMapVersion(eventId: string, input: { version: number; notes?: string | null }): Promise<MapVersion> {
+    return mapVersionSchema.parse(await apiPost(eventPath(eventId, "/map/versions"), input));
+  },
   /** Mapa publicado tal como lo ven los visitantes (con stands ubicados). */
   async getPublishedMap(eventId: string): Promise<PublicEventMap> {
     return publicMapSchema.parse(await apiGet(eventPath(eventId, "/map")));
@@ -236,6 +273,19 @@ export const organizerApi = {
   },
   async getRewards(eventId: string): Promise<EventReward[]> {
     return z.array(rewardSchema).parse(await apiGet(eventPath(eventId, "/rewards")));
+  },
+  async createReward(eventId: string, input: CreateRewardInput): Promise<EventReward> {
+    return rewardSchema.parse(await apiPost(eventPath(eventId, "/rewards"), {
+      ...input,
+      type: input.type ?? "physical",
+      initialStock: input.initialStock ?? 0,
+    }));
+  },
+  async updateReward(eventId: string, rewardId: string, patch: Partial<CreateRewardInput>): Promise<EventReward> {
+    return rewardSchema.parse(await apiPatch(eventPath(eventId, `/rewards/${encodeURIComponent(rewardId)}`), patch));
+  },
+  async deleteReward(eventId: string, rewardId: string): Promise<void> {
+    await apiDelete(eventPath(eventId, `/rewards/${encodeURIComponent(rewardId)}`));
   },
   async getLeaderboard(eventId: string): Promise<LeaderboardEntry[]> {
     return z.array(leaderboardSchema).parse(await apiGet(eventPath(eventId, "/leaderboard")));
