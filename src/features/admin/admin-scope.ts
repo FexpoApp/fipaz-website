@@ -52,8 +52,12 @@ interface StandApiResponse {
 export const adminScopeService = {
   async getStand(standId: string): Promise<StandSummary> {
     if (API_MODE === "http") {
-      const stand = await apiGet<StandApiResponse>(API_ENDPOINTS.stands.byId(standId));
-      return { id: stand.id, name: stand.displayName, boothCode: stand.boothCode };
+      try {
+        const stand = await apiGet<StandApiResponse>(API_ENDPOINTS.stands.byId(standId));
+        return { id: stand.id, name: stand.displayName, boothCode: stand.boothCode };
+      } catch {
+        return { id: standId, name: humanizeId(standId) };
+      }
     }
 
     const stand = stands.find((item) => item.id === standId);

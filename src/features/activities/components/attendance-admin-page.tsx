@@ -214,7 +214,7 @@ export function AttendanceAdminPage({ activityId, initialStatus }: AttendanceAdm
       <AdminPageHeader
         breadcrumbs={[
           { label: "Administración", href: adminRoutes.home() },
-          { label: "Actividades", href: adminRoutes.activities(standId) },
+          { label: "Actividades", href: standId && standId !== ADMIN_DEFAULT_STAND_ID ? adminRoutes.activities(standId) : adminRoutes.home() },
           ...(activity ? [{ label: activity.name }] : []),
           { label: "Asistencia" },
         ]}

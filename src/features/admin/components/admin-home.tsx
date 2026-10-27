@@ -41,19 +41,22 @@ function ModuleCard({ title, description, href, icon: Icon }: ModuleLink) {
 interface AdminHomeProps {
   stand: StandSummary;
   event: EventSummary;
+  isOrganizer?: boolean;
 }
 
 /** Punto de entrada del módulo: agrupa los accesos por stand y por evento. */
-export function AdminHome({ stand, event }: AdminHomeProps) {
+export function AdminHome({ stand, event, isOrganizer = false }: AdminHomeProps) {
+  const showEventSection = isOrganizer || API_MODE === "mock";
+
   return (
     <>
       <AdminPageHeader
         breadcrumbs={[{ label: "Administración" }]}
         title="Administración de tu participación"
-        description="Configura las dinámicas, premios, inventario y actividades con las que los visitantes interactúan durante el evento."
+        description="Configura las dinámicas, actividades y herramientas de interacción de tu stand."
       />
 
-      <div className="grid gap-8 lg:grid-cols-2">
+      <div className={`grid gap-8 ${showEventSection ? "lg:grid-cols-2" : "max-w-2xl"}`}>
         <section aria-labelledby="admin-stand-title">
           <p className="pixel-label text-[var(--expo-blue)]">Stand</p>
           <h2 id="admin-stand-title" className="mt-1 text-xl font-black text-[var(--expo-navy)]">
@@ -82,27 +85,29 @@ export function AdminHome({ stand, event }: AdminHomeProps) {
           </div>
         </section>
 
-        <section aria-labelledby="admin-event-title">
-          <p className="pixel-label text-[var(--expo-blue)]">Evento</p>
-          <h2 id="admin-event-title" className="mt-1 text-xl font-black text-[var(--expo-navy)]">
-            {event.name}
-            {event.city && <span className="ml-2 text-sm font-bold text-slate-600">{event.city}</span>}
-          </h2>
-          <div className="mt-4 grid gap-3">
-            <ModuleCard
-              title="Premios"
-              description="Catálogo de recompensas que los visitantes canjean con sus puntos."
-              href={adminRoutes.rewards(event.id)}
-              icon={Gift}
-            />
-            <ModuleCard
-              title="Inventario"
-              description="Stock físico, reservas, entregas y ajustes de cada premio."
-              href={adminRoutes.inventory(event.id)}
-              icon={Boxes}
-            />
-          </div>
-        </section>
+        {showEventSection && (
+          <section aria-labelledby="admin-event-title">
+            <p className="pixel-label text-[var(--expo-blue)]">Evento</p>
+            <h2 id="admin-event-title" className="mt-1 text-xl font-black text-[var(--expo-navy)]">
+              {event.name}
+              {event.city && <span className="ml-2 text-sm font-bold text-slate-600">{event.city}</span>}
+            </h2>
+            <div className="mt-4 grid gap-3">
+              <ModuleCard
+                title="Premios"
+                description="Catálogo de recompensas que los visitantes canjean con sus puntos."
+                href={adminRoutes.rewards(event.id)}
+                icon={Gift}
+              />
+              <ModuleCard
+                title="Inventario"
+                description="Stock físico, reservas, entregas y ajustes de cada premio."
+                href={adminRoutes.inventory(event.id)}
+                icon={Boxes}
+              />
+            </div>
+          </section>
+        )}
       </div>
 
       {API_MODE === "mock" && (

@@ -9,16 +9,27 @@ simulados**; con `NEXT_PUBLIC_API_MODE=http` llama al backend (`fexpo-backend`).
 
 | Ruta | Pantalla |
 | --- | --- |
-| `/admin` | Resumen: accesos por stand y por evento |
+| `/admin` | Resumen: accesos del stand propio y del evento |
 | `/admin/stands/:standId/dynamics` | Dinámicas del stand |
 | `/admin/stands/:standId/activities` | Actividades del stand |
 | `/admin/stands/:standId/scan` | Escáner de QR de visitantes (check-in con la cámara del operador) |
-| `/admin/activities/:activityId/attendance` | Asistencia (`?status=registered\|present\|absent\|cancelled`) |
-| `/admin/events/:eventId/rewards` | Catálogo de premios |
-| `/admin/events/:eventId/inventory` | Inventario (`?reward=:rewardId` filtra por premio) |
+| `/admin/activities/:activityId/attendance` | Asistencia (`?status=registered|present|absent|cancelled`) |
+| `/admin/events/:eventId/rewards` | Catálogo de premios (organizador) |
+| `/admin/events/:eventId/inventory` | Inventario (organizador; `?reward=:rewardId` filtra por premio) |
 
-Ejemplo con datos: `/admin/stands/stand-altura-labs/dynamics`, `/admin/events/event-fipaz-2026/rewards`.
-Se llega desde el panel del expositor (ítem **Administración**).
+Se llega desde **Mi stand** (`/panel/mi-stand`) mediante el botón **Administrar**, o desde el menú lateral. En modo HTTP se resuelve automáticamente el UUID real del stand asignado a la empresa.
+
+## Integración con `/panel` y alcance de roles (Issue 73)
+
+- **Decisión arquitectónica:** `/admin` se mantiene como módulo especializado con sus rutas jerárquicas (`/admin`, `/admin/stands/:standId/...`), pero **comparte el mismo contexto, sesión y permisos que `/panel`**:
+  - Utiliza `useCompanyAuthStore` para leer la sesión autenticada (`accessToken`, `roles`, `activeEvent`).
+  - Aplica los mismos guards de rol: `company_admin` y `company_staff` para stands; `event_admin` para eventos.
+  - Elimina el uso de IDs demo (`stand-altura-labs`, `event-fipaz-2026`) en modo HTTP.
+- **Resolución automática de stand y evento:** Al entrar a `/admin`, el stand y evento activos se resuelven automáticamente a partir de la sesión autenticada (`useCompanyAuthStore` y `exhibitorApi.getStands(companyId)`), sin requerir selección manual ni exponer IDs demo.
+- **Navegación bidireccional fluida:** Desde el panel del expositor (`/panel/mi-stand`), el botón **Administrar** conduce a `/admin`. Desde `/admin`, el botón **Volver al panel** regresa a `/panel` conservando la sesión.
+- **Alcance de expositor vs organizador en premios e inventario:**
+  - Los **expositores** (`company_admin`, `company_staff`) administran únicamente los recursos de su stand: dinámicas, actividades, asistencia y escáner QR de check-in.
+  - Los **premios** e **inventario** pertenecen al evento (`/events/:eventId/rewards` y `/events/:eventId/inventory`) y están protegidos por `EventAdminGuard`; son administrados exclusivamente por el organizador (`event_admin`) desde `/panel/gamificacion` o sus rutas dedicadas en `/admin/events/:eventId/...`.
 
 ## Arquitectura
 

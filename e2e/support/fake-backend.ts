@@ -151,6 +151,48 @@ export class FakeBackend {
   readonly calls: RecordedCall[] = [];
   failCheckins = false;
 
+  private readonly dynamics = new Map<string, Array<{
+    id: string;
+    standId: string;
+    title: string;
+    description: string | null;
+    type: string;
+    config: Record<string, unknown>;
+    pointsReward: number;
+    scoreReward: number;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+  }>>();
+
+  private readonly activities = new Map<string, Array<{
+    id: string;
+    standId: string;
+    title: string;
+    description: string | null;
+    startsAt: string;
+    endsAt: string | null;
+    capacity: number | null;
+    pointsReward: number;
+    scoreReward: number;
+    requiresRegistration: boolean;
+    status: string;
+    registeredCount: number;
+    attendedCount: number;
+    createdAt: string;
+    updatedAt: string;
+  }>>();
+
+  private readonly attendances = new Map<string, Array<{
+    id: string;
+    activityId: string;
+    userId: string;
+    status: string;
+    registeredAt: string;
+    attendedAt: string | null;
+    pointsAwarded: number;
+  }>>();
+
   private readonly users: FakeUser[] = [];
 
   private readonly accessTokens = new Map<string, string>();
@@ -1139,6 +1181,176 @@ export class FakeBackend {
     }
 
 
+
+    const manageDynamicsMatch = path.match(/^\/stands\/([^/]+)\/manage\/dynamics$/);
+    if (method === "GET" && manageDynamicsMatch && user) {
+      const standId = manageDynamicsMatch[1];
+      return reply(200, ok(this.dynamics.get(standId) ?? []));
+    }
+
+    const postDynamicsMatch = path.match(/^\/stands\/([^/]+)\/dynamics$/);
+    if (method === "POST" && postDynamicsMatch && user) {
+      const standId = postDynamicsMatch[1];
+      const dynamic = {
+        id: crypto.randomUUID(),
+        standId,
+        title: String(input.title),
+        description: input.description ? String(input.description) : null,
+        type: String(input.type ?? "custom"),
+        config: (input.config as Record<string, unknown>) ?? {},
+        pointsReward: Number(input.pointsReward ?? 0),
+        scoreReward: Number(input.scoreReward ?? input.pointsReward ?? 0),
+        isActive: Boolean(input.isActive ?? true),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      const list = this.dynamics.get(standId) ?? [];
+      list.push(dynamic);
+      this.dynamics.set(standId, list);
+      return reply(201, ok(dynamic));
+    }
+
+    const patchDynamicMatch = path.match(/^\/stands\/([^/]+)\/dynamics\/([^/]+)$/);
+    if (method === "PATCH" && patchDynamicMatch && user) {
+      const [, standId, dynamicId] = patchDynamicMatch;
+      const list = this.dynamics.get(standId) ?? [];
+      const dynamic = list.find((d) => d.id === dynamicId);
+      if (!dynamic) return reply(404, fail("DYNAMIC_NOT_FOUND"));
+      Object.assign(dynamic, input, { updatedAt: new Date().toISOString() });
+      return reply(200, ok(dynamic));
+    }
+    if (method === "DELETE" && patchDynamicMatch && user) {
+      const [, standId, dynamicId] = patchDynamicMatch;
+      const list = this.dynamics.get(standId) ?? [];
+      this.dynamics.set(standId, list.filter((d) => d.id !== dynamicId));
+      return reply(204);
+    }
+
+    const getDynamicManageMatch = path.match(/^\/dynamics\/([^/]+)\/manage$/);
+    if (method === "GET" && getDynamicManageMatch && user) {
+      const dynamicId = getDynamicManageMatch[1];
+      for (const list of this.dynamics.values()) {
+        const found = list.find((d) => d.id === dynamicId);
+        if (found) return reply(200, ok(found));
+      }
+      return reply(404, fail("DYNAMIC_NOT_FOUND"));
+    }
+
+    const manageActivitiesMatch = path.match(/^\/stands\/([^/]+)\/manage\/activities$/);
+    if (method === "GET" && manageActivitiesMatch && user) {
+      const standId = manageActivitiesMatch[1];
+      return reply(200, ok(this.activities.get(standId) ?? []));
+    }
+
+    const postActivitiesMatch = path.match(/^\/stands\/([^/]+)\/activities$/);
+    if (method === "POST" && postActivitiesMatch && user) {
+      const standId = postActivitiesMatch[1];
+      const activity = {
+        id: crypto.randomUUID(),
+        standId,
+        title: String(input.title),
+        description: input.description ? String(input.description) : null,
+        startsAt: String(input.startsAt),
+        endsAt: input.endsAt ? String(input.endsAt) : null,
+        capacity: input.capacity !== undefined ? Number(input.capacity) : null,
+        pointsReward: Number(input.pointsReward ?? 0),
+        scoreReward: Number(input.pointsReward ?? 0),
+        requiresRegistration: Boolean(input.requiresRegistration ?? true),
+        status: String(input.status ?? "scheduled"),
+        registeredCount: 1,
+        attendedCount: 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      const list = this.activities.get(standId) ?? [];
+      list.push(activity);
+      this.activities.set(standId, list);
+
+      const initialAttendance = {
+        id: crypto.randomUUID(),
+        activityId: activity.id,
+        userId: "00000000-0000-4000-8000-000000000099",
+        status: "registered",
+        registeredAt: new Date().toISOString(),
+        attendedAt: null,
+        pointsAwarded: 0,
+      };
+      this.attendances.set(activity.id, [initialAttendance]);
+
+      return reply(201, ok(activity));
+    }
+
+    const patchActivityMatch = path.match(/^\/stands\/([^/]+)\/activities\/([^/]+)$/);
+    if (method === "PATCH" && patchActivityMatch && user) {
+      const [, standId, activityId] = patchActivityMatch;
+      const list = this.activities.get(standId) ?? [];
+      const activity = list.find((a) => a.id === activityId);
+      if (!activity) return reply(404, fail("ACTIVITY_NOT_FOUND"));
+      Object.assign(activity, input, { updatedAt: new Date().toISOString() });
+      return reply(200, ok(activity));
+    }
+
+    const getActivityManageMatch = path.match(/^\/activities\/([^/]+)\/manage$/);
+    if (method === "GET" && getActivityManageMatch && user) {
+      const activityId = getActivityManageMatch[1];
+      for (const list of this.activities.values()) {
+        const found = list.find((a) => a.id === activityId);
+        if (found) return reply(200, ok(found));
+      }
+      return reply(404, fail("ACTIVITY_NOT_FOUND"));
+    }
+
+    const attendanceMatch = path.match(/^\/activities\/([^/]+)\/attendance$/);
+    if (attendanceMatch && user) {
+      const activityId = attendanceMatch[1];
+      if (method === "GET") {
+        return reply(200, ok(this.attendances.get(activityId) ?? []));
+      }
+      if (method === "POST") {
+        const userId = String(input.userId ?? user.id);
+        const list = this.attendances.get(activityId) ?? [];
+        let record = list.find((r) => r.userId === userId);
+        if (!record) {
+          record = {
+            id: crypto.randomUUID(),
+            activityId,
+            userId,
+            status: "attended",
+            registeredAt: new Date().toISOString(),
+            attendedAt: new Date().toISOString(),
+            pointsAwarded: 20,
+          };
+          list.push(record);
+        } else {
+          record.status = "attended";
+          record.attendedAt = new Date().toISOString();
+          record.pointsAwarded = 20;
+        }
+        this.attendances.set(activityId, list);
+
+        for (const aList of this.activities.values()) {
+          const act = aList.find((a) => a.id === activityId);
+          if (act) act.attendedCount = list.filter((r) => r.status === "attended").length;
+        }
+
+        return reply(200, ok(record));
+      }
+    }
+
+    const manualCheckinMatch = path.match(/^\/stands\/([^/]+)\/manual-check-ins$/);
+    if (method === "POST" && manualCheckinMatch && user) {
+      const standId = manualCheckinMatch[1];
+      const visitorId = input.userId ? String(input.userId) : `user-${String(input.userQrToken).slice(0, 8)}`;
+      const { checkinId, dailyDuplicate } = this.simulateCheckin(standId, visitorId, "qr");
+      return reply(200, ok({
+        checkinId,
+        visitId: crypto.randomUUID(),
+        isFirstVisit: !dailyDuplicate,
+        dailyDuplicate,
+        pointsAwarded: dailyDuplicate ? 0 : 50,
+        scoreAwarded: dailyDuplicate ? 0 : 50,
+      }));
+    }
 
     const eventMatch = path.match(/^\/events\/([^/]+)(\/.*)$/);
 

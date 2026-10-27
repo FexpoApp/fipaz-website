@@ -1462,7 +1462,7 @@ test.describe("Issue 71: Zonas y categorías, publicación de mapa y gamificaci�
 
     await page.goto("/panel/zonas-categorias");
 
-    await expect(page).toHaveURL(/\/acceso\?panel=organizador/);
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
 
   });
 
@@ -1602,5 +1602,88 @@ test.describe("escenario de cliente Issue 72: KPIs reales y pendientes, visitas 
     await expect(prevBtn).toBeEnabled();
     await prevBtn.click();
     await expect(page.getByText("Página 1 de 11 (205 visitas)")).toBeVisible();
+  });
+test("escenario de cliente Issue 73: Maria administra su stand (dinamicas, actividades, asistencia y escaner)", async ({ page }) => {
+    await loginWithPassword(page, "expositor@fexpo.test");
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
+
+    // 1. Desde Mi stand abre Administrar (/admin)
+    await page.goto("/panel/mi-stand");
+    const adminLink = page.getByRole("link", { name: "Administrar" });
+    await expect(adminLink).toBeVisible();
+    await adminLink.click();
+    await expect(page).toHaveURL(/\/admin$/);
+
+    // Ya esta en su stand sin elegir ni escribir ningun ID demo
+    await expect(page.getByRole("heading", { name: "Administración de tu participación" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Altura Labs/ })).toBeVisible();
+    await expect(page.getByText("Stand A-01")).toBeVisible();
+
+    // 2. Crea la dinamica "Trivia de IA" (20 pts)
+    await page.getByRole("link", { name: "Dinámicas", exact: true }).click();
+    await expect(page).toHaveURL(new RegExp(`/admin/stands/${standId}/dynamics$`));
+
+    await page.getByRole("button", { name: "Crear dinámica" }).first().click();
+    const dynamicModal = page.getByRole("dialog");
+    await expect(dynamicModal).toBeVisible();
+    await dynamicModal.getByLabel(/Nombre/).fill("Trivia de IA");
+    await dynamicModal.getByLabel(/Tipo/).selectOption("trivia");
+    await dynamicModal.getByLabel(/Puntos/).fill("20");
+    await dynamicModal.getByRole("button", { name: "Crear dinámica" }).click();
+    await expect(dynamicModal).not.toBeVisible();
+
+    await expect(page.getByRole("table").getByText("Trivia de IA")).toBeVisible();
+    expect(backend.calls.some((c) => c.method === "POST" && c.path === `/stands/${standId}/dynamics`)).toBe(true);
+
+    // 3. Crea la actividad "Demo de 15:00" con 30 cupos
+    await page.getByRole("link", { name: "Actividades", exact: true }).click();
+    await expect(page).toHaveURL(new RegExp(`/admin/stands/${standId}/activities$`));
+
+    await page.getByRole("button", { name: "Crear actividad" }).first().click();
+    const activityModal = page.getByRole("dialog");
+    await expect(activityModal).toBeVisible();
+    await activityModal.getByLabel(/Nombre/).fill("Demo de 15:00");
+    await activityModal.getByLabel(/Fecha/).fill("2026-11-15");
+    await activityModal.getByLabel(/Hora de inicio/).fill("15:00");
+    await activityModal.getByLabel(/Capacidad/).fill("30");
+    await activityModal.getByLabel(/Puntos/).fill("20");
+    await activityModal.getByRole("button", { name: "Crear actividad" }).click();
+    await expect(activityModal).not.toBeVisible();
+
+    await expect(page.getByRole("table").getByText("Demo de 15:00")).toBeVisible();
+    expect(backend.calls.some((c) => c.method === "POST" && c.path === `/stands/${standId}/activities`)).toBe(true);
+
+    // 4. En la demo, marca la asistencia de un participante
+    await page.getByRole("button", { name: /Acciones de Demo de 15:00/ }).click();
+    await page.getByRole("menuitem", { name: "Marcar asistencia" }).click();
+    await expect(page).toHaveURL(/\/admin\/activities\/[0-9a-f-]+\/attendance/);
+
+    const confirmBtn = page.getByRole("button", { name: /Confirmar/ }).first();
+    await expect(confirmBtn).toBeVisible();
+    await confirmBtn.click();
+    await expect(page.getByText(/Asistencia confirmada: Visitante/)).toBeVisible();
+    expect(backend.calls.some((c) => c.method === "POST" && c.path.includes("/attendance"))).toBe(true);
+
+    // 5. En el escaner QR, registra el check-in de un visitante
+    await page.getByRole("link", { name: "Escáner QR", exact: true }).click();
+    await expect(page).toHaveURL(new RegExp(`/admin/stands/${standId}/scan$`));
+
+    await page.getByRole("button", { name: "¿No puedes escanear? Ingresa el código manualmente" }).click();
+    await page.getByLabel("Código del visitante").fill("FIPAZ-VISITANTE-4821");
+    await page.getByRole("button", { name: "Registrar" }).click();
+
+    await expect(page.getByText("Check-in registrado")).toBeVisible();
+    expect(backend.calls.some((c) => c.method === "POST" && c.path === `/stands/${standId}/manual-check-ins`)).toBe(true);
+
+    // 6. Navega entre /panel y /admin con el mismo menu, sesion y permisos
+    await page.getByRole("link", { name: "Volver al panel" }).first().click();
+    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page.getByRole("heading", { name: /Hola, Altura Labs/ })).toBeVisible();
+
+    // Vuelve a /admin y no hay ningun enlace que lleve a IDs demo
+    await page.goto("/admin");
+    await expect(page.getByRole("heading", { name: "Administración de tu participación" })).toBeVisible();
+    const demoLinks = await page.$$eval("a[href*='stand-altura-labs'], a[href*='event-fipaz-2026']", (els) => els.length);
+    expect(demoLinks).toBe(0);
   });
 });

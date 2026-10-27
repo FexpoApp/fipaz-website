@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, BarChart3, Building2, Mail, Pencil, QrCode, ScanLine, Store } from "lucide-react";
+import { ArrowRight, BarChart3, Building2, Mail, Pencil, QrCode, ScanLine, Settings2, Store } from "lucide-react";
 
 import { canEditCompany } from "@/lib/panel-access";
 import { useCompanyAuthStore } from "@/store/company-auth-store";
@@ -48,6 +48,7 @@ export function MiStandView() {
               </button>
             )}
             <Link href="/panel/mi-stand/qr" className="inline-flex items-center gap-2 rounded-xl border border-[#d8e4f3] bg-white px-4 py-2.5 text-sm font-bold text-[#294671] hover:bg-[#f4f8fd]"><QrCode aria-hidden="true" className="h-4 w-4" />Gestionar QR</Link>
+            <Link href="/admin" className="inline-flex items-center gap-2 rounded-xl border border-[#d8e4f3] bg-white px-4 py-2.5 text-sm font-bold text-[#294671] hover:bg-[#f4f8fd]"><Settings2 aria-hidden="true" className="h-4 w-4" />Administrar</Link>
             {!editable && <p id="stand-edit-permission-help" className="basis-full text-xs font-medium text-slate-600">Solo una persona administradora de la empresa puede editar el perfil del stand.</p>}
           </div>
         </section>

@@ -16,15 +16,33 @@ import { API_MODE } from "@/lib/api/config";
 import { ADMIN_DEFAULT_EVENT_ID, ADMIN_DEFAULT_STAND_ID } from "@/features/admin/admin-scope";
 import type { AdminScope } from "@/features/admin/admin-scope";
 import { ToastProvider } from "./toast";
-import { accessRoute, hasPanelAccess } from "@/lib/panel-access";
+import { accessRoute, getActiveCompany, hasPanelAccess } from "@/lib/panel-access";
+import { exhibitorApi } from "@/lib/api/exhibitor";
 import { isSessionValid, useCompanyAuthStore } from "@/store/company-auth-store";
 
-/** Stand y evento de la URL actual; fuera de una ruta con contexto, los de la cuenta por defecto. */
+/** Stand y evento de la URL actual; fuera de una ruta con contexto, resueltos de la sesión o demo por defecto. */
 function useAdminScope(): AdminScope {
   const params = useParams<{ standId?: string; eventId?: string }>();
+  const session = useCompanyAuthStore((state) => state.session);
+  const activeCompany = getActiveCompany(session);
+  const [resolvedStandId, setResolvedStandId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (params.standId) return;
+    if (activeCompany) {
+      let cancelled = false;
+      void exhibitorApi.getStands(activeCompany.id).then((stands) => {
+        if (cancelled) return;
+        const found = stands.find((s) => s.eventId === session?.activeEvent?.id) ?? stands[0];
+        if (found) setResolvedStandId(found.id);
+      }).catch(() => {});
+      return () => { cancelled = true; };
+    }
+  }, [params.standId, activeCompany?.id, session?.activeEvent?.id]);
+
   return {
-    standId: typeof params.standId === "string" ? params.standId : ADMIN_DEFAULT_STAND_ID,
-    eventId: typeof params.eventId === "string" ? params.eventId : ADMIN_DEFAULT_EVENT_ID,
+    standId: typeof params.standId === "string" ? params.standId : (resolvedStandId ?? ADMIN_DEFAULT_STAND_ID),
+    eventId: typeof params.eventId === "string" ? params.eventId : (session?.activeEvent?.id ?? ADMIN_DEFAULT_EVENT_ID),
   };
 }
 
@@ -56,21 +74,22 @@ function AdminNavList({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const session = useCompanyAuthStore((state) => state.session);
   const params = useParams<{ standId?: string; eventId?: string }>();
-  const allItems = getAdminNavigation(useAdminScope());
+  const scope = useAdminScope();
+  const allItems = getAdminNavigation(scope);
   const isCompanyItem = (item: AdminNavigationItem) => item.id === "company-profile" || item.id === "company-stands";
   const demoModules = isDemoModulesRoute(pathname);
   // Modo demostración: los módulos simulados se ven sin sesión; el perfil de empresa sigue pidiéndola.
   const isExhibitor = isSessionValid(session) && hasPanelAccess(session, "expositor");
   const isOrganizer = isSessionValid(session) && hasPanelAccess(session, "organizador");
-  // Con backend real los ids por defecto son de la demo (no UUID): un módulo solo se enlaza
-  // cuando la URL ya trae el stand o el evento reales.
-  const hasStand = typeof params.standId === "string";
-  const hasEvent = typeof params.eventId === "string";
+  // Con backend real los ids por defecto son de la demo (no UUID): un módulo se enlaza
+  // cuando la URL ya trae el stand o el evento reales o se resolvieron de la sesión.
+  const hasStand = typeof params.standId === "string" || (isExhibitor && scope.standId !== ADMIN_DEFAULT_STAND_ID);
+  const hasEvent = typeof params.eventId === "string" || (isOrganizer && scope.eventId !== ADMIN_DEFAULT_EVENT_ID);
   const items = demoModules
     ? allItems.filter((item) => !isCompanyItem(item) || isExhibitor)
     : allItems.filter((item) => {
         if (isCompanyItem(item)) return isExhibitor;
-        if (item.id === "resumen") return false;
+        if (item.id === "resumen") return true;
         if (item.id === "premios" || item.id === "inventario") return isOrganizer && hasEvent;
         return isExhibitor && hasStand;
       });
