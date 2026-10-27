@@ -135,4 +135,16 @@ Ejecución de la suite completa de pruebas E2E en navegador real Google Chrome (
 ahora revisa la @[d:\Proyectos\KetanoLab-SRL\docs\Mis-Issues\noviembre\issue69.md] por favor tambien es para fipaz-website, realiza un plan de implementacion / claro, procede por favor
 
 **Salida:**
-En curso.
+Implementación y verificación de la issue 69: validación de `maxScans >= 1` y TTL en `qr-stand-view.tsx`, renderizado directo del token emitido por el backend con advertencia de no persistencia tras recargar, revocación con `DELETE /qr/:qrId` reflejando estado revocado inmediatamente, y tests unitarios / E2E de check-in real y duplicado.
+
+### 2026-10-27T02:40:00Z | usuario: franco ayala <fa8050386@gmail.com> | agente: Antigravity (Gemini 3.8 Flash)
+**Prompt:**
+ahora revisa la @[d:\Proyectos\KetanoLab-SRL\docs\Mis-Issues\noviembre\issue70.md] por favor y elabora un plan de implementacion / excelente luego verifica que la issue se considere cerrada
+
+**Salida:**
+Implementación completa y verificación de la issue 70 para `fipaz-website`:
+1. Selector de evento (`src/lib/api/events.ts`, `src/store/company-auth-store.ts`, `src/components/panel/eventos-view.tsx`): consumo tipado de `GET /events` para listar eventos accesibles por el organizador y actualizar reactivamente el evento activo (`setActiveEvent`) y rol asociado.
+2. Directorio y filtros de expositores (`src/components/panel/expositores-list.tsx`): unión de datos de empresas (`GET /events/:id/companies`), stands (`GET /events/:id/stands`) y categorías (`GET /events/:id/categories`). Visualización de stand asignado o "Sin stand asignado", etiquetas de categoría, buscador de texto, filtro por estado de stand y selector/píldoras de filtrado por categoría (e.g. "Salud").
+3. Asignación de stands (`src/components/panel/assign-stand-modal.tsx`, `src/lib/api/organizer.ts`, `src/lib/api/http-client.ts`): modal accesible para asignar stands (`POST /events/:id/stands`) con código de stand (`boothCode`), nombre (`displayName`), descripción y tags. Manejo de error 409 de código duplicado (`BOOTH_CODE_IN_USE`) con banner de alerta descriptivo.
+4. Pruebas E2E en Chrome (`e2e/password-auth.spec.ts`, `e2e/support/fake-backend.ts`): simulación completa en `fake-backend` (`GET /events`, `POST /events/:eventId/stands`), verificación E2E del flujo completo del cliente Carlos (`event_admin`): selección de evento "FIPAZ 2026", filtro por categoría "Salud", asignación de stand "A-12" a Altura Labs, rechazo de código duplicado con mensaje claro, persistencia tras recargar (`page.reload()`), y verificación desde el panel de expositor (`/panel/mi-stand`) viendo el stand asignado "A-12".
+5. Verificación: TypeScript compila sin errores (`tsc --noEmit`), suite unitaria en verde (34/34), y suite completa de 39 tests E2E en Google Chrome (`E2E_CHANNEL=chrome`) pasando al 100% (39/39 passing). Checkboxes en `issue70.md` marcados como completados. Sin commits realizados.

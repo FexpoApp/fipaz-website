@@ -107,6 +107,26 @@ const leaderboardSchema = z.object({
   level: z.number(),
 });
 
+const standAssignmentResponseSchema = z.object({
+  id: z.string().uuid(),
+  eventId: z.string().uuid(),
+  companyId: z.string().uuid(),
+  eventCompanyId: z.string().uuid(),
+  boothCode: z.string(),
+  displayName: z.string(),
+  description: z.string().nullable().optional(),
+  tags: z.array(z.string()).optional().default([]),
+  visitPoints: z.number().optional().default(50),
+  visitScore: z.number().optional().default(50),
+  status: z.string().optional().default("active"),
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
+});
+
+const eventStandManageItemSchema = standAssignmentResponseSchema.extend({
+  companyName: z.string().optional(),
+});
+
 export type EventKpis = z.infer<typeof kpisSchema>;
 export type EventCompany = z.infer<typeof companySchema>;
 export type EventCategory = z.infer<typeof categorySchema>;
@@ -118,6 +138,17 @@ export type EventMission = z.infer<typeof missionSchema>;
 export type MissionMode = EventMission["mode"];
 export type EventReward = z.infer<typeof rewardSchema>;
 export type LeaderboardEntry = z.infer<typeof leaderboardSchema>;
+export type StandAssignmentResponse = z.infer<typeof standAssignmentResponseSchema>;
+export type EventStandManageItem = z.infer<typeof eventStandManageItemSchema>;
+
+export interface AssignStandInput {
+  companyId: string;
+  boothCode: string;
+  displayName?: string;
+  description?: string | null;
+  tags?: string[];
+  status?: "draft" | "pending_review" | "active" | "inactive" | "archived";
+}
 
 export interface FloorWithZones extends MapFloor {
   zones: MapZone[];
@@ -154,6 +185,15 @@ export const organizerApi = {
   },
   async deleteCategory(eventId: string, categoryId: string): Promise<void> {
     await apiDelete(eventPath(eventId, `/categories/${encodeURIComponent(categoryId)}`));
+  },
+  async getStands(eventId: string): Promise<EventStandManageItem[]> {
+    return z.array(eventStandManageItemSchema).parse(await apiGet(eventPath(eventId, "/manage/stands")));
+  },
+  async assignStand(eventId: string, input: AssignStandInput): Promise<StandAssignmentResponse> {
+    return standAssignmentResponseSchema.parse(await apiPost(eventPath(eventId, "/stands"), input));
+  },
+  async deleteStand(eventId: string, standId: string): Promise<void> {
+    await apiDelete(eventPath(eventId, `/stands/${encodeURIComponent(standId)}`));
   },
   async getMapVersions(eventId: string): Promise<MapVersion[]> {
     return z.array(mapVersionSchema).parse(await apiGet(eventPath(eventId, "/map/versions")));

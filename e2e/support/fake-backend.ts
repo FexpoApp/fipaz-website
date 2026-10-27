@@ -99,6 +99,54 @@ export class FakeBackend {
   private readonly oneShotFailures = new Map<string, { status: number; code: string }>();
   private readonly delays = new Map<string, number>();
 
+  constructor() {
+    // Empresa y stand inicial en categoría Gastronomía
+    this.companies.set("c0000000-0000-4000-8000-000000000002", {
+      id: "c0000000-0000-4000-8000-000000000002",
+      displayName: "Cafe Altiplano",
+      description: "Cafetería y tostado de altura",
+      logoPath: null,
+      website: null,
+      contactEmail: "cafe@fexpo.test",
+    });
+    this.stands.set("5a000000-0000-4000-8000-000000000002", {
+      id: "5a000000-0000-4000-8000-000000000002",
+      companyId: "c0000000-0000-4000-8000-000000000002",
+      eventId: DEFAULT_EVENT_ID,
+      eventName: "FIPAZ 2026",
+      boothCode: "G-01",
+      displayName: "Cafe Altiplano",
+      description: "Stand de café boliviano",
+      categories: [{ id: "ca000000-0000-4000-8000-000000000001", slug: "gastronomia", label: "Gastronomía" }],
+      tags: ["gastronomia", "cafe"],
+      visitPoints: 50,
+      status: "active",
+    });
+
+    // Empresa y stand inicial en categoría Salud
+    this.companies.set("c0000000-0000-4000-8000-000000000003", {
+      id: "c0000000-0000-4000-8000-000000000003",
+      displayName: "BioSalud Farmacéutica",
+      description: "Productos médicos y farmacia",
+      logoPath: null,
+      website: null,
+      contactEmail: "salud@fexpo.test",
+    });
+    this.stands.set("5a000000-0000-4000-8000-000000000003", {
+      id: "5a000000-0000-4000-8000-000000000003",
+      companyId: "c0000000-0000-4000-8000-000000000003",
+      eventId: DEFAULT_EVENT_ID,
+      eventName: "FIPAZ 2026",
+      boothCode: "S-01",
+      displayName: "BioSalud Farmacéutica",
+      description: "Stand de salud y bienestar",
+      categories: [{ id: "ca000000-0000-4000-8000-000000000002", slug: "salud", label: "Salud" }],
+      tags: ["salud", "medicina"],
+      visitPoints: 50,
+      status: "active",
+    });
+  }
+
   addUser(user: Omit<FakeUser, "id" | "roles" | "activeEvent"> & {
     roles?: FakeRole[];
     activeEvent?: FakeActiveEvent | null;
@@ -133,6 +181,8 @@ export class FakeBackend {
     for (const [standId, stand] of this.stands) {
       if (stand.companyId === companyId) this.stands.delete(standId);
     }
+    const comp = this.event.companies.find((c) => c.companyId === companyId);
+    if (comp) comp.standCount = 0;
   }
 
   addStand(stand: Record<string, unknown>): void {
@@ -200,7 +250,6 @@ export class FakeBackend {
   }
 
   async install(page: Page): Promise<void> {
-    // El botón de Google no se usa en estas pruebas: su script externo se bloquea.
     await page.route("https://accounts.google.com/**", (route) => route.abort());
     await page.route("**/api/v1/**", (route) => this.handle(route));
   }
@@ -263,7 +312,7 @@ export class FakeBackend {
     try { body = request.postDataJSON(); } catch { body = request.postData(); }
     this.calls.push({ method, path, body, authorization });
 
-    const input = (body ?? {}) as Record<string, string>;
+    const input = (body ?? {}) as Record<string, unknown>;
     const reply = (status: number, payload?: unknown) =>
       route.fulfill(payload === undefined
         ? { status }
@@ -288,15 +337,15 @@ export class FakeBackend {
       if (this.users.some((candidate) => candidate.email.toLowerCase() === String(input.email).toLowerCase())) {
         return reply(409, fail("EMAIL_IN_USE", "Email already in use."));
       }
-      const user = this.addUser({ email: input.email, password: input.password, displayName: input.displayName });
+      const user = this.addUser({ email: String(input.email), password: String(input.password), displayName: String(input.displayName) });
       return reply(201, ok(this.issueTokens(user)));
     }
 
     if (method === "POST" && path === "/auth/refresh") {
-      const userId = this.refreshTokens.get(input.refreshToken);
+      const userId = this.refreshTokens.get(String(input.refreshToken));
       const user = this.users.find((candidate) => candidate.id === userId);
       if (!user) return reply(401, fail("INVALID_REFRESH_TOKEN", "Invalid refresh token."));
-      this.refreshTokens.delete(input.refreshToken);
+      this.refreshTokens.delete(String(input.refreshToken));
       return reply(200, ok(this.issueTokens(user)));
     }
 
@@ -314,7 +363,7 @@ export class FakeBackend {
 
     if (method === "POST" && path === "/auth/logout") {
       if (!this.userFromBearer(authorization)) return reply(401, fail("AUTH_REQUIRED"));
-      this.refreshTokens.delete(input.refreshToken);
+      this.refreshTokens.delete(String(input.refreshToken));
       return reply(204);
     }
 
@@ -328,10 +377,31 @@ export class FakeBackend {
     if (method === "POST" && path === "/companies") {
       const user = this.userFromBearer(authorization);
       if (!user) return reply(401, fail("AUTH_REQUIRED"));
-      const company = { id: crypto.randomUUID(), displayName: input.displayName };
+      const company = { id: crypto.randomUUID(), displayName: String(input.displayName) };
       user.roles.push(companyRole("company_admin", company.id, company.displayName));
-      this.companies.set(company.id, { ...company, description: input.description ?? null, logoPath: null, website: null, contactEmail: null });
+      this.companies.set(company.id, { ...company, description: (input.description as string | null) ?? null, logoPath: null, website: null, contactEmail: null });
       return reply(201, ok(company));
+    }
+
+    // Listado de eventos accesibles (GET /events)
+    if (method === "GET" && path === "/events") {
+      const user = this.userFromBearer(authorization);
+      if (!user) return reply(401, fail("AUTH_REQUIRED"));
+      return reply(200, ok([
+        {
+          id: DEFAULT_EVENT_ID,
+          slug: "fipaz-2026",
+          name: "FIPAZ 2026",
+          status: "active",
+          startsAt: "2026-10-20T00:00:00Z",
+          endsAt: "2026-11-05T00:00:00Z",
+          venueName: "Campo Ferial Chuquiago Marka",
+          venue: "Campo Ferial Chuquiago Marka",
+          city: "La Paz",
+          description: "Feria Internacional de La Paz 2026",
+          isCurrentActive: true,
+        },
+      ]));
     }
 
     // Estos dos endpoints son públicos en el backend real. Se resuelven antes de exigir Bearer
@@ -355,7 +425,7 @@ export class FakeBackend {
             .join(" ")
             .toLocaleLowerCase();
           if (query && !searchable.includes(query)) return false;
-          if (categoryId && !stand.categories.some((category) => (category as Record<string, unknown>).id === categoryId)) return false;
+          if (categoryId && !stand.categories.some((category) => (category as Record<string, unknown>).id === categoryId || (category as Record<string, unknown>).slug === categoryId)) return false;
           if (featured !== null && String(stand.featured) !== featured) return false;
           if (floorId && (stand.location as Record<string, unknown> | null)?.floorId !== floorId) return false;
           if (zoneId && (stand.location as Record<string, unknown> | null)?.zoneId !== zoneId) return false;
@@ -484,11 +554,10 @@ export class FakeBackend {
     if (eventMatch && user) {
       const [, eventId, rest] = eventMatch;
       if (!user.roles.some((role) => role.eventId === eventId)) return reply(403, fail("INSUFFICIENT_PERMISSIONS"));
-      const result = this.handleEvent(method, rest, body as Record<string, unknown> | undefined);
+      const result = this.handleEvent(eventId, method, rest, body as Record<string, unknown> | undefined);
       if (result) return reply(result[0], result[1]);
     }
 
-    // El resto de módulos no forma parte de estas pruebas.
     if (method === "GET") return reply(200, ok([]));
     return reply(404, fail("NOT_FOUND"));
   }
@@ -499,6 +568,7 @@ export class FakeBackend {
     companies: [
       { id: "ec000000-0000-4000-8000-000000000001", companyId: "c0000000-0000-4000-8000-000000000001", displayName: "Altura Labs", description: null, status: "active", standCount: 1 },
       { id: "ec000000-0000-4000-8000-000000000002", companyId: "c0000000-0000-4000-8000-000000000002", displayName: "Cafe Altiplano", description: null, status: "active", standCount: 1 },
+      { id: "ec000000-0000-4000-8000-000000000003", companyId: "c0000000-0000-4000-8000-000000000003", displayName: "BioSalud Farmacéutica", description: null, status: "active", standCount: 1 },
     ],
     categories: [
       { id: "ca000000-0000-4000-8000-000000000001", slug: "gastronomia", label: "Gastronomía", colorToken: null, sortOrder: 1 },
@@ -512,7 +582,7 @@ export class FakeBackend {
     ],
   };
 
-  private handleEvent(method: string, rest: string, input: Record<string, unknown> = {}): [number, unknown] | null {
+  private handleEvent(eventId: string, method: string, rest: string, input: Record<string, unknown> = {}): [number, unknown] | null {
     const event = this.event;
     const version = { id: "d0000000-0000-4000-8000-000000000001", version: 1, status: "published", notes: "Plano local", publishedAt: GRANTED_AT };
     const floor = { id: "f0000000-0000-4000-8000-000000000001", code: "PB", name: "Planta Baja", sortOrder: 1 };
@@ -523,6 +593,15 @@ export class FakeBackend {
         case "/kpis": return [200, ok(event.kpis)];
         case "/companies": return [200, ok(event.companies)];
         case "/categories": return [200, ok(event.categories)];
+        case "/manage/stands": {
+          const list = [...this.stands.values()]
+            .filter((s) => s.eventId === eventId)
+            .map((s) => ({
+              ...s,
+              companyName: this.companies.get(String(s.companyId))?.displayName ?? s.displayName,
+            }));
+          return [200, ok(list)];
+        }
         case "/missions": return [200, ok(event.missions)];
         case "/rewards": return [200, ok(event.rewards)];
         case "/leaderboard": return [200, ok([{ position: 1, userId: "u-1", displayName: "Saúl Prueba", avatarUrl: null, rankingScore: 130, level: 2 }])];
@@ -538,6 +617,46 @@ export class FakeBackend {
           }],
         })];
       }
+    }
+
+    if (method === "POST" && rest === "/stands") {
+      const boothCode = String(input.boothCode ?? "").trim().toUpperCase();
+      const companyId = String(input.companyId ?? "");
+
+      const existingStand = [...this.stands.values()].find(
+        (s) => s.eventId === eventId && String(s.boothCode ?? "").toUpperCase() === boothCode
+      );
+      if (existingStand) {
+        return [409, fail("BOOTH_CODE_IN_USE", "El stand ya está asignado")];
+      }
+
+      const standId = crypto.randomUUID();
+      const company = this.companies.get(companyId);
+      const displayName = input.displayName ? String(input.displayName) : (company?.displayName ?? "Nuevo Stand");
+      const newStand = {
+        id: standId,
+        eventId,
+        companyId,
+        eventCompanyId: crypto.randomUUID(),
+        boothCode,
+        displayName,
+        description: input.description ? String(input.description) : null,
+        tags: Array.isArray(input.tags) ? input.tags : [],
+        visitPoints: 50,
+        visitScore: 50,
+        status: input.status ?? "active",
+        eventName: "FIPAZ 2026",
+        activityHighlight: null,
+        promotionHighlight: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      this.stands.set(standId, newStand);
+      const comp = this.event.companies.find((c) => c.companyId === companyId);
+      if (comp) {
+        comp.standCount = (comp.standCount ?? 0) + 1;
+      }
+      return [201, ok(newStand)];
     }
 
     if (method === "POST" && rest === "/categories") {

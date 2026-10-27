@@ -90,6 +90,8 @@ const KNOWN_ERRORS: Readonly<Record<string, readonly [ServiceErrorCode, string]>
   PARTICIPANT_NOT_ACTIVE: ["VALIDATION", "Este visitante no tiene una inscripción activa en el evento."],
   REWARD_NOT_FOUND: ["NOT_FOUND", "No encontramos el premio solicitado."],
   REWARD_IN_USE: ["CONFLICT", "El premio tiene inventario o canjes asociados. Desactívalo en lugar de eliminarlo."],
+  BOOTH_CODE_IN_USE: ["CONFLICT", "El código de stand ya está en uso en este evento. Por favor ingresa otro."],
+  STAND_IN_USE: ["CONFLICT", "El stand tiene interacciones registradas. Desactívalo en su lugar."],
   INVENTORY_NOT_FOUND: ["NOT_FOUND", "No encontramos el inventario solicitado."],
   ACTIVITY_NOT_AVAILABLE: ["NOT_FOUND", "La actividad no está disponible para registro."],
   ACTIVITY_FULL: ["VALIDATION", "La actividad ya no tiene cupos disponibles."],

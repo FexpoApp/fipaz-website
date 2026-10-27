@@ -42,6 +42,7 @@ interface CompanyAuthStore {
   loginWithPassword: (email: string, password: string) => Promise<AuthMe>;
   registerWithPassword: (input: { email: string; password: string; displayName: string }) => Promise<AuthMe>;
   setActiveRole: (roleId: string) => void;
+  setActiveEvent: (eventId: string, eventName?: string) => void;
   refreshAccessToken: () => Promise<boolean>;
   /** Actualiza los roles; conserva la sesión si el servicio está temporalmente caído. */
   verifySession: () => Promise<SessionVerificationResult>;
@@ -150,11 +151,39 @@ export const useCompanyAuthStore = create<CompanyAuthStore>()(
 
         setActiveRole: (roleId) => {
           const current = get().session;
-          // Sin cambio no se crea una sesión nueva: los efectos que dependen de `session` (AccessScreen,
-          // PanelShell) llaman a esto en cada render y entrarían en un bucle de actualizaciones.
           if (!current || current.activeRoleId === roleId) return;
           if (current.roles.some((role) => role.id === roleId)) {
             set({ session: { ...current, activeRoleId: roleId } });
+          }
+        },
+
+        setActiveEvent: (eventId, eventName) => {
+          const current = get().session;
+          if (!current) return;
+          const matchingRole = current.roles.find((role) => role.eventId === eventId);
+          if (matchingRole) {
+            set({
+              session: {
+                ...current,
+                activeRoleId: matchingRole.id,
+                activeEvent: current.activeEvent
+                  ? { ...current.activeEvent, id: eventId, name: eventName ?? matchingRole.eventName ?? current.activeEvent.name }
+                  : (eventName ? { id: eventId, slug: eventId, name: eventName, status: "active", startsAt: "", endsAt: "", venueName: null, venue: null, city: null } : null),
+              },
+            });
+            return;
+          }
+          if (current.activeEvent) {
+            set({
+              session: {
+                ...current,
+                activeEvent: {
+                  ...current.activeEvent,
+                  id: eventId,
+                  name: eventName ?? current.activeEvent.name,
+                },
+              },
+            });
           }
         },
 
@@ -206,21 +235,19 @@ export const useCompanyAuthStore = create<CompanyAuthStore>()(
             return "valid";
           } catch (error) {
             if (error instanceof Error && "status" in error && error.status === 401) {
-              if (await get().refreshAccessToken()) {
-                const refreshed = get().session;
-                if (!refreshed) return "invalid";
-                try {
-                  applyIdentity(await fetchAuthMe(refreshed.accessToken));
-                  return "valid";
-                } catch (retryError) {
-                  if (isAuthenticationFailure(retryError)) {
-                    set({ session: null });
-                    return "invalid";
-                  }
-                  return "unavailable";
+              if (!await get().refreshAccessToken()) return get().session ? "unavailable" : "invalid";
+              const refreshed = get().session;
+              if (!refreshed) return "invalid";
+              try {
+                applyIdentity(await fetchAuthMe(refreshed.accessToken));
+                return "valid";
+              } catch (retryError) {
+                if (isAuthenticationFailure(retryError)) {
+                  set({ session: null });
+                  return "invalid";
                 }
+                return "unavailable";
               }
-              return get().session ? "unavailable" : "invalid";
             }
             if (isAuthenticationFailure(error)) {
               set({ session: null });

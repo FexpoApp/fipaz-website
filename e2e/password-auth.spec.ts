@@ -555,3 +555,91 @@ test.describe("registro de empresa con correo y contraseña", () => {
     expect(backend.calls.some((call) => call.path === "/companies")).toBe(true);
   });
 });
+
+
+test.describe("Issue 70: Selector de eventos, directorio de expositores y asignación de stands", () => {
+  let backend: FakeBackend;
+
+  test.beforeEach(async ({ page }) => {
+    backend = createBackend();
+    await backend.install(page);
+  });
+
+  test("flujo completo de Carlos (event_admin): selector de eventos, filtrado de categorías y asignación persistente de stand", async ({ page }) => {
+    backend.event.categories.push({
+      id: "ca000000-0000-4000-8000-000000000002",
+      slug: "salud",
+      label: "Salud",
+      colorToken: null,
+      sortOrder: 2,
+    });
+
+    // 1. Carlos entra al panel y elige "FIPAZ 2026" en el selector de eventos
+    await loginWithPassword(page, "organizador@fexpo.test", PASSWORD, "organizador");
+    await expect(page).toHaveURL(ORGANIZER_HOME);
+
+    await page.goto("/panel/eventos");
+    await expect(page.getByRole("heading", { name: "FIPAZ 2026" })).toBeVisible();
+    await expect(page.getByText("Evento activo")).toBeVisible();
+
+    // 2. En Expositores ve la tabla real de empresas con su stand (o "sin stand") y filtra por categoría "Salud"
+    backend.removeStandsForCompany(SEED_COMPANY_ID);
+
+    await page.goto("/panel/expositores");
+    await expect(page.getByRole("heading", { name: "Directorio de expositores" })).toBeVisible();
+
+    // Ve Altura Labs como "Sin stand asignado"
+    await expect(page.getByText("Altura Labs")).toBeVisible();
+    await expect(page.getByText("Sin stand asignado")).toBeVisible();
+
+    // Ve BioSalud Farmacéutica con su stand S-01
+    await expect(page.getByText("BioSalud Farmacéutica")).toBeVisible();
+    await expect(page.getByText(/Stand S-01/)).toBeVisible();
+
+    // Filtra por categoría "Salud"
+    const categoryFilter = page.locator("#category-filter");
+    await categoryFilter.selectOption("salud");
+
+    // Con el filtro "Salud", ve a BioSalud Farmacéutica y NO a Altura Labs ni a Cafe Altiplano
+    await expect(page.getByText("BioSalud Farmacéutica")).toBeVisible();
+    await expect(page.getByText("Altura Labs")).toHaveCount(0);
+    await expect(page.getByText("Cafe Altiplano")).toHaveCount(0);
+
+    // Restablece el filtro a todas las categorías
+    await categoryFilter.selectOption("all");
+    await expect(page.getByText("Altura Labs")).toBeVisible();
+
+    // 3. Abre Altura Labs, pulsa Asignar stand y escoge A-12
+    await page.getByRole("button", { name: "Asignar stand a Altura Labs" }).click();
+
+    const modal = page.getByRole("dialog", { name: /Asignar stand a Altura Labs/ });
+    await expect(modal).toBeVisible();
+
+    const boothInput = modal.getByLabel(/Código de stand/);
+    await boothInput.fill("A-12");
+    await modal.getByRole("button", { name: "Asignar stand" }).click();
+
+    // Stand A-12 aparece para Altura Labs
+    await expect(page.getByRole("link", { name: /Stand A-12/ })).toBeVisible();
+
+    // 4. Al recargar, la asignación persiste y la empresa lo ve en su propio panel
+    await page.reload();
+    await expect(page.getByText("Altura Labs")).toBeVisible();
+    await expect(page.getByRole("link", { name: /Stand A-12/ })).toBeVisible();
+
+    // Intento de conflicto 409 con boothCode duplicado
+    await page.getByRole("button", { name: "Asignar stand a Cafe Altiplano" }).click();
+    const conflictModal = page.getByRole("dialog", { name: /Asignar stand a Cafe Altiplano/ });
+    await conflictModal.getByLabel(/Código de stand/).fill("A-12");
+    await conflictModal.getByRole("button", { name: "Asignar stand" }).click();
+    await expect(conflictModal.getByRole("alert")).toContainText("ya está ocupado en este evento");
+    await conflictModal.getByRole("button", { name: "Cancelar" }).click();
+
+    // La empresa lo ve en su propio panel
+    await page.evaluate(() => sessionStorage.clear());
+    await page.goto("/acceso?panel=expositor");
+    await loginWithPassword(page, "expositor@fexpo.test");
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
+    await expect(page.getByText("Stand A-12").first()).toBeVisible();
+  });
+});
