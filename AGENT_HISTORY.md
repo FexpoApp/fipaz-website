@@ -130,3 +130,9 @@ tengo chrome instalado, la issue pide pruebas, podrias intentar?
 
 **Salida:**
 Ejecución de la suite completa de pruebas E2E en navegador real Google Chrome (`E2E_CHANNEL=chrome`) con Playwright sobre Next.js dev (`e2e/password-auth.spec.ts`). Se ajustó el simulador `FakeBackend` (`fail` y `clearFailures`) para reflejar fidedignamente la caída y recuperación del backend en el test de reintento, y se ajustó la expresión regular del encabezado dinámico del evento activo. Las 36 pruebas de navegador pasaron en verde (36/36 passing en Chrome): esqueleto de carga, estado vacío, selector de stands múltiples, reintento ante error 503, persistencia y relectura tras guardar stand y empresa, emisión/revocación de QR, permisos de solo lectura para `company_staff` y panel de organizador con API real. Sin commits.
+### 2026-10-27T01:55:15Z | usuario: franco ayala <fa8050386@gmail.com> | agente: Antigravity (Gemini 3.8 Flash)
+**Prompt:**
+ahora revisa la @[d:\Proyectos\KetanoLab-SRL\docs\Mis-Issues\noviembre\issue69.md] por favor tambien es para fipaz-website, realiza un plan de implementacion / claro, procede por favor
+
+**Salida:**
+En curso.

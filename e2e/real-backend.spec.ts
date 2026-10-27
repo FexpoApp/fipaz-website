@@ -96,6 +96,20 @@ test("expositor real: edita su stand, confirma persistencia y revoca su sesión"
   await expect.poll(async () => (await page.request.post("/api/v1/auth/refresh", { data: { refreshToken } })).status()).toBe(401);
 });
 
+test("expositor real: emite un código QR y lo revoca en el backend", async ({ page }) => {
+  await login(page, "expositor@fexpo.test", "expositor");
+  await page.goto("/panel/mi-stand/qr");
+  await page.getByLabel("Máximo de escaneos").fill("50");
+  await page.getByRole("button", { name: "Generar QR" }).click();
+
+  await expect(page.getByRole("button", { name: "Revocar QR" })).toBeVisible();
+  await expect(page.getByRole("note")).toContainText("Guárdalo ahora: no se puede recuperar al recargar");
+
+  await page.getByRole("button", { name: "Revocar QR" }).click();
+  await expect(page.getByRole("button", { name: "Revocar QR" })).toHaveCount(0);
+  await expect(page.getByRole("status")).toContainText("Código QR revocado");
+});
+
 test("organizador real: entra a su panel y vuelve a él desde rutas del expositor", async ({ page }) => {
   await login(page, "organizador@fexpo.test", "organizador");
   await expect(page.getByRole("complementary", { name: "Navegación del panel" }).getByRole("link", { name: "Expositores" })).toBeVisible();

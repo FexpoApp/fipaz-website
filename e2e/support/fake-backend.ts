@@ -79,6 +79,22 @@ export class FakeBackend {
   private readonly refreshTokens = new Map<string, string>();
   private readonly companies = new Map<string, Record<string, unknown>>();
   private readonly stands = new Map<string, Record<string, unknown>>();
+  private readonly qrCodes = new Map<string, {
+    qrId: string;
+    standId: string;
+    token: string;
+    expiresAt: string;
+    maxScans: number;
+    scanCount: number;
+    isRevoked: boolean;
+  }>();
+  private readonly checkins = new Map<string, Array<{
+    id: string;
+    standId: string;
+    userId: string;
+    method: "nfc" | "qr" | "manual" | "system";
+    acceptedAt: string;
+  }>>();
   private readonly persistentFailures = new Map<string, { status: number; code: string }>();
   private readonly oneShotFailures = new Map<string, { status: number; code: string }>();
   private readonly delays = new Map<string, number>();
@@ -134,6 +150,25 @@ export class FakeBackend {
       slug: name.toLocaleLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
       name,
     };
+  }
+
+  simulateCheckin(standId: string, userId: string, method: "nfc" | "qr" = "qr"): { checkinId: string; dailyDuplicate: boolean } {
+    const list = this.checkins.get(standId) ?? [];
+    const dailyDuplicate = list.some((item) => item.userId === userId);
+    const checkinId = crypto.randomUUID();
+    list.unshift({
+      id: checkinId,
+      standId,
+      userId,
+      method,
+      acceptedAt: new Date().toISOString(),
+    });
+    this.checkins.set(standId, list);
+    return { checkinId, dailyDuplicate };
+  }
+
+  getQr(qrId: string) {
+    return this.qrCodes.get(qrId) ?? null;
   }
 
   fail(method: string, path: string, status = 503, code = "DATABASE_UNAVAILABLE"): void {
@@ -370,16 +405,80 @@ export class FakeBackend {
       const [, standId, resource] = standMatch;
       const stand = this.stands.get(standId);
       if (!stand) return reply(404, fail("STAND_NOT_FOUND"));
+
+      // Check-in de visitante mediante QR o NFC (abierto a todo usuario autenticado)
+      if (method === "POST" && resource === "check-ins") {
+        const credential = String(input.credential ?? "");
+        const qr = [...this.qrCodes.values()].find((item) => item.standId === standId && item.token === credential);
+        if (!qr) return reply(422, fail("QR_INVALID", "El código QR no es válido."));
+        if (qr.isRevoked) return reply(422, fail("QR_REVOKED", "Este QR fue revocado."));
+        if (Date.parse(qr.expiresAt) <= Date.now()) return reply(422, fail("QR_EXPIRED", "El código QR expiró."));
+        if (qr.scanCount >= qr.maxScans) return reply(422, fail("QR_SCAN_LIMIT", "Este QR alcanzó su límite de escaneos."));
+
+        qr.scanCount += 1;
+        const list = this.checkins.get(standId) ?? [];
+        const dailyDuplicate = list.some((item) => item.userId === user.id);
+        const checkinId = crypto.randomUUID();
+        const visitId = crypto.randomUUID();
+        const pointsAwarded = dailyDuplicate ? 0 : 50;
+
+        list.unshift({
+          id: checkinId,
+          standId,
+          userId: user.id,
+          method: "qr",
+          acceptedAt: new Date().toISOString(),
+        });
+        this.checkins.set(standId, list);
+
+        return reply(200, ok({
+          checkinId,
+          visitId,
+          isFirstVisit: !dailyDuplicate,
+          dailyDuplicate,
+          pointsAwarded,
+          scoreAwarded: pointsAwarded,
+        }));
+      }
+
+      // Endpoints que requieren rol de operador sobre el stand
       if (!user.roles.some((role) => role.companyId === stand.companyId)) return reply(403, fail("INSUFFICIENT_PERMISSIONS"));
       if (method === "PATCH" && !resource) {
         if (!user.roles.some((role) => role.companyId === stand.companyId && role.role === "company_admin")) return reply(403, fail("INSUFFICIENT_PERMISSIONS"));
         Object.assign(stand, input);
         return reply(200, ok(stand));
       }
-      if (method === "GET" && resource === "check-ins") return reply(200, ok([]));
-      if (method === "POST" && resource === "qr") return reply(201, ok({ qrId: crypto.randomUUID(), token: nextId("stand-qr"), expiresAt: new Date(Date.now() + Number(input.ttlSeconds ?? 60) * 1000).toISOString() }));
+      if (method === "GET" && resource === "check-ins") {
+        return reply(200, ok(this.checkins.get(standId) ?? []));
+      }
+      if (method === "POST" && resource === "qr") {
+        const ttlSeconds = Number(input.ttlSeconds ?? 60);
+        const maxScans = Number(input.maxScans ?? 1);
+        if (maxScans < 1 || maxScans > 1000) return reply(400, fail("VALIDATION_ERROR", "maxScans fuera de rango"));
+        if (ttlSeconds < 10 || ttlSeconds > 3600) return reply(400, fail("VALIDATION_ERROR", "ttlSeconds fuera de rango"));
+
+        const qrId = crypto.randomUUID();
+        const token = nextId("stand-qr");
+        const expiresAt = new Date(Date.now() + ttlSeconds * 1000).toISOString();
+        this.qrCodes.set(qrId, {
+          qrId,
+          standId,
+          token,
+          expiresAt,
+          maxScans,
+          scanCount: 0,
+          isRevoked: false,
+        });
+        return reply(201, ok({ qrId, token, expiresAt }));
+      }
     }
-    if (method === "DELETE" && /^\/qr\/[0-9a-f-]+$/.test(path) && user) return reply(204);
+    const deleteQrMatch = path.match(/^\/qr\/([0-9a-f-]+)$/);
+    if (method === "DELETE" && deleteQrMatch && user) {
+      const qrId = deleteQrMatch[1];
+      const qr = this.qrCodes.get(qrId);
+      if (qr) qr.isRevoked = true;
+      return reply(204);
+    }
 
     const eventMatch = path.match(/^\/events\/([^/]+)(\/.*)$/);
     if (eventMatch && user) {

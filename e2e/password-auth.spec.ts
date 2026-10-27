@@ -272,20 +272,55 @@ test.describe("panel real de expositor", () => {
     await expect(page.getByLabel("Nombre de la empresa")).toHaveValue("Altura Labs Bolivia");
   });
 
-  test("el QR se emite y revoca usando el backend", async ({ page }) => {
+  test("el formulario de QR valida maxScans >= 1 e impide generar con 0", async ({ page }) => {
     await loginWithPassword(page, "expositor@fexpo.test");
     await expect(page).toHaveURL(EXHIBITOR_HOME);
 
     await page.goto("/panel/mi-stand/qr");
+    await page.getByLabel("Máximo de escaneos").fill("0");
     await page.getByRole("button", { name: "Generar QR" }).click();
+
+    await expect(page.getByText("El máximo de escaneos debe ser al menos 1.")).toBeVisible();
+    expect(backend.calls.some((call) => call.method === "POST" && call.path.includes("/qr"))).toBe(false);
+  });
+
+  test("el QR se emite con parámetros válidos, muestra advertencia de no persistencia y se revoca reflejando el estado", async ({ page }) => {
+    await loginWithPassword(page, "expositor@fexpo.test");
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
+
+    await page.goto("/panel/mi-stand/qr");
+    await page.getByLabel("Máximo de escaneos").fill("50");
+    await page.getByRole("button", { name: "Generar QR" }).click();
+
     await expect(page.getByRole("button", { name: "Revocar QR" })).toBeVisible();
+    await expect(page.getByRole("note")).toContainText("Guárdalo ahora: no se puede recuperar al recargar");
+
     const issue = backend.calls.find((call) => call.method === "POST" && call.path === "/stands/5a000000-0000-4000-8000-000000000001/qr");
-    expect(issue?.body).toMatchObject({ ttlSeconds: 60, maxScans: 10 });
+    expect(issue?.body).toMatchObject({ ttlSeconds: 60, maxScans: 50 });
     expect(issue?.authorization).toMatch(/^Bearer /);
 
     await page.getByRole("button", { name: "Revocar QR" }).click();
     await expect(page.getByRole("button", { name: "Revocar QR" })).toHaveCount(0);
+    await expect(page.getByRole("status")).toContainText("Código QR revocado");
     expect(backend.calls.some((call) => call.method === "DELETE" && /^\/qr\/[0-9a-f-]+$/.test(call.path))).toBe(true);
+  });
+
+  test("los check-ins registrados con el QR aparecen en Visitas y se detectan duplicados", async ({ page }) => {
+    const standId = "5a000000-0000-4000-8000-000000000001";
+    const visitorId = "00000000-0000-4000-8000-000000000099";
+
+    const firstCheckin = backend.simulateCheckin(standId, visitorId, "qr");
+    expect(firstCheckin.dailyDuplicate).toBe(false);
+
+    const secondCheckin = backend.simulateCheckin(standId, visitorId, "qr");
+    expect(secondCheckin.dailyDuplicate).toBe(true);
+
+    await loginWithPassword(page, "expositor@fexpo.test");
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
+
+    await page.goto("/panel/visitas");
+    await expect(page.getByRole("heading", { name: "Check-ins registrados" })).toBeVisible();
+    await expect(page.getByText(`Visitante ···${visitorId.slice(-6)}`).first()).toBeVisible();
   });
 });
 
