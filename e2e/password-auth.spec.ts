@@ -1468,3 +1468,139 @@ test.describe("Issue 71: Zonas y categorías, publicación de mapa y gamificaci�
 
 });
 
+test.describe("escenario de cliente Issue 72: KPIs reales y pendientes, visitas y actualización tras check-in", () => {
+  let backend: FakeBackend;
+  const standId = "5a000000-0000-4000-8000-000000000001"; // Stand de Altura Labs
+
+  test.beforeEach(async ({ page }) => {
+    backend = createBackend();
+    await backend.install(page);
+  });
+
+  test("María (expositor) y Carlos (organizador) ven métricas reales, rotulados 'Aún no disponible', y actualización tras check-in", async ({ page }) => {
+    // 1. María entra como expositor de Altura Labs
+    await loginWithPassword(page, "expositor@fexpo.test");
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
+
+    // En Resumen (/panel) ve check-ins (3), visitantes únicos (2) y primeras visitas (2) reales
+    await page.goto("/panel");
+    await expect(page.getByRole("heading", { name: /Hola, Altura Labs/ })).toBeVisible();
+
+    const checkinsResumen = page.locator(".pixel-card").filter({ has: page.getByText("Check-ins", { exact: true }) });
+    await expect(checkinsResumen.getByText("3")).toBeVisible();
+
+    const uniqueResumen = page.locator(".pixel-card").filter({ has: page.getByText("Visitantes únicos", { exact: true }) });
+    await expect(uniqueResumen.getByText("2")).toBeVisible();
+
+    const firstVisitsResumen = page.locator(".pixel-card").filter({ has: page.getByText("Primeras visitas", { exact: true }) });
+    await expect(firstVisitsResumen.getByText("2")).toBeVisible();
+
+    // 'Vistas del perfil' aparece rotulado como 'Aún no disponible' en vez de un cero ficticio
+    const profileViewsResumen = page.locator(".pixel-card").filter({ has: page.getByText("Vistas del perfil", { exact: true }) });
+    await expect(profileViewsResumen.getByText("Aún no disponible", { exact: true })).toBeVisible();
+
+    // 2. María va a Métricas de su stand (/panel/metricas-stand)
+    await page.goto("/panel/metricas-stand");
+    await expect(page.getByRole("heading", { name: "Resultados de la empresa" })).toBeVisible();
+
+    const standProfileViews = page.locator(".pixel-card").filter({ has: page.getByText("Vistas del perfil", { exact: true }) });
+    await expect(standProfileViews.getByText("Aún no disponible", { exact: true })).toBeVisible();
+
+    const standPeakHours = page.locator(".pixel-card").filter({ has: page.getByText("Horas pico", { exact: true }) });
+    await expect(standPeakHours.getByText("Aún no disponible", { exact: true })).toBeVisible();
+
+    const standDwell = page.locator(".pixel-card").filter({ has: page.getByText("Permanencia promedio", { exact: true }) });
+    await expect(standDwell.getByText("Aún no disponible", { exact: true })).toBeVisible();
+
+    // 3. María va a Visitas (/panel/visitas) sin visitas previas
+    await page.goto("/panel/visitas");
+    await expect(page.getByRole("heading", { name: "Check-ins registrados" })).toBeVisible();
+    await expect(page.getByText("Aún no hay visitas registradas en este stand.")).toBeVisible();
+
+    // 4. Carlos entra como organizador y revisa /panel/metricas-evento
+    await page.evaluate(() => sessionStorage.clear());
+    await page.goto("/acceso?panel=organizador");
+    await loginWithPassword(page, "organizador@fexpo.test", PASSWORD, "organizador");
+    await expect(page).toHaveURL(ORGANIZER_HOME);
+
+    await page.goto("/panel/metricas-evento");
+    await expect(page.getByRole("heading", { name: "Métricas del evento" })).toBeVisible();
+
+    // Ve KPIs totales iniciales: Participantes (4), Check-ins (9), Visitas únicas (8)
+    const eventCheckinsCard = page.locator(".pixel-card").filter({ has: page.getByText("Check-ins", { exact: true }) });
+    await expect(eventCheckinsCard.getByText("9")).toBeVisible();
+
+    const eventUniqueCard = page.locator(".pixel-card").filter({ has: page.getByText("Visitas únicas", { exact: true }) });
+    await expect(eventUniqueCard.getByText("8")).toBeVisible();
+
+    // 'Tráfico por zona' y 'Horas pico' aparecen rotulados como 'Aún no disponible'
+    const eventZoneTraffic = page.locator(".pixel-card").filter({ has: page.getByText("Tráfico por zona", { exact: true }) });
+    await expect(eventZoneTraffic.getByText("Aún no disponible", { exact: true })).toBeVisible();
+
+    const eventPeakHours = page.locator(".pixel-card").filter({ has: page.getByText("Horas pico", { exact: true }) });
+    await expect(eventPeakHours.getByText("Aún no disponible", { exact: true })).toBeVisible();
+
+    // 5. Check-in real en el stand de Altura Labs
+    const newVisitorId = "00000000-0000-4000-8000-000000000077";
+    backend.simulateCheckin(standId, newVisitorId, "qr");
+
+    // Carlos recarga la pantalla de métricas de evento -> Check-ins sube a 10 y Visitas únicas sube a 9
+    await page.reload();
+    await expect(page.locator(".pixel-card").filter({ has: page.getByText("Check-ins", { exact: true }) }).getByText("10")).toBeVisible();
+    await expect(page.locator(".pixel-card").filter({ has: page.getByText("Visitas únicas", { exact: true }) }).getByText("9")).toBeVisible();
+
+    // María vuelve a entrar como expositor y recarga /panel
+    await page.evaluate(() => sessionStorage.clear());
+    await page.goto("/acceso?panel=expositor");
+    await loginWithPassword(page, "expositor@fexpo.test");
+    await page.goto("/panel");
+
+    // Check-ins sube a 4 (de 3) y Visitantes únicos a 3 (de 2)
+    await expect(page.locator(".pixel-card").filter({ has: page.getByText("Check-ins", { exact: true }) }).getByText("4")).toBeVisible();
+    await expect(page.locator(".pixel-card").filter({ has: page.getByText("Visitantes únicos", { exact: true }) }).getByText("3")).toBeVisible();
+
+    // María va a /panel/visitas y ve el nuevo check-in
+    await page.goto("/panel/visitas");
+    await expect(page.getByText(`Visitante ···${newVisitorId.slice(-6)}`)).toBeVisible();
+  });
+
+  test("Visitas maneja error con reintento y paginación con límite de 200", async ({ page }) => {
+    await loginWithPassword(page, "expositor@fexpo.test");
+    await expect(page).toHaveURL(EXHIBITOR_HOME);
+
+    // Simular error al cargar visitas
+    backend.failCheckins = true;
+    await page.goto("/panel/visitas");
+    const errorAlert = page.locator(".rounded-xl[role='alert']");
+    await expect(errorAlert).toContainText("El servidor no pudo procesar la solicitud");
+    const retryBtn = errorAlert.getByRole("button", { name: "Reintentar" });
+    await expect(retryBtn).toBeVisible();
+
+    // Quitar error y hacer clic en reintentar
+    backend.failCheckins = false;
+    await retryBtn.click();
+    await expect(page.getByText("Aún no hay visitas registradas en este stand.")).toBeVisible();
+
+    // Sembrar 205 visitas para probar paginación y aviso de 200
+    backend.seedCheckins(standId, 205);
+    await page.reload();
+
+    // Aviso de 200 registros más recientes
+    await expect(page.getByRole("status")).toContainText("Mostrando los 200 registros más recientes");
+
+    // Paginación: Página 1 de 11 (205 visitas)
+    await expect(page.getByText("Página 1 de 11 (205 visitas)")).toBeVisible();
+    const nextBtn = page.getByRole("button", { name: "Siguiente" });
+    await expect(nextBtn).toBeEnabled();
+
+    // Ir a siguiente página
+    await nextBtn.click();
+    await expect(page.getByText("Página 2 de 11 (205 visitas)")).toBeVisible();
+
+    // Botón Anterior habilitado
+    const prevBtn = page.getByRole("button", { name: "Anterior" });
+    await expect(prevBtn).toBeEnabled();
+    await prevBtn.click();
+    await expect(page.getByText("Página 1 de 11 (205 visitas)")).toBeVisible();
+  });
+});
