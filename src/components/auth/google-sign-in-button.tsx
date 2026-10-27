@@ -25,9 +25,9 @@ export function GoogleSignInButton({
   clientId = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID ?? "",
 }: GoogleSignInButtonProps) {
   const [scriptReady, setScriptReady] = useState(false);
-  const [rendered, setRendered] = useState(false);
   const [buttonHost, setButtonHost] = useState<HTMLDivElement | null>(null);
   const onCredentialRef = useRef(onCredential);
+  const rendered = scriptReady && Boolean(buttonHost) && Boolean(clientId);
 
   useEffect(() => { onCredentialRef.current = onCredential; }, [onCredential]);
 
@@ -42,7 +42,6 @@ export function GoogleSignInButton({
       theme: "outline", size: "large", shape: "rectangular", text: "continue_with", locale: "es",
       width: Math.min(400, Math.max(200, Math.round(buttonHost.clientWidth) || 320)),
     });
-    setRendered(true);
   }, [scriptReady, buttonHost, clientId]);
 
   return (
@@ -56,7 +55,7 @@ export function GoogleSignInButton({
         />
       ) : (
         <p className="rounded-xl bg-amber-50 p-3 text-xs font-bold text-amber-800">
-          Falta configurar NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID en .env.local.
+          El acceso con Google no está disponible en este momento. Inténtalo más tarde.
         </p>
       )}
     </>

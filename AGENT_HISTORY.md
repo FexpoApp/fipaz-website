@@ -136,3 +136,38 @@ ahora revisa la @[d:\Proyectos\KetanoLab-SRL\docs\Mis-Issues\noviembre\issue69.m
 
 **Salida:**
 En curso.
+
+### 2026-10-27T05:03:28Z | usuario: saulchoque <saulchoque123@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+tengo este error en https://fexpo.lat/acceso: Bienvenido a Fexpo
+Acceso al panel
+Ingresa para gestionar tu participación en la feria.
+
+Falta configurar NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID en .env.local.
+
+¿Todavía no registraste tu empresa? Regístrala aquí
+
+corrige el error, recuerda que fexpo.lat y sus subdominios pertenecen al ambiente de produccion
+
+**Salida:**
+Corregido y desplegado en Production de Vercel, proyecto fexpo, despliegue dpl_Bd9RpUxouLPFAQUjsZY3uhpWidTF promovido a fexpo.lat. Configuradas variables Production NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID (cliente público 492704011109...), BACKEND_URL=https://api.fexpo.lat, NEXT_PUBLIC_API_MODE=http, NEXT_PUBLIC_FIPAZ_EVENT_ID, NEXT_PUBLIC_DEMO_PANEL_STANDS=false y NEXT_PUBLIC_PASSWORD_LOGIN_ENABLED=false; preservada variable de contacto existente. No se usó .env.local para corregir producción. next.config.ts rechaza builds Production sin cliente/backend o con mocks; componente Google evita mensaje de configuración local y elimina estado redundante señalado por ESLint. Añadidos docs/PRODUCTION_AUTH.md y scripts/smoke-production-auth.mjs; AGENTS.md raíz recuerda que dominio y subdominios son producción. Instalación frozen-lockfile, typegen/typecheck, ESLint de archivos modificados, 31 pruebas unitarias y build Vercel satisfactorios. Smoke real en fexpo.lat verifica /acceso 200 sin aviso, salud PostgreSQL 200, endpoints de autenticación y rechazo de token Google inválido 401; navegador confirma botón visible, recursos GSI 200, cliente esperado y popup con origen https://fexpo.lat sin errores. Informe test-results/production-auth/report.json y captura acceso.png. www conserva redirección al dominio raíz. Sin credenciales de usuario, sin login real completado ni creación de datos de negocio. Fuente sin commit/push.
+### 2026-10-27T05:45:25Z | usuario: saulchoque <saulchoque123@gmail.com> | agente: Codex (GPT-6 Luna)
+**Prompt:**
+Genial, ahora haz pull de los cambios de fipaz-website. resuelve conflictos, realiza pruebas, luego realiza un commit y push a main
+
+**Salida:**
+Se obtuvo origin/main (15 commits nuevos), se guardaron los cambios locales, se hizo pull por fast-forward y al reaplicar el stash surgió un conflicto en AGENT_HISTORY.md; el turno se interrumpió antes de resolverlo, ejecutar pruebas o hacer commit/push.
+
+### 2026-10-27T05:47:14Z | usuario: saulchoque <saulchoque123@gmail.com> | agente: Codex (GPT-6 Sol)
+**Prompt:**
+Genial, ahora haz pull de los cambios de fipaz-website. resuelve conflictos, realiza pruebas, luego realiza un commit y push a main (los cambios recientes en github predominan)
+
+**Salida:**
+Se obtuvo origin/main por fast-forward (15 commits nuevos) y se resolvió el conflicto de AGENT_HISTORY.md conservando primero todas las entradas remotas y después las locales. Se preservaron los cambios visuales recientes de GitHub. Se integró la corrección de acceso Google de producción (next.config.ts, google-sign-in-button.tsx, docs/PRODUCTION_AUTH.md, scripts/smoke-production-auth.mjs) y se corrigió el orden condicional de hooks en company-stands-view.tsx sin cambiar el diseño. Verificación: 34/34 unitarias, 38/38 E2E en Chromium con backend simulado, typecheck, build de Production y lint sin errores (5 avisos de variables sin uso). El primer intento E2E chocó con el puerto 3001 ocupado; se repitió en 3009 y pasó. Se hizo commit y push a origin/main. No se ejecutaron pruebas que modifiquen la base de producción.
+
+### 2026-10-27T05:48:12Z | usuario: saulchoque <saulchoque123@gmail.com> | agente: Codex (GPT-6 Sol)
+**Prompt:**
+lso cambios de diseño de github recientes predominan
+
+**Salida:**
+Se respetó la prioridad del diseño reciente de GitHub; no se modificaron sus estilos. La única edición adicional en un componente de administración fue para corregir el orden de hooks que impedía pasar lint, sin cambiar su presentación.
