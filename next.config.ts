@@ -8,6 +8,19 @@ import type { NextConfig } from "next";
  */
 const backendUrl = (process.env.BACKEND_URL || process.env.NEXT_PUBLIC_AGENT_BACKEND_URL)?.trim().replace(/\/+$/, "");
 
+// A production deploy must never silently publish a demo panel or broken login.
+if (process.env.VERCEL_ENV === "production") {
+  if (!process.env.NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID?.trim()) {
+    throw new Error("Production requires NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID in Vercel before building.");
+  }
+  if (!process.env.BACKEND_URL?.trim()) {
+    throw new Error("Production requires BACKEND_URL in Vercel before building.");
+  }
+  if (process.env.NEXT_PUBLIC_API_MODE !== "http" || process.env.NEXT_PUBLIC_DEMO_PANEL_STANDS === "true") {
+    throw new Error("Production must use the HTTP backend with demo panel stands disabled.");
+  }
+}
+
 const nextConfig: NextConfig = {
   async rewrites() {
     if (!backendUrl) return [];

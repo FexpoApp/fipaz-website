@@ -11,7 +11,7 @@ import { useCompanyAuthStore } from "@/store/company-auth-store";
 import { StandCategoryBadge } from "@/components/pixel/StandCategoryBadge";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { CompanyAuthGuard } from "@/components/admin/company-auth-guard";
-import type { CompanyProfileInput } from "@/types/panel";
+import type { CompanyProfileInput, ExhibitorProfile } from "@/types/panel";
 import type { StandCategory } from "@/types/demo";
 
 // ─── Tag input ────────────────────────────────────────────────────────────────
@@ -71,11 +71,14 @@ function TagInput({ tags, onChange }: { tags: string[]; onChange: (tags: string[
 
 function StandEditForm({ standId, onClose }: { standId: string; onClose: () => void }) {
   const companies = usePanelStore((s) => s.companies);
-  const updateCompany = usePanelStore((s) => s.updateCompany);
-
   const stand = companies.find((c) => c.id === standId);
   if (!stand) return null;
 
+  return <StandEditFormContent key={stand.id} stand={stand} onClose={onClose} />;
+}
+
+function StandEditFormContent({ stand, onClose }: { stand: ExhibitorProfile; onClose: () => void }) {
+  const updateCompany = usePanelStore((s) => s.updateCompany);
   const [description, setDescription] = useState(stand.description);
   const [category, setCategory] = useState<StandCategory>(stand.category);
   const [tags, setTags] = useState<string[]>(stand.tags);
@@ -85,7 +88,7 @@ function StandEditForm({ standId, onClose }: { standId: string; onClose: () => v
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
 
-  // TS narrowed: stand is defined from here on
+  const standId = stand.id;
   const standName = stand.name;
   const standEmail = stand.contactEmail ?? "";
 
