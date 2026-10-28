@@ -25,7 +25,7 @@ function ContentOverlay() {
   return (
     <div className={styles.content} data-problem-content>
       <div className={styles.copy}>
-        <span className={styles.eyebrow} data-reveal="eyebrow"><span aria-hidden="true">✦</span> EL DESAFÍO EN LAS FERIAS HOY</span>
+        <span className={styles.eyebrow} data-reveal="eyebrow">EL DESAFÍO EN LAS FERIAS HOY</span>
         <h2 className={styles.title} data-reveal="title">Una feria llena de <span className={styles.titleAccent}>oportunidades</span> no debería sentirse difícil de navegar.</h2>
         <p className={styles.subtitle} data-reveal="subtitle">Sin una capa digital integrada, cada paso del recorrido genera fricción.</p>
       </div>
