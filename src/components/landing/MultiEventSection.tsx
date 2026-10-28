@@ -2,10 +2,11 @@
 
 import React, { useRef } from "react";
 import { gsap } from "gsap";
-import { ArrowRight, Briefcase, Calendar, Globe, MapPin, TrendingUp, Users } from "lucide-react";
+import { Briefcase, Calendar, Globe, MapPin, TrendingUp, Users } from "lucide-react";
 import { DEMO_FIXTURE } from "@/data/demo-fixture";
+import { DemoBgShapes } from "./DemoBgShapes";
 import { headingFont } from "./fonts";
-import { UI_OUT, revealHeading, useScrollFx } from "./scroll-fx";
+import { UI_OUT, depthLayers, revealHeading, useScrollFx } from "./scroll-fx";
 import fx from "./landing-fx.module.css";
 
 const events = [
@@ -53,6 +54,8 @@ const events = [
 
 /** One profile travelling between events: the connector draws from the pilot outward and each event lights as it arrives. */
 function playMultiEvent(root: HTMLElement) {
+  depthLayers(root);
+
   const heading = root.querySelector<HTMLElement>("[data-fx-heading]");
   const stopHeading = heading ? revealHeading(heading) : undefined;
 
@@ -97,14 +100,7 @@ export function MultiEventSection() {
       id="multi-evento"
       className="relative scroll-mt-24 overflow-hidden border-t border-[var(--expo-line)] bg-white py-20 md:py-28"
     >
-      {/* Fondo: cuadrados redondeados inclinados (no diamantes de 45°), agrupados en las esquinas como en la
-          referencia, sangrando por el borde. Recortados por el overflow-hidden de la sección. */}
-      <span aria-hidden="true" className="pointer-events-none absolute top-10 -left-10 h-36 w-36 rotate-[18deg] rounded-[28px] border-2 border-[var(--expo-gray)]/25" />
-      <span aria-hidden="true" className="pointer-events-none absolute top-24 -left-4 h-40 w-40 rotate-[15deg] rounded-[28px] bg-[var(--expo-yellow)]/10" />
-      <span aria-hidden="true" className="pointer-events-none absolute top-[17rem] left-[15%] hidden h-14 w-14 rotate-[18deg] rounded-2xl border-2 border-[var(--expo-yellow)]/50 sm:block" />
-      <span aria-hidden="true" className="pointer-events-none absolute top-16 right-[16%] hidden h-11 w-11 rotate-[18deg] rounded-xl bg-[var(--expo-yellow)] sm:block" />
-      <span aria-hidden="true" className="pointer-events-none absolute top-56 -right-12 hidden h-44 w-44 rotate-[15deg] rounded-[28px] border-2 border-[var(--expo-gray)]/25 lg:block" />
-      <span aria-hidden="true" className="pointer-events-none absolute bottom-10 -left-14 h-44 w-44 rotate-[18deg] rounded-[28px] bg-[var(--expo-gray)]/15" />
+      <DemoBgShapes />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -128,9 +124,6 @@ export function MultiEventSection() {
             La experiencia multi-evento es una propuesta en evaluación. Esta demo no comparte ni sincroniza datos entre ferias.
           </p>
 
-          <p data-fx-intro className="mx-auto mt-3 max-w-2xl text-sm font-bold text-slate-500">
-            Hoy FIPAZ 2026 es el piloto. No hay selector de eventos: HuaynaFEX se muestra dentro de la app.
-          </p>
         </div>
 
         {/* Ecosystem: cards joined by a connector, el piloto en azul feria se lee como el ancla de las demás */}
@@ -150,15 +143,15 @@ export function MultiEventSection() {
             />
           ))}
 
-          <ul className="relative z-10 grid grid-cols-1 items-start gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+          <ul className="relative z-10 grid grid-cols-1 items-stretch gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
             {events.map((evt, index) => {
               const Icon = evt.icon;
               return (
-                <li key={evt.name} data-fx-event>
+                <li key={evt.name} data-fx-event className="h-full">
                   <div
-                    className={`${fx.slab} ${fx.eventCard} flex flex-col justify-between rounded-2xl p-6 [--slab-offset:13px] ${
+                    className={`${fx.slab} ${fx.eventCard} flex h-full flex-col justify-between rounded-2xl p-6 [--slab-offset:13px] ${
                       evt.active
-                        ? "bg-[var(--expo-navy)] text-white lg:py-8"
+                        ? "bg-[var(--expo-navy)] text-white"
                         : "border border-black/5 bg-white text-[var(--expo-navy)]"
                     }`}
                   >
@@ -196,19 +189,6 @@ export function MultiEventSection() {
                       <p className={`mt-3 border-t pt-3 text-xs leading-relaxed font-medium ${evt.active ? "border-white/10 text-white/70" : "border-slate-100 text-slate-600"}`}>
                         {evt.desc}
                       </p>
-                    </div>
-
-                    <div className={`mt-6 flex items-center justify-between border-t pt-3 font-mono text-[11px] ${evt.active ? "border-white/10 text-white/40" : "border-slate-100 text-slate-400"}`}>
-                      <span>Plataforma</span>
-                      {/* Decorativo: 3 de los 4 eventos son ejemplo/proyección, sin una página propia a la que enlazar. */}
-                      <span
-                        aria-hidden="true"
-                        className={`flex h-9 w-9 items-center justify-center rounded-full ${
-                          evt.active ? "bg-[var(--expo-yellow)] text-[var(--expo-navy)]" : "bg-slate-100 text-[var(--expo-navy)]"
-                        }`}
-                      >
-                        <ArrowRight aria-hidden="true" className="h-4 w-4" strokeWidth={2.5} />
-                      </span>
                     </div>
                   </div>
                 </li>
