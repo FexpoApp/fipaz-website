@@ -18,7 +18,8 @@ const actors = [
     subtitle: "Una propuesta de orientación y dinámicas para visitantes.",
     icon: <User aria-hidden="true" className="h-7 w-7 text-white" />,
     headerBg: "bg-[var(--expo-blue)]",
-    badgeColor: "bg-[var(--expo-sky)] text-[var(--expo-navy)]",
+    headerText: "text-white",
+    badgeColor: "bg-[var(--expo-yellow)] text-[var(--expo-navy)]",
     accent: "var(--expo-blue)",
     features: [
       "Exploración de stands ficticios por rubro.",
@@ -37,7 +38,8 @@ const actors = [
     subtitle: "Funciones propuestas para marcas participantes.",
     icon: <Store aria-hidden="true" className="h-7 w-7 text-[var(--expo-navy)]" />,
     headerBg: "bg-[var(--expo-yellow)]",
-    badgeColor: "bg-[var(--expo-pink)] text-[var(--expo-navy)]",
+    headerText: "text-[var(--expo-navy)]",
+    badgeColor: "bg-[var(--expo-blue)] text-white",
     accent: "var(--expo-yellow)",
     features: [
       "Vista de ejemplo del perfil digital de una marca.",
@@ -55,9 +57,10 @@ const actors = [
     title: "Para Organizadores",
     subtitle: "Herramientas conceptuales para organizar una feria.",
     icon: <Building2 aria-hidden="true" className="h-7 w-7 text-white" />,
-    headerBg: "bg-[var(--expo-purple)]",
-    badgeColor: "bg-[var(--expo-mint)] text-[var(--expo-navy)]",
-    accent: "var(--expo-purple)",
+    headerBg: "bg-[#111820]",
+    headerText: "text-white",
+    badgeColor: "bg-[var(--expo-yellow)] text-[var(--expo-navy)]",
+    accent: "#111820",
     features: [
       "Propuesta de gestión de pabellones, zonas y categorías.",
       "Vista de ejemplo para administrar pabellones, zonas y categorías.",
@@ -125,7 +128,7 @@ export function ActorsSection() {
             data-fx-intro
             className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-[var(--expo-blue)]/15 bg-white px-3.5 py-1.5 text-xs font-bold tracking-wide text-[var(--expo-navy)] shadow-sm"
           >
-            <PixelStar className="h-3.5 w-3.5" />
+            
             Datos de demostración · funciones propuestas
           </span>
 
@@ -150,7 +153,7 @@ export function ActorsSection() {
                 style={{ "--accent": actor.accent } as CSSProperties}
               >
                 <div>
-                  <div className={`${fx.actorBand} ${actor.headerBg} p-6 text-white`}>
+                  <div className={`${actor.headerBg} p-6 text-white`}>
                     <div className="flex items-center justify-between">
                       <div className={`${fx.actorIcon} rounded-xl bg-white/20 p-2.5`}>{actor.icon}</div>
                       <span
@@ -160,11 +163,11 @@ export function ActorsSection() {
                       </span>
                     </div>
 
-                    <h3 className={`${headingFont.className} mt-5 text-3xl leading-none font-bold tracking-tight text-slate-900`}>
+                    <h3 className={`${headingFont.className} mt-5 text-3xl leading-none font-bold tracking-tight ${actor.headerText}`}>
                       {actor.title}
                     </h3>
 
-                    <p className="mt-2 text-xs leading-snug font-bold text-slate-800">{actor.subtitle}</p>
+                    <p className={`mt-2 text-xs leading-snug font-bold ${actor.headerText} opacity-80`}>{actor.subtitle}</p>
                   </div>
 
                   <ul className="space-y-3 p-6">
@@ -172,7 +175,7 @@ export function ActorsSection() {
                       <li key={feature} className="flex items-start gap-2.5">
                         <CheckCircle2
                           aria-hidden="true"
-                          className={`${fx.check} mt-0.5 h-4 w-4 shrink-0 text-[var(--expo-green)]`}
+                          className={`${fx.check} mt-0.5 h-4 w-4 shrink-0 text-[var(--expo-blue)]`}
                           style={{ "--i": featureIndex } as CSSProperties}
                         />
                         <span className="text-xs leading-normal font-semibold text-slate-700">{feature}</span>
@@ -180,16 +183,6 @@ export function ActorsSection() {
                     ))}
                   </ul>
                 </div>
-
-                <Link
-                  href={actor.href}
-                  className={`${fx.cardLink} flex items-center justify-between gap-3 border-t border-slate-100 bg-slate-50 px-6 py-4`}
-                >
-                  <span className="text-xs font-bold text-slate-500">Plataforma Fexpo</span>
-                  <span className="flex items-center gap-1 text-right text-xs font-bold text-[var(--expo-blue)]">
-                    {actor.cta} <ArrowUpRight aria-hidden="true" className={`${fx.arrow} h-3.5 w-3.5`} />
-                  </span>
-                </Link>
               </div>
             </li>
           ))}
