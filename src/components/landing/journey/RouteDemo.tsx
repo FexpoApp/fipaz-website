@@ -66,7 +66,7 @@ function Pin({ x, y, color }: { x: number; y: number; color: string }) {
 function Chip({ x, y, text }: { x: number; y: number; text: string }) {
   const width = text.length * 5.6 + 16;
   return <g className={styles.chip} data-pin>
-    <rect x={x - width / 2} y={y - 8} width={width} height="16" rx="8" fill="#20234a" />
+    <rect x={x - width / 2} y={y - 8} width={width} height="16" rx="8" fill="#132D46" />
     <text x={x} y={y + 3.4} textAnchor="middle">{text}</text>
   </g>;
 }
@@ -130,11 +130,11 @@ export function RouteDemo({ reduced, company, onNext }: RouteDemoProps) {
         {PEOPLE.map(([x, y, color]) => <g key={`${x}-${y}`}><rect x={x - 1.6} y={y - 5} width="3.2" height="5" rx="1.4" fill={color} /><circle cx={x} cy={y - 6.6} r="1.8" fill="#4a3a35" /></g>)}
         <path d={ROUTE} fill="none" stroke="var(--accent)" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.28" />
         <path data-route d={ROUTE} fill="none" stroke="var(--accent)" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
-        {WAYPOINTS.map(point => <circle key={point.x} cx={point.x} cy={point.y} r="3.4" fill="#20234a" stroke="#fff" strokeWidth="1.6" />)}
+        {WAYPOINTS.map(point => <circle key={point.x} cx={point.x} cy={point.y} r="3.4" fill="#132D46" stroke="#fff" strokeWidth="1.6" />)}
         <ellipse data-ring cx={END.x} cy={END.y} rx="6" ry="3" fill="none" stroke="var(--accent)" strokeWidth="1.6" opacity="0.5" />
         <Pin x={START.x} y={START.y} color="#1687e8" />
         <Pin x={END.x} y={END.y} color="var(--accent)" />
-        <circle data-route-dot cx="0" cy="0" r="5.5" transform={`translate(${dotAt.x} ${dotAt.y})`} fill="#20234a" stroke="#fff" strokeWidth="2" />
+        <circle data-route-dot cx="0" cy="0" r="5.5" transform={`translate(${dotAt.x} ${dotAt.y})`} fill="#132D46" stroke="#fff" strokeWidth="2" />
         <g className={styles.chips}>
           <Chip x={102} y={132} text="Tú estás aquí" />
           <Chip x={330} y={30} text={pavilion} />

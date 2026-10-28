@@ -7,13 +7,19 @@ export const journeyCopy = {
   subtitle: "Explora cada paso y descubre cómo una visita se convierte en una oportunidad.",
 };
 
+// `color` alimenta el acento (--accent) del spotlight de la tarjeta, el punto del panel de
+// demo y la línea que los conecta. Un solo tono (Lima activa) para los 6 pasos: la guía de
+// marca v1.0 define el lima como el color que "destaca acciones y momentos del recorrido",
+// justo el rol de esta sección — no una paleta arcoíris por paso.
+const stepAccent = "#D5F24A";
+
 export const journeySteps = [
-  { id: "search", number: "01", title: "Buscar", color: "#1687E8", icon: Search, description: "Encuentra tu próxima oportunidad.", demoTitle: "Buscar empresas", demoDescription: "Encuentra expositores por categoría, nombre o rubro." },
-  { id: "map", number: "02", title: "Ver mapa", color: "#8B4FC7", icon: Map, description: "Ubica cada stand en el recinto.", demoTitle: "Tu feria, en un mapa", demoDescription: "Ubica tu próximo destino y traza el recorrido." },
-  { id: "route", number: "03", title: "Llegar", color: "#D86BAC", icon: Navigation, description: "Sigue el camino hasta tu destino.", demoTitle: "Ruta hacia tu destino", demoDescription: "Sigue la ruta paso a paso para llegar a tu stand de forma rápida y sencilla." },
-  { id: "nfc", number: "04", title: "Tocar NFC", color: "#82D6BF", icon: Smartphone, description: "Acerca tu teléfono. Registra tu visita.", demoTitle: "Un toque, una visita", demoDescription: "Acerca el teléfono al punto del stand." },
-  { id: "reward", number: "05", title: "Ganar", color: "#FFBD18", icon: Gift, description: "Completa misiones y suma puntos.", demoTitle: "Cada visita cuenta", demoDescription: "Explora la feria y completa una misión." },
-  { id: "connect", number: "06", title: "Conectar", color: "#F27C68", icon: Users, description: "Guarda empresas y sigue en contacto.", demoTitle: "La conexión sigue", demoDescription: "Lleva tus descubrimientos contigo." },
+  { id: "search", number: "01", title: "Buscar", color: stepAccent, icon: Search, description: "Encuentra tu próxima oportunidad.", demoTitle: "Buscar empresas", demoDescription: "Encuentra expositores por categoría, nombre o rubro." },
+  { id: "map", number: "02", title: "Ver mapa", color: stepAccent, icon: Map, description: "Ubica cada stand en el recinto.", demoTitle: "Tu feria, en un mapa", demoDescription: "Ubica tu próximo destino y traza el recorrido." },
+  { id: "route", number: "03", title: "Llegar", color: stepAccent, icon: Navigation, description: "Sigue el camino hasta tu destino.", demoTitle: "Ruta hacia tu destino", demoDescription: "Sigue la ruta paso a paso para llegar a tu stand de forma rápida y sencilla." },
+  { id: "nfc", number: "04", title: "Tocar NFC", color: stepAccent, icon: Smartphone, description: "Acerca tu teléfono. Registra tu visita.", demoTitle: "Un toque, una visita", demoDescription: "Acerca el teléfono al punto del stand." },
+  { id: "reward", number: "05", title: "Ganar", color: stepAccent, icon: Gift, description: "Completa misiones y suma puntos.", demoTitle: "Cada visita cuenta", demoDescription: "Explora la feria y completa una misión." },
+  { id: "connect", number: "06", title: "Conectar", color: stepAccent, icon: Users, description: "Guarda empresas y sigue en contacto.", demoTitle: "La conexión sigue", demoDescription: "Lleva tus descubrimientos contigo." },
 ] as const;
 
 export type JourneyStepId = (typeof journeySteps)[number]["id"];

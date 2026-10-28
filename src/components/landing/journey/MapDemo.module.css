@@ -1,30 +1,30 @@
 /* "Ver mapa" preview: a floor plan with a camera. The frame height shrinks with the viewport because the panel sits
    between the title and the cards. */
-.root { --map-h: 196px; container-type: inline-size; display: flex; flex-direction: column; gap: 10px; color: #20234a; font-family: var(--font-jakarta), system-ui, sans-serif; }
+.root { --map-h: 196px; container-type: inline-size; display: flex; flex-direction: column; gap: 10px; color: #132D46; font-family: var(--font-poppins), system-ui, sans-serif; }
 
 .frame { position: relative; overflow: hidden; border: 1px solid #d5dfec; border-radius: 14px; background: #e6edf6; }
 .map { display: block; width: 100%; height: var(--map-h); }
-.map text { font-family: var(--font-jakarta), system-ui, sans-serif; }
+.map text { font-family: var(--font-poppins), system-ui, sans-serif; }
 .pavilionLabel { font-size: 8.5px; font-weight: 800; letter-spacing: 0.08em; fill: #5b6788; }
 .standNumber { font-size: 7.5px; font-weight: 700; fill: #55658a; }
 .standNumberActive { font-size: 8px; font-weight: 800; fill: #fff; }
 .chip text { font-size: 9px; font-weight: 800; fill: #fff; }
 
-.focus { position: absolute; top: 8px; right: 8px; padding: 5px 11px; border: 1px solid #d5dbe7; border-radius: 20px; background: #ffffffeb; color: #20234a; font-size: 11px; font-weight: 700; pointer-events: none; }
+.focus { position: absolute; top: 8px; right: 8px; padding: 5px 11px; border: 1px solid #d5dbe7; border-radius: 20px; background: #ffffffeb; color: #132D46; font-size: 11px; font-weight: 700; pointer-events: none; }
 .zoom { position: absolute; right: 8px; bottom: 8px; display: flex; flex-direction: column; gap: 4px; }
-.zoomButton { display: grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 1px solid #d5dbe7; border-radius: 50%; background: #ffffffeb; color: #20234a; cursor: pointer; transition: background-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease; }
+.zoomButton { display: grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 1px solid #d5dbe7; border-radius: 50%; background: #ffffffeb; color: #132D46; cursor: pointer; transition: background-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease; }
 .zoomButton:hover:not(:disabled) { background: #fff; transform: scale(1.08); }
 .zoomButton:disabled { opacity: 0.4; cursor: default; }
 
 .footer { display: flex; align-items: center; gap: 10px; }
 .legend { display: flex; flex: 1; flex-direction: column; gap: 3px; min-width: 0; color: #626b82; font-size: 11px; }
 .legend > span, .legend > strong { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
-.legend i { flex: none; width: 7px; height: 7px; border-radius: 50%; background: #20234a; }
-.legend strong { color: #20234a; font-size: 12px; font-weight: 700; }
+.legend i { flex: none; width: 7px; height: 7px; border-radius: 50%; background: #132D46; }
+.legend strong { color: #132D46; font-size: 12px; font-weight: 700; }
 .legend strong svg { flex: none; color: var(--accent); }
-.primary { display: inline-flex; flex: none; align-items: center; justify-content: center; gap: 8px; min-height: 40px; padding: 0 18px; border: 0; border-radius: 10px; background: #20234a; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.primary { display: inline-flex; flex: none; align-items: center; justify-content: center; gap: 8px; min-height: 40px; padding: 0 18px; border: 0; border-radius: 10px; background: #132D46; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; }
 @media (hover: hover) and (pointer: fine) {
-  .primary:hover { transform: translateY(-1px); box-shadow: 0 6px 14px #20234a40; }
+  .primary:hover { transform: translateY(-1px); box-shadow: 0 6px 14px #132D4640; }
   .primary:active { transform: translateY(1px); }
 }
 

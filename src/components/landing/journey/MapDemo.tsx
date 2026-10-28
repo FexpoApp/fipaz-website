@@ -77,7 +77,7 @@ const levelLabel = (level: Level, company: DemoCompany) => level === 0 ? "Vista 
 
 function Chip({ text }: { text: string }) {
   const width = text.length * 5.8 + 14;
-  return <g className={styles.chip}><rect x="15" y="-33" width={width} height="16" rx="8" fill="#20234a" /><text x={15 + width / 2} y="-22" textAnchor="middle">{text}</text></g>;
+  return <g className={styles.chip}><rect x="15" y="-33" width={width} height="16" rx="8" fill="#132D46" /><text x={15 + width / 2} y="-22" textAnchor="middle">{text}</text></g>;
 }
 
 function Scene({ reduced, company, onNext }: MapDemoProps) {
@@ -167,7 +167,7 @@ function Scene({ reduced, company, onNext }: MapDemoProps) {
         <path ref={routeRef} d={route} fill="none" stroke="var(--accent)" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
 
         <g data-fixed data-x={ENTRANCE.x} data-y={ENTRANCE.y} transform={fixedTransform(ENTRANCE.x, ENTRANCE.y, initial)}>
-          <g data-entrance><circle r="7" fill="#20234a" stroke="#fff" strokeWidth="2.4" /><circle r="2.4" fill="#fff" /></g>
+          <g data-entrance><circle r="7" fill="#132D46" stroke="#fff" strokeWidth="2.4" /><circle r="2.4" fill="#fff" /></g>
         </g>
         <g data-fixed data-x={destination.x + destination.w / 2} data-y={destinationCy} transform={fixedTransform(destination.x + destination.w / 2, destinationCy, initial)}>
           <circle data-ring r="7" fill="none" stroke="var(--accent)" strokeWidth="2" opacity="0.6" />

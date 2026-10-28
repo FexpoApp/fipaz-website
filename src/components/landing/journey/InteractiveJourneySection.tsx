@@ -74,9 +74,9 @@ function JourneyCard({ step, active, pinned, tilt, panelId, triggerId, onPreview
     aria-expanded={active} aria-controls={panelId} onPointerEnter={event => { if (event.pointerType === "mouse") onPreview(); }} onPointerMove={onPointerMove}
     onPointerLeave={() => { tiltTo.current?.x(0); tiltTo.current?.y(0); onLeave(); }}
     onClick={event => onActivate(event.detail === 0)}>
-    <span className={styles.cardTop}><span className={styles.cardIcon} data-journey-icon><Icon size={21} strokeWidth={2} aria-hidden="true" /></span><span className={styles.number}>{step.number}</span></span>
+    <span className={styles.cardTop}><span className={styles.cardIcon} data-journey-icon><Icon size={20} strokeWidth={2.4} aria-hidden="true" /></span><span className={styles.number}>{step.number}</span></span>
     <span className={styles.cardTitle}>{step.title}</span><span className={styles.cardDescription}>{step.description}</span>
-    <span className={styles.cardFooter}><span>{pinned ? "Demo fijada" : "Explorar"}</span><ArrowRight size={15} data-journey-arrow aria-hidden="true" /><ChevronDown size={17} className={styles.accordionChevron} aria-hidden="true" /></span>
+    <span className={styles.cardFooter}><span>{pinned ? "Demo fijada" : "Explorar"}</span><ArrowRight size={15} strokeWidth={2.4} data-journey-arrow aria-hidden="true" /><ChevronDown size={17} className={styles.accordionChevron} aria-hidden="true" /></span>
   </button>;
 }
 
@@ -259,7 +259,7 @@ export function InteractiveJourneySection({ variant }: { variant: "overlay" | "s
   return <section ref={root} className={`${styles.journey} ${variant === "overlay" ? styles.overlay : styles.standalone}`} data-solution={variant === "overlay" ? "" : undefined} data-journey={variant} aria-label={journeyCopy.title}>
     <JourneyHeader />
     <div ref={setBoundary} className={styles.demoSlot}>
-      {!active && <p className={styles.idleHint}><MousePointer2 size={15} aria-hidden="true" /> Pasa por una tarjeta para explorar. Haz clic para fijarla.</p>}
+      {!active && <p className={styles.idleHint}><MousePointer2 size={14} strokeWidth={2.2} aria-hidden="true" /> Pasa por una tarjeta para explorar. Haz clic para fijarla.</p>}
     </div>
     {!compact && active && <><ConnectionLine root={root} reference={elements.reference instanceof Element ? elements.reference : null} floating={elements.floating} active={active} reduced={reduced} x={x} y={y} />
       <div ref={setFloating} className={styles.floating} data-wide={active.id === "route" || active.id === "map" || active.id === "nfc" || active.id === "reward" || active.id === "connect"} style={floatingStyles}>{panel}</div></>}
