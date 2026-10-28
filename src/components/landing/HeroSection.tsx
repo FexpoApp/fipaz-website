@@ -42,11 +42,11 @@ export function HeroSection() {
         className="pointer-events-none -z-10 object-cover object-[70%_center] sm:object-[65%_center] lg:object-center"
       />
 
-      {/* Mobile veil: soft wash so copy stays sharp */}
-      <div data-hero-veil="mobile" className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(255,255,255,0.92)_0%,rgba(255,255,255,0.75)_50%,rgba(255,255,255,0.35)_100%)] lg:hidden" />
+      {/* Mobile veil keeps the copy readable over the illustration. */}
+      <div data-hero-veil="mobile" className="pointer-events-none absolute inset-0 -z-10 lg:hidden" />
 
-      {/* Desktop veil: white/marfil wash on the left side, fading to transparent on the right */}
-      <div data-hero-veil="desktop" className="pointer-events-none absolute inset-0 -z-10 hidden bg-[linear-gradient(90deg,rgba(255,255,255,0.98)_0%,rgba(255,255,255,0.95)_38%,rgba(255,255,255,0.6)_55%,rgba(255,255,255,0)_75%)] lg:block" />
+      {/* Desktop veil fades toward the illustration on the right. */}
+      <div data-hero-veil="desktop" className="pointer-events-none absolute inset-0 -z-10 hidden lg:block" />
 
       <div className="relative mx-auto grid w-full max-w-7xl items-center gap-6 px-5 sm:px-10 lg:grid-cols-12 lg:gap-8 lg:px-8">
         <div className="mx-auto max-w-xl text-center sm:max-w-2xl sm:text-left lg:col-span-7 lg:mx-0">
@@ -55,11 +55,11 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.05 }}
-            className={`${headingFont.className} text-center text-[2.65rem] leading-[1.02] font-bold tracking-tight text-[#132D46] sm:text-left sm:text-6xl sm:leading-[1.02] lg:text-7xl xl:text-8xl`}
+            className={`${headingFont.className} text-center text-[2.65rem] leading-[1.02] font-bold tracking-tight sm:text-left sm:text-6xl sm:leading-[1.02] lg:text-7xl xl:text-8xl`}
           >
             Explora. <br />
             Conecta. <br />
-            <span className="relative inline-block pb-1.5 text-[#132D46]">
+            <span className="relative inline-block pb-1.5">
               Vive Fexpo.
               <span className="absolute bottom-0 left-0 -z-10 h-2 sm:h-2.5 w-full rounded-full bg-[#D5F24A]" />
             </span>
@@ -70,7 +70,8 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.1 }}
-            className="mx-auto mt-5 max-w-xl text-center text-[15px] leading-relaxed font-normal text-slate-700 sm:mx-0 sm:mt-6 sm:text-left sm:text-base lg:text-lg"
+            data-hero-copy
+            className="mx-auto mt-5 max-w-xl text-center text-[15px] leading-relaxed font-normal sm:mx-0 sm:mt-6 sm:text-left sm:text-base lg:text-lg"
           >
             La app para ferias que ya tenemos. Explora stands y rutas, haz check-in con NFC y suma puntos en cada visita.
           </motion.p>

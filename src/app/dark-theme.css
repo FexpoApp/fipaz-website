@@ -103,18 +103,11 @@ html[data-theme="dark"] .landing-page img[src*="fexpo-isotipo.svg"] {
 /* Landing: la imagen se conserva con un velo azul para que la copia siga legible. */
 html[data-theme="dark"] #inicio {
   background: #0b1723;
-}
-
-html[data-theme="dark"] #inicio > img {
-  opacity: 0.48;
-}
-
-html[data-theme="dark"] #inicio [data-hero-veil="mobile"] {
-  background: linear-gradient(180deg, rgb(11 23 35 / 95%), rgb(11 23 35 / 82%) 55%, rgb(11 23 35 / 62%));
-}
-
-html[data-theme="dark"] #inicio [data-hero-veil="desktop"] {
-  background: linear-gradient(90deg, rgb(11 23 35 / 99%), rgb(11 23 35 / 92%) 40%, rgb(11 23 35 / 30%) 78%);
+  --hero-heading: #f1f4ef;
+  --hero-copy: #b6c4ce;
+  --hero-image-opacity: 0.48;
+  --hero-mobile-veil: linear-gradient(180deg, rgb(11 23 35 / 95%), rgb(11 23 35 / 82%) 55%, rgb(11 23 35 / 62%));
+  --hero-desktop-veil: linear-gradient(90deg, rgb(11 23 35 / 99%), rgb(11 23 35 / 92%) 40%, rgb(11 23 35 / 30%) 78%);
 }
 
 html[data-theme="dark"] .landing-page [class~="bg-white/95"],

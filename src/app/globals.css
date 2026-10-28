@@ -71,6 +71,32 @@ body {
   font-family: var(--font-poppins), Arial, Helvetica, sans-serif;
 }
 
+/* El velo y el texto del hero comparten el mismo estado de tema. */
+#inicio {
+  --hero-heading: #132d46;
+  --hero-copy: #334155;
+  --hero-image-opacity: 1;
+  --hero-mobile-veil: linear-gradient(180deg, rgb(255 255 255 / 92%), rgb(255 255 255 / 75%) 50%, rgb(255 255 255 / 35%));
+  --hero-desktop-veil: linear-gradient(90deg, rgb(255 255 255 / 98%), rgb(255 255 255 / 95%) 38%, rgb(255 255 255 / 60%) 55%, transparent 75%);
+  color: var(--hero-heading);
+}
+
+#inicio > img {
+  opacity: var(--hero-image-opacity);
+}
+
+#inicio [data-hero-veil="mobile"] {
+  background-image: var(--hero-mobile-veil);
+}
+
+#inicio [data-hero-veil="desktop"] {
+  background-image: var(--hero-desktop-veil);
+}
+
+#inicio [data-hero-copy] {
+  color: var(--hero-copy);
+}
+
 button,
 a,
 input,
