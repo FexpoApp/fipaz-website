@@ -97,12 +97,14 @@ export function MultiEventSection() {
       id="multi-evento"
       className="relative scroll-mt-24 overflow-hidden border-t border-[var(--expo-line)] bg-white py-20 md:py-28"
     >
-      {/* Diamantes decorativos: solo contorno, como la referencia. Recortados por el overflow-hidden de la sección. */}
-      <span aria-hidden="true" className="pointer-events-none absolute top-16 left-[6%] h-14 w-14 rotate-45 rounded-xl border-2 border-[var(--expo-yellow)]/40" />
-      <span aria-hidden="true" className="pointer-events-none absolute top-40 left-[18%] h-9 w-9 rotate-45 rounded-lg border-2 border-[var(--expo-gray)]/20" />
-      <span aria-hidden="true" className="pointer-events-none absolute top-8 right-[14%] hidden h-7 w-7 rotate-45 rounded-lg bg-[var(--expo-yellow)]/70 sm:block" />
-      <span aria-hidden="true" className="pointer-events-none absolute right-[5%] bottom-24 hidden h-20 w-20 rotate-45 rounded-2xl border-2 border-[var(--expo-blue)]/10 lg:block" />
-      <span aria-hidden="true" className="pointer-events-none absolute right-[22%] bottom-10 h-10 w-10 rotate-45 rounded-xl border-2 border-[var(--expo-gray)]/20" />
+      {/* Fondo: cuadrados redondeados inclinados (no diamantes de 45°), agrupados en las esquinas como en la
+          referencia, sangrando por el borde. Recortados por el overflow-hidden de la sección. */}
+      <span aria-hidden="true" className="pointer-events-none absolute top-10 -left-10 h-36 w-36 rotate-[18deg] rounded-[28px] border-2 border-[var(--expo-gray)]/25" />
+      <span aria-hidden="true" className="pointer-events-none absolute top-24 -left-4 h-40 w-40 rotate-[15deg] rounded-[28px] bg-[var(--expo-yellow)]/10" />
+      <span aria-hidden="true" className="pointer-events-none absolute top-[17rem] left-[15%] hidden h-14 w-14 rotate-[18deg] rounded-2xl border-2 border-[var(--expo-yellow)]/50 sm:block" />
+      <span aria-hidden="true" className="pointer-events-none absolute top-16 right-[16%] hidden h-11 w-11 rotate-[18deg] rounded-xl bg-[var(--expo-yellow)] sm:block" />
+      <span aria-hidden="true" className="pointer-events-none absolute top-56 -right-12 hidden h-44 w-44 rotate-[15deg] rounded-[28px] border-2 border-[var(--expo-gray)]/25 lg:block" />
+      <span aria-hidden="true" className="pointer-events-none absolute bottom-10 -left-14 h-44 w-44 rotate-[18deg] rounded-[28px] bg-[var(--expo-gray)]/15" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
