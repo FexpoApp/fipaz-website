@@ -21,15 +21,19 @@ export function LandingHeader() {
     <header className="sticky top-0 z-50 w-full border-b border-[var(--expo-line)] bg-white/95 backdrop-blur-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2.5 sm:px-6 sm:py-3 lg:px-8">
         {/* Brand Logo */}
-        <Link href="#inicio" aria-label="Fexpo, ir al inicio" className="group flex items-center transition-transform hover:scale-105">
+        <Link href="#inicio" aria-label="Fexpo, ir al inicio" className="group flex items-center gap-[6px] transition-transform hover:scale-105 sm:gap-2">
           <Image
-            src="/img/landing/fexpo-logo.png"
-            alt="Fexpo"
-            width={1254}
-            height={380}
+            src="/img/landing/fexpo-isotipo.svg"
+            alt=""
+            width={221}
+            height={310}
             priority
-            className="h-9 w-auto sm:h-11"
+            unoptimized
+            className="h-[23px] w-auto sm:h-[29px]"
           />
+          <span className="text-2xl font-semibold leading-none tracking-tight text-[#132D46] sm:text-3xl">
+            fexpo
+          </span>
         </Link>
 
         {/* Desktop Nav */}
