@@ -18,7 +18,7 @@ export function LandingFooter() {
             <span className={`${fx.lift} inline-flex`}>
               <Image src="/img/landing/fexpo-logo.png" alt="Fexpo" width={1254} height={388} className="h-10 w-auto" />
             </span>
-            <p className="text-xs font-bold text-slate-500">Eventos que te mueven.</p>
+            <p className="text-xs font-semibold text-slate-500">Explora la feria. Encuentra tu próxima conexión.</p>
           </div>
 
           {/* Links */}
