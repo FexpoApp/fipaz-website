@@ -1,0 +1,26 @@
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #132d46;
+}
+
+.hero::after {
+  position: absolute;
+  z-index: -1;
+  top: -7rem;
+  right: max(3%, calc((100vw - 70rem) / 2));
+  width: 18rem;
+  height: 25rem;
+  background: url("/img/landing/Fexpo-logo.svg") center / contain no-repeat;
+  filter: brightness(0) invert(1);
+  opacity: 0.08;
+  content: "";
+}
+
+@media (max-width: 640px) {
+  .hero::after {
+    right: -5rem;
+    opacity: 0.05;
+  }
+}
