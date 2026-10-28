@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { apiDelete, apiGet, apiPatch, apiPost } from "@/lib/api/http-client";
+import { apiDelete, apiGet, apiPatch, apiPost, apiUpload } from "@/lib/api/http-client";
 
 const companySchema = z.object({
   id: z.string().uuid(),
@@ -19,11 +19,22 @@ const standSchema = z.object({
   boothCode: z.string(),
   displayName: z.string(),
   description: z.string().nullable(),
+  logoPath: z.string().nullable(),
+  website: z.string().nullable(),
   tags: z.array(z.string()),
   activityHighlight: z.string().nullable(),
   promotionHighlight: z.string().nullable(),
   visitPoints: z.number(),
   status: z.string(),
+});
+
+const uploadedFileSchema = z.object({
+  id: z.string().uuid(),
+  path: z.string(),
+  url: z.string(),
+  fileName: z.string(),
+  mimeType: z.string(),
+  size: z.number(),
 });
 
 const kpisSchema = z.object({
@@ -54,6 +65,7 @@ const updatedRecordSchema = z.object({ id: z.string().uuid() }).passthrough();
 
 export type ExhibitorCompany = z.infer<typeof companySchema>;
 export type ExhibitorStand = z.infer<typeof standSchema>;
+export type UploadedFile = z.infer<typeof uploadedFileSchema>;
 export type CompanyKpis = z.infer<typeof kpisSchema>;
 export type StandCheckin = z.infer<typeof checkinSchema>;
 export type IssuedStandQr = z.infer<typeof issuedQrSchema>;
@@ -82,8 +94,16 @@ export const exhibitorApi = {
     tags?: string[];
     activityHighlight?: string | null;
     promotionHighlight?: string | null;
+    logoPath?: string | null;
+    website?: string | null;
   }): Promise<{ id: string }> {
     return updatedRecordSchema.parse(await apiPatch(`/stands/${encodeURIComponent(standId)}`, patch));
+  },
+  /** Sube una imagen (PNG/JPEG/WebP, máx. 5 MB) y devuelve su ruta para usar como `logoPath`. */
+  async uploadLogo(file: File): Promise<UploadedFile> {
+    const formData = new FormData();
+    formData.append("file", file);
+    return uploadedFileSchema.parse(await apiUpload("/uploads", formData));
   },
   async getCheckins(standId: string): Promise<StandCheckin[]> {
     return z.array(checkinSchema).parse(await apiGet(`/stands/${encodeURIComponent(standId)}/check-ins`));

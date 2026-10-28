@@ -1,7 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, BarChart3, Building2, Mail, Pencil, QrCode, ScanLine, Settings2, Store } from "lucide-react";
+import { ArrowRight, BarChart3, Building2, Globe, Mail, Pencil, QrCode, ScanLine, Settings2, Store } from "lucide-react";
 
 import { canEditCompany } from "@/lib/panel-access";
 import { useCompanyAuthStore } from "@/store/company-auth-store";
@@ -20,7 +21,11 @@ export function MiStandView() {
         <section className="panel-surface overflow-hidden" aria-label="Datos del stand">
           <div className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[250px_minmax(0,1fr)] lg:gap-8">
             <div className="flex min-h-48 flex-col justify-between rounded-2xl bg-[linear-gradient(145deg,#e0f0ff,#f3f7ff_58%,#dce8ff)] p-5">
-              <Store aria-hidden="true" className="h-12 w-12 text-[#0878f9]" strokeWidth={1.5} />
+              {stand.logoPath ? (
+                <Image src={stand.logoPath} alt={`Logo de ${stand.displayName}`} width={64} height={64} className="h-16 w-16 rounded-xl bg-white object-cover shadow-sm" unoptimized />
+              ) : (
+                <Store aria-hidden="true" className="h-12 w-12 text-[#0878f9]" strokeWidth={1.5} />
+              )}
               <span className="self-start rounded-full bg-white/90 px-3 py-1.5 text-xs font-extrabold text-[#0878f9]">Stand {stand.boothCode}</span>
             </div>
             <div className="min-w-0">
@@ -30,7 +35,7 @@ export function MiStandView() {
               </div>
               <p className="mt-4 max-w-3xl text-sm leading-6 text-[#5f7499]">{stand.description || "Aún no hay una descripción. Puedes agregarla al editar el stand."}</p>
               {stand.tags.length > 0 && <div className="mt-4 flex flex-wrap gap-2">{stand.tags.map((tag) => <span key={tag} className="rounded-full bg-[#f0f5fc] px-3 py-1.5 text-xs font-semibold text-[#557099]">#{tag}</span>)}</div>}
-              <div className="mt-6 flex flex-wrap gap-x-7 gap-y-2 border-t border-[#e9eff7] pt-4 text-xs font-semibold text-[#60779c]"><span>+{stand.visitPoints} puntos por visita</span>{company?.contactEmail && <span className="inline-flex items-center gap-1.5"><Mail aria-hidden="true" className="h-3.5 w-3.5" />{company.contactEmail}</span>}</div>
+              <div className="mt-6 flex flex-wrap gap-x-7 gap-y-2 border-t border-[#e9eff7] pt-4 text-xs font-semibold text-[#60779c]"><span>+{stand.visitPoints} puntos por visita</span>{company?.contactEmail && <span className="inline-flex items-center gap-1.5"><Mail aria-hidden="true" className="h-3.5 w-3.5" />{company.contactEmail}</span>}{stand.website && <a href={stand.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:text-[#0878f9]"><Globe aria-hidden="true" className="h-3.5 w-3.5" />{stand.website}</a>}</div>
             </div>
           </div>
           {(stand.activityHighlight || stand.promotionHighlight) && <div className="grid gap-3 border-t border-[#edf1f8] bg-[#fbfdff] px-5 py-4 sm:grid-cols-2 sm:px-7">{stand.activityHighlight && <p className="text-sm text-[#62779b]"><strong className="text-[#1e3159]">Actividad:</strong> {stand.activityHighlight}</p>}{stand.promotionHighlight && <p className="text-sm text-[#62779b]"><strong className="text-[#1e3159]">Promoción:</strong> {stand.promotionHighlight}</p>}</div>}

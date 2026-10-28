@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Loader2, Save } from "lucide-react";
+import { ImagePlus, Loader2, Save, Store } from "lucide-react";
 
 import { exhibitorApi, type ExhibitorStand } from "@/lib/api/exhibitor";
 import { canEditCompany } from "@/lib/panel-access";
@@ -38,8 +39,35 @@ function StandForm({ stand, reload }: { stand: ExhibitorStand; reload: () => Pro
   const [tags, setTags] = useState(stand.tags.join(", "));
   const [activity, setActivity] = useState(stand.activityHighlight ?? "");
   const [promotion, setPromotion] = useState(stand.promotionHighlight ?? "");
+  const [website, setWebsite] = useState(stand.website ?? "");
+  const [logoPath, setLogoPath] = useState(stand.logoPath);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  async function onLogoSelected(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
+      setError("El logo debe ser una imagen PNG, JPEG o WebP.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError("El logo no puede superar los 5 MB.");
+      return;
+    }
+    setUploadingLogo(true);
+    setError("");
+    try {
+      const uploaded = await exhibitorApi.uploadLogo(file);
+      setLogoPath(uploaded.path);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "No se pudo subir el logo.");
+    } finally {
+      setUploadingLogo(false);
+    }
+  }
 
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -52,6 +80,8 @@ function StandForm({ stand, reload }: { stand: ExhibitorStand; reload: () => Pro
         tags: tags.split(",").map((tag) => tag.trim()).filter(Boolean),
         activityHighlight: activity.trim() || null,
         promotionHighlight: promotion.trim() || null,
+        website: website.trim() || null,
+        logoPath: logoPath || null,
       });
       const confirmed = await reload();
       if (!confirmed) return;
@@ -68,14 +98,33 @@ function StandForm({ stand, reload }: { stand: ExhibitorStand; reload: () => Pro
     <>
       <PanelPageHeader eyebrow="Mi stand" title="Editar stand" description="Los cambios se guardan en el servidor y aparecerán al volver a cargar." demo={false} />
       <form onSubmit={(event) => void save(event)} className="pixel-card max-w-2xl space-y-5 p-6">
+        <div>
+          <span className="block text-sm font-bold">Logo del stand</span>
+          <div className="mt-1 flex items-center gap-4">
+            <span className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border-2 border-slate-300 bg-white">
+              {logoPath ? (
+                <Image src={logoPath} alt="" width={64} height={64} className="h-full w-full object-cover" unoptimized />
+              ) : (
+                <Store aria-hidden="true" className="h-7 w-7 text-slate-300" />
+              )}
+            </span>
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border-2 border-[var(--expo-navy)] bg-white px-4 py-2 text-sm font-black hover:bg-slate-50">
+              {uploadingLogo ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
+              {uploadingLogo ? "Subiendo…" : "Cambiar logo"}
+              <input type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => void onLogoSelected(event)} disabled={uploadingLogo} className="sr-only" />
+            </label>
+          </div>
+          <p className="mt-1 text-xs text-slate-500">PNG, JPEG o WebP, máximo 5 MB.</p>
+        </div>
         <label className="block text-sm font-bold">Nombre visible<input value={name} onChange={(event) => setName(event.target.value)} maxLength={160} className={`mt-1 ${field}`} required /></label>
         <label className="block text-sm font-bold">Descripción<textarea value={description} onChange={(event) => setDescription(event.target.value)} rows={4} className={`mt-1 ${field}`} /></label>
         <label className="block text-sm font-bold">Etiquetas, separadas por comas<input value={tags} onChange={(event) => setTags(event.target.value)} className={`mt-1 ${field}`} /></label>
         <label className="block text-sm font-bold">Actividad destacada<input value={activity} onChange={(event) => setActivity(event.target.value)} className={`mt-1 ${field}`} /></label>
         <label className="block text-sm font-bold">Promoción visible<input value={promotion} onChange={(event) => setPromotion(event.target.value)} className={`mt-1 ${field}`} /></label>
+        <label className="block text-sm font-bold">Sitio web<input type="url" value={website} onChange={(event) => setWebsite(event.target.value)} placeholder="https://" className={`mt-1 ${field}`} /></label>
         <p className="text-xs text-slate-500">Los datos de contacto de la empresa se editan en <Link href="/panel/empresa" className="font-bold text-[var(--expo-blue)] underline">Perfil de empresa</Link>.</p>
         {error && <p role="alert" className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700">{error}</p>}
-        <button type="submit" disabled={saving} className="inline-flex items-center gap-2 rounded-xl border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-5 py-2.5 text-sm font-black disabled:opacity-60">
+        <button type="submit" disabled={saving || uploadingLogo} className="inline-flex items-center gap-2 rounded-xl border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-5 py-2.5 text-sm font-black disabled:opacity-60">
           {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}Guardar cambios
         </button>
       </form>

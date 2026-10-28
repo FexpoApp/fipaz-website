@@ -416,6 +416,10 @@ test.describe("panel real de expositor", () => {
 
       promotionHighlight: null,
 
+      logoPath: null,
+
+      website: null,
+
       visitPoints: 60,
 
       status: "active",

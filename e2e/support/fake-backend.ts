@@ -283,6 +283,8 @@ export class FakeBackend {
 
       tags: ["gastronomia", "cafe"],
 
+      logoPath: null, website: null,
+
       visitPoints: 50,
 
       status: "active",
@@ -328,6 +330,8 @@ export class FakeBackend {
       categories: [{ id: "ca000000-0000-4000-8000-000000000002", slug: "salud", label: "Salud" }],
 
       tags: ["salud", "medicina"],
+
+      logoPath: null, website: null,
 
       visitPoints: 50,
 
@@ -386,6 +390,8 @@ export class FakeBackend {
         boothCode: "A-01", displayName: role.companyName, description: "Stand de prueba",
 
         tags: ["tecnología"], activityHighlight: null, promotionHighlight: null,
+
+        logoPath: null, website: null,
 
         visitPoints: 50, status: "active",
 
@@ -1575,6 +1581,10 @@ export class FakeBackend {
         activityHighlight: null,
 
         promotionHighlight: null,
+
+        logoPath: null,
+
+        website: null,
 
         createdAt: new Date().toISOString(),
 
