@@ -43,10 +43,10 @@ export function HeroSection() {
       />
 
       {/* Mobile veil: soft wash so copy stays sharp */}
-      <div className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(255,255,255,0.92)_0%,rgba(255,255,255,0.75)_50%,rgba(255,255,255,0.35)_100%)] lg:hidden" />
+      <div data-hero-veil="mobile" className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(255,255,255,0.92)_0%,rgba(255,255,255,0.75)_50%,rgba(255,255,255,0.35)_100%)] lg:hidden" />
 
       {/* Desktop veil: white/marfil wash on the left side, fading to transparent on the right */}
-      <div className="pointer-events-none absolute inset-0 -z-10 hidden bg-[linear-gradient(90deg,rgba(255,255,255,0.98)_0%,rgba(255,255,255,0.95)_38%,rgba(255,255,255,0.6)_55%,rgba(255,255,255,0)_75%)] lg:block" />
+      <div data-hero-veil="desktop" className="pointer-events-none absolute inset-0 -z-10 hidden bg-[linear-gradient(90deg,rgba(255,255,255,0.98)_0%,rgba(255,255,255,0.95)_38%,rgba(255,255,255,0.6)_55%,rgba(255,255,255,0)_75%)] lg:block" />
 
       <div className="relative mx-auto grid w-full max-w-7xl items-center gap-6 px-5 sm:px-10 lg:grid-cols-12 lg:gap-8 lg:px-8">
         <div className="mx-auto max-w-xl text-center sm:max-w-2xl sm:text-left lg:col-span-7 lg:mx-0">

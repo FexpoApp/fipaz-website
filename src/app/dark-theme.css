@@ -1,0 +1,318 @@
+/* La tinta y el azul feria siguen siendo colores de marca; las superficies cambian de valor. */
+html[data-theme="dark"] {
+  --background: #0b1723;
+  --foreground: #f1f4ef;
+  --expo-bg: #0b1723;
+  --expo-card: #172a3a;
+  --expo-line: #34495b;
+  --expo-gray: #afbdc9;
+  --dark-text: #f1f4ef;
+  --dark-muted: #b6c4ce;
+  --dark-surface: #172a3a;
+  --access-surface: #0b1723;
+  color-scheme: dark;
+}
+
+html[data-theme="dark"] :focus-visible {
+  outline-color: #d5f24a;
+}
+
+html[data-theme="dark"] [class~="bg-white"],
+html[data-theme="dark"] [class~="bg-white/95"],
+html[data-theme="dark"] [class~="bg-white/90"],
+html[data-theme="dark"] [class~="bg-[#FFFFFF]"] {
+  background-color: var(--dark-surface);
+}
+
+html[data-theme="dark"] [class~="bg-[#F5F4EF]"],
+html[data-theme="dark"] [class~="bg-[#f5f4ef]"] {
+  background-color: var(--expo-bg);
+}
+
+html[data-theme="dark"] [class~="bg-[#fff8e1]"] {
+  background-color: #293321;
+}
+
+html[data-theme="dark"] [class~="bg-[var(--expo-sky)]"] {
+  background-color: #284258;
+}
+
+html[data-theme="dark"] [class~="bg-[var(--expo-mint)]"] {
+  background-color: #245047;
+}
+
+html[data-theme="dark"] [class~="bg-[var(--expo-coral)]"] {
+  background-color: #684239;
+}
+
+html[data-theme="dark"] [class~="text-[#132D46]"],
+html[data-theme="dark"] [class~="text-[var(--expo-navy)]"],
+html[data-theme="dark"] [class~="text-[var(--expo-blue)]"],
+html[data-theme="dark"] [class~="text-[var(--expo-ink)]"] {
+  color: var(--dark-text);
+}
+
+html[data-theme="dark"] [class~="text-[#626D78]"],
+html[data-theme="dark"] [class~="text-slate-500"],
+html[data-theme="dark"] [class~="text-slate-600"],
+html[data-theme="dark"] [class~="text-slate-700"],
+html[data-theme="dark"] [class~="text-[#475569]"] {
+  color: var(--dark-muted);
+}
+
+html[data-theme="dark"] [class~="border-[#E2E0D8]"],
+html[data-theme="dark"] [class~="border-[#D5D9D5]"],
+html[data-theme="dark"] [class~="border-slate-200"],
+html[data-theme="dark"] [class~="border-slate-300"] {
+  border-color: var(--expo-line);
+}
+
+html[data-theme="dark"] :is(input, textarea, select) {
+  color-scheme: dark;
+}
+
+html[data-theme="dark"] :is(input, textarea, select):not([type="checkbox"]):not([type="radio"]):not([type="file"]) {
+  background-color: var(--dark-surface);
+  color: var(--dark-text);
+}
+
+html[data-theme="dark"] :is(input, textarea)::placeholder {
+  color: #a1b0bd;
+}
+
+/* El lima es siempre una acción de alto contraste: su texto conserva el azul original. */
+html[data-theme="dark"] :is([class~="bg-[#D5F24A]"], [class~="bg-[var(--expo-yellow)]"], [class~="bg-[var(--expo-lime)]"]) {
+  color: #132d46 !important;
+}
+
+html[data-theme="dark"] :is([class~="bg-[#D5F24A]"], [class~="bg-[var(--expo-yellow)]"], [class~="bg-[var(--expo-lime)]"]) [class~="text-[#132D46]"],
+html[data-theme="dark"] :is([class~="bg-[#D5F24A]"], [class~="bg-[var(--expo-yellow)]"], [class~="bg-[var(--expo-lime)]"]) [class~="text-[var(--expo-navy)]"] {
+  color: #132d46 !important;
+}
+
+/* La firma se usa en blanco, una sola tinta, sobre superficies oscuras. */
+html[data-theme="dark"] .fexpo-brand {
+  color: #fff;
+}
+
+html[data-theme="dark"] .fexpo-brand img,
+html[data-theme="dark"] .landing-page img[src*="fexpo-isotipo.svg"] {
+  filter: brightness(0) invert(1);
+}
+
+/* Landing: la imagen se conserva con un velo azul para que la copia siga legible. */
+html[data-theme="dark"] #inicio {
+  background: #0b1723;
+}
+
+html[data-theme="dark"] #inicio > img {
+  opacity: 0.48;
+}
+
+html[data-theme="dark"] #inicio [data-hero-veil="mobile"] {
+  background: linear-gradient(180deg, rgb(11 23 35 / 95%), rgb(11 23 35 / 82%) 55%, rgb(11 23 35 / 62%));
+}
+
+html[data-theme="dark"] #inicio [data-hero-veil="desktop"] {
+  background: linear-gradient(90deg, rgb(11 23 35 / 99%), rgb(11 23 35 / 92%) 40%, rgb(11 23 35 / 30%) 78%);
+}
+
+html[data-theme="dark"] .landing-page [class~="bg-white/95"],
+html[data-theme="dark"] .landing-page [class~="bg-white/90"] {
+  background-color: rgb(23 42 58 / 95%);
+}
+
+html[data-theme="dark"] .landing-page [class~="bg-slate-50"] {
+  background-color: #263a4b;
+}
+
+html[data-theme="dark"] .landing-page [class~="text-[#F5F4EF]"] {
+  color: #f5f4ef;
+}
+
+html[data-theme="dark"] [data-arrival-wash] {
+  background: linear-gradient(180deg, rgb(11 23 35 / 79%), rgb(11 23 35 / 75%) 55%, rgb(11 23 35 / 92%));
+}
+
+html[data-theme="dark"] [data-arrival-header]::before {
+  background: radial-gradient(ellipse at center, rgb(11 23 35 / 90%), rgb(11 23 35 / 63%) 60%, transparent 82%);
+}
+
+html[data-theme="dark"] .access-page [class~="text-[#0f1b5c]"] {
+  color: var(--dark-text);
+}
+
+html[data-theme="dark"] .access-page [class~="text-[#0a62d6]"] {
+  color: #8bc6ff;
+}
+
+html[data-theme="dark"] .access-page [class~="lg:text-[#0f1b5c]"] {
+  color: var(--dark-text);
+}
+
+html[data-theme="dark"] .registration-page {
+  background: radial-gradient(circle at 12% 50%, #173047, #0b1723 60%);
+  color: var(--dark-text);
+}
+
+html[data-theme="dark"] .registration-page > div:first-child {
+  background: linear-gradient(145deg, #132d46, #0b1723);
+}
+
+html[data-theme="dark"] .registration-page [class~="text-[#0f1b5c]"] {
+  color: var(--dark-text);
+}
+
+html[data-theme="dark"] .registration-page [class~="text-[#0a62d6]"] {
+  color: #d5f24a;
+}
+
+html[data-theme="dark"] .registration-page [class~="bg-[#eaf2ff]"],
+html[data-theme="dark"] .registration-page [class~="bg-[#f3f8ff]"],
+html[data-theme="dark"] .registration-page [class~="bg-slate-50"],
+html[data-theme="dark"] .registration-page [class~="bg-slate-100"] {
+  background-color: #263c3a;
+}
+
+html[data-theme="dark"] .registration-page [class~="border-[#0a62d6]"] {
+  border-color: #d5f24a;
+}
+
+html[data-theme="dark"] .registration-page [class~="text-[#0a4fb0]"] {
+  color: var(--dark-text);
+}
+
+html[data-theme="dark"] .registration-page [class~="border-[#dce7f7]"] {
+  border-color: var(--expo-line);
+}
+
+html[data-theme="dark"] .registration-page [class~="bg-slate-200"] {
+  background-color: var(--expo-line);
+}
+
+html[data-theme="dark"] .registration-page [class~="bg-[#D5F24A]"] {
+  color: #132d46 !important;
+}
+
+/* La demo móvil tenía un selector propio para el sistema; sigue la elección del sitio. */
+:root [data-testid="mobile-demo"][data-theme="dark"] {
+  --m-primary: #132d46;
+  --m-primaryText: #d5f24a;
+  --m-deep: #132d46;
+  --m-bg: #0b1723;
+  --m-surface: #172a3a;
+  --m-muted: #22384a;
+  --m-ink: #f1f4ef;
+  --m-secondary: #bdcbd5;
+  --m-tertiary: #9fb0bd;
+  --m-border: #34495b;
+  --m-soft: #1d3a4c;
+  --m-purple: #d5f24a;
+  --m-purpleSoft: #293b29;
+  --m-gold: #d5f24a;
+  --m-goldSoft: #2a3926;
+  font-family: var(--font-poppins), Arial, sans-serif;
+}
+
+:root [data-testid="mobile-demo"][data-theme="dark"] [class*="brandMark"] {
+  color: #d5f24a;
+}
+
+html[data-theme="dark"] [data-testid="mobile-demo"] [class*="desktopIntro"] strong {
+  color: #d5f24a;
+}
+
+html[data-theme="dark"] [data-legal-prose] :is(a, strong) {
+  color: #f1f4ef;
+}
+
+html[data-theme="dark"] [data-legal-prose] a {
+  text-decoration-color: #d5f24a;
+}
+
+html[data-theme="dark"] [data-legal-prose] li::before {
+  background: #d5f24a;
+}
+
+/* Panel y administración usan las mismas superficies y controles. */
+html[data-theme="dark"] .fexpo-panel {
+  --panel-ink: #f1f4ef;
+  --panel-muted: #b6c4ce;
+  --panel-border: #34495b;
+  background: var(--expo-bg);
+}
+
+html[data-theme="dark"] .fexpo-panel :is(.pixel-card, .panel-surface) {
+  background: var(--dark-surface);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 14%);
+}
+
+html[data-theme="dark"] .fexpo-panel .panel-nav-link[aria-current="page"] {
+  background: #284156;
+  color: #fff;
+}
+
+html[data-theme="dark"] .fexpo-panel .panel-hero {
+  background: #132d46;
+  color: #fff;
+}
+
+html[data-theme="dark"] .fexpo-panel form.pixel-card :is(input, textarea, select) {
+  border-color: var(--expo-line);
+  background: #102232;
+  color: var(--dark-text);
+}
+
+html[data-theme="dark"] .fexpo-panel form.pixel-card button[type="submit"] {
+  color: #132d46;
+}
+
+html[data-theme="dark"] .panel-chart-grid line {
+  stroke: #34495b;
+}
+
+html[data-theme="dark"] .panel-chart-grid text {
+  fill: #b6c4ce;
+}
+
+/* Control persistente: visible en cualquier ruta sin ocupar la navegación. */
+.theme-toggle {
+  position: fixed;
+  z-index: 100;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  display: inline-flex;
+  min-width: 48px;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid #a9b4b6;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 8px 25px rgb(19 45 70 / 20%);
+  color: #132d46;
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease;
+}
+
+.theme-toggle:hover { transform: translateY(-2px); }
+.theme-toggle-label { display: none; }
+
+html[data-theme="dark"] .theme-toggle {
+  border-color: #506476;
+  background: #1c3447;
+  box-shadow: 0 8px 25px rgb(0 0 0 / 35%);
+  color: #d5f24a;
+}
+
+@media (min-width: 768px) {
+  .theme-toggle { padding: 0 16px; }
+  .theme-toggle-label { display: inline; font-size: 12px; font-weight: 600; }
+}
+
+@media (max-width: 600px) {
+  html:has([data-testid="mobile-demo"]) .theme-toggle {
+    display: none;
+  }
+}

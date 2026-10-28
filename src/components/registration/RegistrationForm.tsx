@@ -81,7 +81,7 @@ const inputClass =
 const labelClass = "mb-1.5 block text-sm font-bold text-[#0f1b5c]";
 const iconClass = "pointer-events-none absolute left-3.5 h-[18px] w-[18px] text-slate-500";
 const primaryButton =
-  "group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#0a62d6] px-5 py-3 text-base font-extrabold text-white shadow-[0_10px_24px_-12px_rgba(10,98,214,0.9)] transition-[filter,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:brightness-110 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a62d6]";
+  "group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#D5F24A] px-5 py-3 text-base font-extrabold text-[#132D46] shadow-[0_10px_24px_-12px_rgba(19,45,70,0.25)] transition-[filter,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:brightness-95 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D5F24A]";
 const errorClass = "rounded-xl border border-rose-300 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-800";
 
 function Required() {
@@ -106,7 +106,7 @@ function StepProgress({ step }: { step: number }) {
         className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-slate-200"
       >
         <div
-          className="h-full rounded-full bg-[#0a62d6] transition-[width] duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]"
+          className="h-full rounded-full bg-[#D5F24A] transition-[width] duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]"
           style={{ width: `${(current / TOTAL_STEPS) * 100}%` }}
         />
       </div>
@@ -351,7 +351,7 @@ function Step2({
           </div>
           <PasswordAuthForm
             variant="fexpo"
-            tone="blue"
+            tone="yellow"
             mode="register"
             allowModeSwitch
             defaultEmail={contactEmail}
@@ -420,7 +420,7 @@ function StepPanel({ stepKey, children }: { stepKey: string; children: ReactNode
 function CardHeading({ title, description }: { title: string; description: string }) {
   return (
     <header>
-      <span className="inline-flex items-center gap-2 rounded-full bg-amber-100 px-3.5 py-1.5 text-xs font-extrabold uppercase tracking-wide text-amber-900">
+      <span className="inline-flex items-center gap-2 rounded-full bg-[#D5F24A] px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-[#132D46]">
         <UsersRound aria-hidden="true" className="h-3.5 w-3.5" />
         Para expositores
       </span>
@@ -546,7 +546,7 @@ export function RegistrationForm() {
 
   return (
     <MotionConfig reducedMotion="user">
-      <div className="relative min-h-dvh overflow-hidden bg-[radial-gradient(circle_at_12%_50%,#e4f0ff_0%,#f5f9ff_40%,#edf4ff_100%)] text-[#0f1b5c] antialiased">
+      <div className="registration-page relative min-h-dvh overflow-hidden bg-[radial-gradient(circle_at_12%_50%,#e4f0ff_0%,#f5f9ff_40%,#edf4ff_100%)] text-[#0f1b5c] antialiased">
         <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[38%] bg-[linear-gradient(145deg,#e4f0ff_0%,#d8e9ff_100%)] xl:block" aria-hidden="true" />
 
         <div className="relative mx-auto flex min-h-dvh w-full max-w-[1320px] flex-col px-4 sm:px-8">
@@ -568,7 +568,7 @@ export function RegistrationForm() {
               <div>
                 {step < 2 && <StepProgress step={step} />}
                 <h1 className="mt-5 text-balance text-[2.1rem] font-extrabold leading-[1.08] tracking-tight sm:text-5xl lg:mt-6 lg:text-[2.7rem] xl:text-[2.9rem]">
-                  Tu empresa, presente en <span className="text-[#0a62d6]">Fexpo</span><span className="text-amber-400">.</span>
+                  Tu empresa, presente en <span className="text-[#D5F24A]">Fexpo</span><span className="text-[#D5F24A]">.</span>
                 </h1>
                 <p className="mt-3 max-w-md text-pretty text-base text-slate-600 sm:text-lg">
                   Registra tu empresa y comienza a preparar tu participación en la feria.
