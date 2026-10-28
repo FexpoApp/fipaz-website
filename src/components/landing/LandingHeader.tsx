@@ -18,7 +18,7 @@ export function LandingHeader() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 h-14 sm:h-16 w-full border-b border-[var(--expo-line)] bg-white/95 backdrop-blur-sm">
+    <header data-landing-header className="sticky top-0 z-50 h-14 sm:h-16 w-full border-b border-[var(--expo-line)] bg-white/95 backdrop-blur-sm">
       <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand Logo */}
         <Link
@@ -46,6 +46,7 @@ export function LandingHeader() {
             <a
               key={link.name}
               href={link.href}
+              data-nav-link
               className="whitespace-nowrap rounded-lg px-2.5 py-1.5 text-sm font-medium text-[#132D46] transition-colors xl:px-3 hover:bg-[#F5F4EF] hover:text-[#132D46]"
             >
               {link.name}
@@ -77,6 +78,7 @@ export function LandingHeader() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            data-menu-toggle
             className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 text-[#132D46] shadow-sm transition-colors hover:bg-slate-50"
             aria-label="Alternar menú"
           >
@@ -94,6 +96,7 @@ export function LandingHeader() {
                 key={link.name}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
+                data-nav-link
                 className="rounded-md px-3 py-2.5 text-base font-medium text-[#132D46] hover:bg-[#F5F4EF] hover:text-[#132D46]"
               >
                 {link.name}

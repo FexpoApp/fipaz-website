@@ -806,3 +806,10 @@ pero modificaste lo que es el modo claro [Image #1] ahora ya no esta como era an
 
 **Salida:**
 Se comparó la captura con el hero en la rama `feat/fexpo-dark-mode`: faltaba el velo blanco del modo claro. En `src/components/landing/HeroSection.tsx` se restauraron como valores de respaldo en el propio componente los degradados claros originales, los colores del título y subtítulo y la opacidad de la imagen. El modo oscuro sigue tomando sus valores del mismo selector de `src/app/dark-theme.css`. Se retiraron de `src/app/globals.css` las reglas del hero que hacían depender el modo claro de otra hoja CSS. En Chrome con Playwright se verificó a escala 125 % el ciclo claro inicial → oscuro → claro y se inspeccionaron capturas y estilos calculados: el claro recupera el velo blanco y el oscuro conserva el velo azul con texto legible. `pnpm exec tsc --noEmit`, ESLint del componente y `git diff --check` terminaron sin errores. Se eliminaron script y capturas temporales.
+
+### 2026-10-28T23:55:54Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+ok lo que es los hover en el heder y en el footer se hacen desaparecer en el modo dark
+
+**Salida:**
+Se corrigió el contraste de los enlaces de navegación de `src/components/landing/LandingHeader.tsx` y `src/components/landing/LandingFooter.tsx` en modo oscuro. Se añadieron identificadores semánticos a esos componentes y reglas específicas en `src/app/dark-theme.css`: hover y foco visible del encabezado usan fondo azul y texto lima; los enlaces del pie usan texto lima; el botón del menú móvil conserva texto claro sobre fondo azul. Se comprobó con Chrome y Playwright que los enlaces de escritorio y móvil tienen los colores esperados en hover y que el hover del modo claro sigue usando azul de marca y marfil. `pnpm exec tsc --noEmit`, ESLint de ambos componentes y `git diff --check` terminaron sin errores. El primer script de verificación intentó pasar el cursor sobre un enlace de escritorio oculto en móvil y agotó el tiempo; se corrigió el selector del script, la verificación pasó y el script temporal se eliminó.

@@ -123,6 +123,20 @@ html[data-theme="dark"] .landing-page [class~="text-[#F5F4EF]"] {
   color: #f5f4ef;
 }
 
+html[data-theme="dark"] [data-landing-header] [data-nav-link]:is(:hover, :focus-visible) {
+  background-color: #2a4155;
+  color: #d5f24a;
+}
+
+html[data-theme="dark"] [data-landing-header] [data-menu-toggle]:is(:hover, :focus-visible) {
+  background-color: #2a4155;
+  color: #f1f4ef;
+}
+
+html[data-theme="dark"] [data-landing-footer] nav a:is(:hover, :focus-visible) {
+  color: #d5f24a;
+}
+
 html[data-theme="dark"] [data-arrival-wash] {
   background: linear-gradient(180deg, rgb(11 23 35 / 79%), rgb(11 23 35 / 75%) 55%, rgb(11 23 35 / 92%));
 }
