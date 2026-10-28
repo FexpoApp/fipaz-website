@@ -92,7 +92,7 @@ export function HowItWorksBody({ scripted = false }: { scripted?: boolean }) {
       {/* Header */}
       <div className={`${styles.header} mx-auto max-w-3xl text-center`} data-arrival-header={scripted ? "" : undefined}>
         <div className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-[var(--expo-blue)]/15 bg-white px-3.5 py-1.5 text-xs font-bold tracking-wide text-[var(--expo-navy)] shadow-sm">
-          <PixelStar className="w-3.5 h-3.5" />
+          
           Datos de demostración · paso a paso
         </div>
 
