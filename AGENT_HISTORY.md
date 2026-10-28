@@ -589,3 +589,12 @@ Cambios en MultiEventSection.tsx + landing-fx.module.css:
 - Se quito el grid de alturas iguales (`h-full` + stretch) para que la tarjeta piloto se vea mas alta que las otras 3, como en la imagen; el grid ahora usa `items-start`.
 
 Verificado con `npx tsc --noEmit` sin errores, detector de Impeccable sin hallazgos, y `npm test` 34/34. No se pudo renderizar/capturar visualmente (sin navegador en este entorno) -- se le pidio al usuario que lo revise el mismo antes de darlo por definitivo. Archivos tocados: src/components/landing/MultiEventSection.tsx, src/components/landing/landing-fx.module.css.
+
+### 2026-10-28T19:09:12Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+[misma imagen de referencia] pero has que el fondo se paresca a la imagen que te pase de esa seccion
+
+**Salida:**
+Se reviso la referencia con mas detalle: las formas de fondo no son diamantes de 45° (como los que quedaron del intento anterior) sino cuadrados redondeados inclinados ~15-18°, mas grandes, agrupados en 2-3 esquinas (arriba-izquierda dos formas superpuestas, medio-derecha una grande, abajo-izquierda otra grande) en vez de 5 acentos chicos repartidos parejo. Se reemplazaron los 5 `<span>` decorativos por 6: cluster arriba-izquierda (contorno gris + relleno lima tenue superpuestos, sangrando por el borde izquierdo), acento chico de contorno lima bajo el subtitulo, cuadrado lima solido arriba-derecha, forma grande de contorno medio-derecha, y forma grande de relleno gris abajo-izquierda -- todas con `rotate-[18deg]` o `rotate-[15deg]` en vez de `rotate-45`, consistente con el angulo de inclinacion ya usado en los listones diagonales de NfcSection (no es un patron nuevo, es el mismo recurso con otra forma). Las insignias de icono en diamante de las tarjetas (esas si con `rotate-45`, forma distinta y correcta) no se tocaron.
+
+Verificado con `npx tsc --noEmit` sin errores y detector de Impeccable sin hallazgos. No se pudo renderizar/capturar visualmente (sin navegador en este entorno). Archivo tocado: src/components/landing/MultiEventSection.tsx.
