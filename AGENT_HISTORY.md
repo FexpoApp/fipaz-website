@@ -770,3 +770,17 @@ En `LandingFooter.tsx`: se quito una linea en blanco muerta (resto de un bloque 
 
 **Salida:**
 En `LandingFooter.tsx`: se cambio el contenedor de `flex flex-col items-center justify-between gap-7 sm:flex-row` (que en desktop separaba el logo a la izquierda y los enlaces a la derecha, con un hueco grande en medio) a `flex flex-col items-center gap-7` sin el `sm:flex-row`, dejando logo, enlaces y copyright centrados en columna en todos los tamaños de pantalla. Verificado con `npx tsc --noEmit` sin errores.
+
+### 2026-10-28T21:49:10Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+para lo qu es el aparatdo de panel mejora la linea visual con le branding que esta en C:\proyectos 2026\fipaz proyecto\fipaz-website\Doc\branding\Fexpo · Guía de marca · v1.0.md con eso mejora lo que son los panel de expositor que se vea bien que siga las tipografias que se tiene en fonts y que los logos antiguos se cambien que se ponga el nuevo
+
+**Salida:**
+Se revisaron la guía `Doc/branding/Fexpo · Guía de marca · v1.0.md` y las guías locales de Next.js para CSS, imágenes y fuentes. Se renovó el panel del expositor con azul feria, marfil, lima activa y Poppins local: navegación, cabecera, superficies, formularios, resumen, tarjetas de métricas, gráfica y ficha del stand. Se creó `src/components/shared/fexpo-brand.tsx` como firma horizontal de una tinta con el símbolo vectorial y el nombre en minúsculas; se cambió a azul el SVG `public/img/landing/Fexpo-logo.svg` y se reemplazó el PNG antiguo en panel, administración, acceso, registro y páginas legales. También se actualizó `BrandMark` y el `themeColor`, y se añadió un estado vacío claro a la gráfica. Archivos principales: `src/app/panel/panel-theme.css`, `src/components/panel/{panel-sidebar,panel-navbar,panel-mobile-drawer,panel-page-header,panel-dashboard-client,metric-card,metricas-stand-view,mi-stand-view,panel-visits-chart,panel-account-menu}.tsx`, `src/components/admin/admin-shell.tsx`, `src/components/auth/access-screen.tsx`, `src/components/registration/RegistrationForm.tsx`, `src/components/legal/LegalPage.tsx`, `src/components/shared/{fexpo-brand,brand-mark}.tsx`, `src/app/layout.tsx` y este historial. Verificado con `npx tsc --noEmit` y `git diff --check` sin errores; lint de archivos modificados sin errores, con una advertencia preexistente en `admin-shell.tsx` (`useEffect`/`activeCompany`). La ejecución inicial de Playwright en 3001 no pudo iniciar otro `next dev` porque ya corría uno en 3000; al reutilizar 3000 pasó el flujo real de acceso simulado del expositor. Capturas temporales verificaron escritorio y móvil (390/320 px), firma horizontal de al menos 160 px y ausencia de desborde; los archivos temporales se eliminaron. Una corrida amplia de lint también mostró tres errores preexistentes en `assign-stand-modal.tsx`, `gamificacion-view.tsx` y `visitas-view.tsx`, fuera del cambio final.
+
+### 2026-10-28T22:18:25Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+has los commit corespondientes de lo que isiste y mejora con la branding lo que es el apartado de http://localhost:3000/feedback y lo que es la seccion de http://localhost:3000/privacidad y terminos mejora eso y has los commit corespondientes
+
+**Salida:**
+Pendiente.

@@ -14,22 +14,23 @@ export function BrandMark({
   return (
     <span
       className={`inline-flex items-center gap-2 ${className}`}
-      aria-label="ExpoVia"
+      aria-label="fexpo"
     >
       <Image
-        src="/assets/brand/expovia-app-icon.svg"
+        src="/img/landing/Fexpo-logo.svg"
         alt=""
-        width={36}
+        width={26}
         height={36}
         priority
+        className={inverse ? "brightness-0 invert" : undefined}
       />
       {!compact && (
         <span
-          className={`text-lg font-black tracking-tight ${
+          className={`text-lg font-extrabold tracking-tight ${
             inverse ? "text-white" : "text-[var(--expo-navy)]"
           }`}
         >
-          Expo<span className={inverse ? "text-[#ffe67a]" : "text-[var(--expo-blue)]"}>Via</span>
+          fexpo
         </span>
       )}
     </span>

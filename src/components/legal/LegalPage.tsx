@@ -1,5 +1,5 @@
 import React from "react";
-import Image from "next/image";
+import { FexpoBrand } from "@/components/shared/fexpo-brand";
 import Link from "next/link";
 import { ArrowLeft, Mail } from "lucide-react";
 import { PixelStar } from "../landing/PixelIcons";
@@ -48,14 +48,7 @@ export function LegalPage({ title, updatedAt, intro, sections, current }: LegalP
       <header className="sticky top-0 z-40 border-b-2 border-[var(--expo-line)] bg-white/95">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-2.5 sm:px-6 sm:py-3 lg:px-8">
           <Link href="/" aria-label="Fexpo, ir al inicio" className={`${styles.press} flex items-center`}>
-            <Image
-              src="/img/landing/fexpo-logo.png"
-              alt="Fexpo"
-              width={1254}
-              height={388}
-              priority
-              className="h-9 w-auto sm:h-11"
-            />
+            <FexpoBrand />
           </Link>
           <Link
             href="/"
@@ -162,7 +155,7 @@ export function LegalPage({ title, updatedAt, intro, sections, current }: LegalP
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-4 sm:flex-row sm:px-6 lg:px-8">
           <div className="flex flex-col items-center gap-1 sm:items-start">
             <Link href="/" aria-label="Fexpo, ir al inicio" className={styles.press}>
-              <Image src="/img/landing/fexpo-logo.png" alt="Fexpo" width={1254} height={388} className="h-10 w-auto" />
+              <FexpoBrand />
             </Link>
             <p className="font-mono text-xs font-bold text-slate-500">Eventos que te mueven.</p>
           </div>

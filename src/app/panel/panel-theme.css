@@ -1,26 +1,32 @@
 .fexpo-panel {
-  --panel-ink: #101d3d;
-  --panel-muted: #62749b;
-  --panel-blue: #0878f9;
-  --panel-border: #e4ecf7;
+  --panel-ink: #132d46;
+  --panel-muted: #626d78;
+  --panel-accent: #d5f24a;
+  --panel-border: #e2e0d8;
   color: var(--panel-ink);
-  background: #f4f8fd;
-  background-image: radial-gradient(circle at 58% 0, #e7f1ff 0, transparent 35%);
+  background: #f5f4ef;
+  font-family: var(--font-poppins), Arial, sans-serif;
+}
+
+.fexpo-panel h1,
+.fexpo-panel h2 {
+  font-weight: 700;
 }
 
 .fexpo-panel .pixel-card,
 .fexpo-panel .panel-surface {
   border: 1px solid var(--panel-border);
-  border-radius: 16px;
+  border-radius: 18px;
   background: #fff;
-  box-shadow: 0 8px 28px rgb(34 85 155 / 5%);
+  box-shadow: 0 8px 28px rgb(19 45 70 / 5%);
 }
 
 .fexpo-panel .pixel-label {
   font-family: inherit;
-  font-size: 0.72rem;
-  font-weight: 750;
-  letter-spacing: 0.06em;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
 }
 
 .fexpo-panel form.pixel-card {
@@ -31,33 +37,33 @@
 .fexpo-panel form.pixel-card input,
 .fexpo-panel form.pixel-card textarea,
 .fexpo-panel form.pixel-card select {
-  border: 1px solid #d7e3f3;
+  border: 1px solid #d5d9d5;
   border-radius: 11px;
-  background: #fbfdff;
-  color: #172344;
+  background: #fff;
+  color: var(--panel-ink);
 }
 
 .fexpo-panel form.pixel-card input:focus,
 .fexpo-panel form.pixel-card textarea:focus,
 .fexpo-panel form.pixel-card select:focus {
-  border-color: #0878f9;
-  box-shadow: 0 0 0 3px rgb(8 120 249 / 10%);
+  border-color: var(--panel-ink);
+  box-shadow: 0 0 0 3px rgb(213 242 74 / 45%);
 }
 
 .fexpo-panel form.pixel-card button[type="submit"] {
-  border: 1px solid #0878f9;
+  border: 1px solid var(--panel-ink);
   border-radius: 11px;
-  background: #0878f9;
-  color: white;
-  box-shadow: 0 6px 16px rgb(8 120 249 / 17%);
+  background: var(--panel-accent);
+  color: var(--panel-ink);
+  box-shadow: 0 6px 16px rgb(19 45 70 / 10%);
 }
 
 .fexpo-panel form.pixel-card button[type="submit"]:hover:not(:disabled) {
-  background: #0067d9;
+  background: #e4f798;
 }
 
 .panel-sidebar {
-  box-shadow: 6px 0 30px rgb(33 67 115 / 3%);
+  box-shadow: 6px 0 30px rgb(19 45 70 / 3%);
 }
 
 .panel-nav-link {
@@ -68,32 +74,31 @@
   min-height: 46px;
   border-radius: 11px;
   padding: 10px 14px;
-  color: #40557e;
-  font-size: 0.9rem;
-  font-weight: 650;
+  color: var(--panel-ink);
+  font-size: 0.875rem;
+  font-weight: 500;
   transition: background 160ms ease, color 160ms ease, transform 160ms ease;
 }
 
 .panel-nav-link:hover {
-  background: #eff6ff;
-  color: #0675f8;
+  background: rgb(19 45 70 / 7%);
   transform: translateX(2px);
 }
 
 .panel-nav-link[aria-current="page"] {
-  background: linear-gradient(100deg, #e5f1ff, #f2f7ff);
-  color: #0675f8;
-  font-weight: 800;
+  background: var(--panel-ink);
+  color: #fff;
+  font-weight: 600;
 }
 
 .panel-nav-link[aria-current="page"]::before {
   position: absolute;
-  top: 9px;
-  bottom: 9px;
-  left: -16px;
+  top: 12px;
+  bottom: 12px;
+  left: 0;
   width: 3px;
   border-radius: 0 4px 4px 0;
-  background: #0878f9;
+  background: var(--panel-accent);
   content: "";
 }
 
@@ -101,46 +106,44 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  min-height: 190px;
-  border: 1px solid #deebfa;
-  border-radius: 19px;
-  background: linear-gradient(100deg, #fff 0%, #f4f9ff 52%, rgb(239 247 255 / 55%) 100%);
-}
-
-.panel-hero::before {
-  position: absolute;
-  z-index: -2;
-  inset: 0 0 0 42%;
-  background: url("/img/landing/entrance/interior-main.png") center 46% / cover no-repeat;
-  opacity: 0.28;
-  content: "";
+  min-height: 205px;
+  border: 1px solid var(--panel-ink);
+  border-radius: 20px;
+  background: var(--panel-ink);
+  color: #fff;
 }
 
 .panel-hero::after {
   position: absolute;
-  z-index: -1;
-  inset: 0;
-  background: linear-gradient(90deg, #fff 0%, rgb(255 255 255 / 98%) 35%, rgb(255 255 255 / 42%) 78%, rgb(255 255 255 / 65%) 100%);
+  z-index: 0;
+  top: -75px;
+  right: 8%;
+  width: 215px;
+  height: 300px;
+  background: url("/img/landing/Fexpo-logo.svg") center / contain no-repeat;
+  filter: brightness(0) invert(1);
+  opacity: 0.08;
   content: "";
 }
 
+.panel-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
 .panel-chart-grid line {
-  stroke: #e8eff9;
+  stroke: #e2e0d8;
   stroke-width: 1;
 }
 
 .panel-chart-grid text {
-  fill: #8a9abb;
+  fill: #626d78;
   font-size: 11px;
 }
 
 @media (max-width: 640px) {
-  .panel-hero::before {
-    inset: 0;
-    opacity: 0.14;
-  }
-
   .panel-hero::after {
-    background: rgb(255 255 255 / 74%);
+    right: -35px;
+    opacity: 0.05;
   }
 }
