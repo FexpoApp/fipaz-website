@@ -26,6 +26,9 @@ const benefits = [
   },
 ];
 
+const lightMobileVeil = "linear-gradient(180deg,rgba(255,255,255,0.92) 0%,rgba(255,255,255,0.75) 50%,rgba(255,255,255,0.35) 100%)";
+const lightDesktopVeil = "linear-gradient(90deg,rgba(255,255,255,0.98) 0%,rgba(255,255,255,0.95) 38%,rgba(255,255,255,0.6) 55%,rgba(255,255,255,0) 75%)";
+
 export function HeroSection() {
   return (
     <section
@@ -39,14 +42,23 @@ export function HeroSection() {
         fill
         priority
         sizes="100vw"
+        style={{ opacity: "var(--hero-image-opacity, 1)" }}
         className="pointer-events-none -z-10 object-cover object-[70%_center] sm:object-[65%_center] lg:object-center"
       />
 
       {/* Mobile veil keeps the copy readable over the illustration. */}
-      <div data-hero-veil="mobile" className="pointer-events-none absolute inset-0 -z-10 lg:hidden" />
+      <div
+        data-hero-veil="mobile"
+        style={{ backgroundImage: `var(--hero-mobile-veil, ${lightMobileVeil})` }}
+        className="pointer-events-none absolute inset-0 -z-10 lg:hidden"
+      />
 
       {/* Desktop veil fades toward the illustration on the right. */}
-      <div data-hero-veil="desktop" className="pointer-events-none absolute inset-0 -z-10 hidden lg:block" />
+      <div
+        data-hero-veil="desktop"
+        style={{ backgroundImage: `var(--hero-desktop-veil, ${lightDesktopVeil})` }}
+        className="pointer-events-none absolute inset-0 -z-10 hidden lg:block"
+      />
 
       <div className="relative mx-auto grid w-full max-w-7xl items-center gap-6 px-5 sm:px-10 lg:grid-cols-12 lg:gap-8 lg:px-8">
         <div className="mx-auto max-w-xl text-center sm:max-w-2xl sm:text-left lg:col-span-7 lg:mx-0">
@@ -55,6 +67,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.05 }}
+            style={{ color: "var(--hero-heading, #132D46)" }}
             className={`${headingFont.className} text-center text-[2.65rem] leading-[1.02] font-bold tracking-tight sm:text-left sm:text-6xl sm:leading-[1.02] lg:text-7xl xl:text-8xl`}
           >
             Explora. <br />
@@ -70,7 +83,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.1 }}
-            data-hero-copy
+            style={{ color: "var(--hero-copy, #334155)" }}
             className="mx-auto mt-5 max-w-xl text-center text-[15px] leading-relaxed font-normal sm:mx-0 sm:mt-6 sm:text-left sm:text-base lg:text-lg"
           >
             La app para ferias que ya tenemos. Explora stands y rutas, haz check-in con NFC y suma puntos en cada visita.

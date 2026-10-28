@@ -798,3 +798,11 @@ C:\Users\ASUS_TUF\AppData\Local\Temp\orca-paste-1793230637077-a0eaba70-5b45-42c8
 
 **Salida:**
 Se revisó la captura: el título claro quedaba sobre el velo blanco del hero. En `src/components/landing/HeroSection.tsx`, `src/app/globals.css` y `src/app/dark-theme.css` se unificaron los colores del texto, la opacidad de la imagen y los velos móvil y escritorio mediante variables del tema en `#inicio`, para que cambien juntos. Se verificó el cambio claro → oscuro → claro en Chrome con Playwright; en escritorio el velo pasa de blanco a azul profundo y el título de azul a claro. En móvil se confirmó el velo oscuro, el texto legible y la ausencia de desborde horizontal. `pnpm exec tsc --noEmit`, ESLint del componente y `git diff --check` terminaron sin errores. El intento de iniciar otro servidor de desarrollo encontró el puerto 3000 ocupado por el servidor existente; se usó ese servidor. Se eliminaron el script y las capturas temporales.
+
+### 2026-10-28T23:47:00Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+<image name=[Image #1] path="C:\Users\ASUS_TUF\AppData\Local\Temp\orca-paste-1793231162574-896764b9-7230-4406-af80-cdd55fae0f44.png">
+pero modificaste lo que es el modo claro [Image #1] ahora ya no esta como era antes
+
+**Salida:**
+Se comparó la captura con el hero en la rama `feat/fexpo-dark-mode`: faltaba el velo blanco del modo claro. En `src/components/landing/HeroSection.tsx` se restauraron como valores de respaldo en el propio componente los degradados claros originales, los colores del título y subtítulo y la opacidad de la imagen. El modo oscuro sigue tomando sus valores del mismo selector de `src/app/dark-theme.css`. Se retiraron de `src/app/globals.css` las reglas del hero que hacían depender el modo claro de otra hoja CSS. En Chrome con Playwright se verificó a escala 125 % el ciclo claro inicial → oscuro → claro y se inspeccionaron capturas y estilos calculados: el claro recupera el velo blanco y el oscuro conserva el velo azul con texto legible. `pnpm exec tsc --noEmit`, ESLint del componente y `git diff --check` terminaron sin errores. Se eliminaron script y capturas temporales.
