@@ -635,3 +635,138 @@ Tarea: conseguir el archivo PNG completo de esa imagen y guardarlo en el repo, s
 Se siguieron los pasos: generate-design (desktop_wallpaper, asset_ids ["MAHZU6QS9KU"]) devolvio 4 candidatos bajo job e400c489-03b0-47d4-af70-399727f2ed6e; se tomo el primero (dg-029276e5-5905-41e2-a9e9-ebcb47387ef2) y create-design-from-candidate genero el design DAHZU8yTLPQ; get-export-formats confirmo soporte png; export-design (png 1920x1080) devolvio una URL S3 firmada que se descargo con curl a un archivo temporal (1920x1080 PNG valido, 513KB) en el scratchpad de la sesion.
 
 Verificacion visual con Read: el resultado NO coincide con el asset original. La miniatura real de MAHZU6QS9KU (via get-assets) muestra fondo marfil con dos bloques azul marino (#132D46) inclinados sangrando por los bordes izquierdo y derecho y acentos lima chicos, tal como se describio. El PNG exportado del design generado por desktop_wallpaper en cambio muestra una composicion completamente distinta: circulos y triangulos verde oliva/caqui en las cuatro esquinas, sin los bloques azul marino, sin la paleta correcta -- es claramente una composicion nueva generada por IA a partir del asset como referencia/inspiracion, no una incrustacion literal de la imagen original. Por lo tanto NO se guardo nada en public/img/landing/multi-evento-fondo.png y se reporto el fallo al usuario en vez de darlo por bueno. No se modificaron otros archivos del repo ni se hizo commit.
+
+### 2026-10-28T21:25:44Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Nota:** las 8 entradas siguientes se registran de forma retroactiva en este mismo momento -- la sesion se reinicio por compactacion de contexto entre el primer prompt de este bloque y este registro, y el habito de anadir la entrada antes de empezar a trabajar no se mantuvo turno a turno tras la compactacion. Se reconstruyen a partir del propio historial de la conversacion, con el prompt literal de cada turno y un resumen fiel de lo que se hizo.
+
+**Prompt:**
+para datros de desmotracion esa seccion que tenga este background
+
+```css
+.fexpo-eventos {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #F5F4EF;
+  min-height: 800px;
+}
+
+.fexpo-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.fexpo-eventos-content {
+  position: relative;
+  z-index: 1;
+}
+
+.fx-band {
+  position: absolute;
+  display: block;
+  transform: rotate(45deg);
+  border-radius: 30px;
+}
+
+.fx-left-1 { width: 35%; height: 12%; top: 8%; left: -18%; background: rgba(213, 242, 74, 0.17); }
+.fx-left-2 { width: 38%; height: 12%; top: 41%; left: -21%; background: rgba(213, 242, 74, 0.14); }
+.fx-left-3 { width: 22%; height: 9%; top: 74%; left: -15%; background: rgba(213, 242, 74, 0.07); }
+.fx-right-1 { width: 35%; height: 12%; top: 0; right: -20%; background: rgba(98, 109, 120, 0.065); }
+.fx-right-2 { width: 36%; height: 13%; top: 32%; right: -21%; background: rgba(98, 109, 120, 0.15); }
+.fx-right-3 { width: 32%; height: 11%; top: 73%; right: -20%; background: rgba(98, 109, 120, 0.065); }
+
+.fx-diamond { position: absolute; display: block; aspect-ratio: 1; transform: rotate(45deg); border-radius: 13%; }
+.fx-d1 { top: 22%; left: 16%; width: 4.5%; border: 1.5px solid rgba(213, 242, 74, 0.8); }
+.fx-d2 { top: 27%; left: 19%; width: 7%; background: rgba(98, 109, 120, 0.18); }
+.fx-d3 { top: 12%; right: 16%; width: 3.4%; background: rgba(213, 242, 74, 0.76); }
+.fx-d4 { top: 33%; right: 9%; width: 8%; border: 1.5px solid rgba(213, 242, 74, 0.73); }
+.fx-d5 { top: 44%; right: 5%; width: 5%; background: rgba(98, 109, 120, 0.24); }
+
+@media (max-width: 768px) {
+  .fexpo-eventos { min-height: auto; }
+  .fx-band { border-radius: 15px; }
+  .fx-left-1, .fx-left-2 { width: 65%; left: -45%; }
+  .fx-right-1, .fx-right-2 { width: 65%; right: -45%; }
+  .fx-d2, .fx-d5 { opacity: 0.5; }
+}
+```
+
+```jsx
+export default function FondoFexpo({ children }) {
+  return (
+    <section className="fexpo-eventos">
+      <div className="fexpo-bg" aria-hidden="true">
+        <span className="fx-band fx-left-1" />
+        <span className="fx-band fx-left-2" />
+        <span className="fx-band fx-left-3" />
+        <span className="fx-band fx-right-1" />
+        <span className="fx-band fx-right-2" />
+        <span className="fx-band fx-right-3" />
+        <span className="fx-diamond fx-d1" />
+        <span className="fx-diamond fx-d2" />
+        <span className="fx-diamond fx-d3" />
+        <span className="fx-diamond fx-d4" />
+        <span className="fx-diamond fx-d5" />
+      </div>
+      <div className="fexpo-eventos-content">{children}</div>
+    </section>
+  );
+}
+```
+
+que se vea de al mejor maneraa
+
+**Salida:**
+Se tradujo el patron CSS/JSX pegado (bandas diagonales + rombos, en los mismos rgba de lima/gris que ya son los colores de marca D5F24A/626D78) a clases Tailwind arbitrarias dentro de `MultiEventSection.tsx`, reemplazando los cuadrados rotados que tenia la seccion antes. Breakpoint mobile->desktop replicado con clases sin prefijo (mobile, igual que el `@media max-width:768px` del original) y `md:` (desktop, igual que los valores base del CSS original). Verificado con `npx tsc --noEmit` sin errores. Archivo tocado: src/components/landing/MultiEventSection.tsx.
+
+### 2026-10-28T21:25:49Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+que esos span tenga lo que es movimientos suaves al hacer scrolling
+
+**Salida:**
+Se reutilizo `depthLayers()` (scroll-fx.ts), ya usado en FinalCTASection/ActorsSection/NfcSection para dar parallax por scroll a capas decorativas -- no se invento una animacion nueva. Se le agrego `data-fx-depth` (valores 10-34px) a cada una de las 11 figuras de fondo y se llamo `depthLayers(root)` dentro de `playMultiEvent()`. Respeta `prefers-reduced-motion` automaticamente via `useScrollFx`. Verificado con `npx tsc --noEmit` sin errores. Archivo tocado: src/components/landing/MultiEventSection.tsx.
+
+### 2026-10-28T21:25:54Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+en las cards de fipaz 2026 tengan todos una sola altura y que no tenga lo de abjao que dice plataforma
+
+**Salida:**
+En `MultiEventSection.tsx`: se cambio el grid de `items-start` a `items-stretch` y se agrego `h-full` al `<li>` y a la tarjeta para que las 4 tarjetas de eventos midan lo mismo (antes la tarjeta piloto tenia `lg:py-8` extra que la hacia mas alta). Se elimino el bloque inferior "Plataforma" con el boton de flecha decorativo de las 4 tarjetas, y el import de `ArrowRight` (ya sin uso). Verificado con `npx tsc --noEmit` sin errores.
+
+### 2026-10-28T21:26:00Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+en esta seccion "Hablemos de tu próxima feria." ponle lo que es el svg C:\proyectos 2026\fipaz proyecto\fipaz-website\public\img\landing\Tech support and customer service.svg pero a ese svg cambiale los colores que tienen adaptalo su colores asules a lo que es nuestra paleta de colores
+
+**Salida:**
+Se identificaron por `fill="#......"` los 3 tonos realmente azules del SVG (`#01527f`, `#015e95`: los blobs decorativos grandes y los circulos de fondo de los iconos flotantes; `#c8e9f0`: el detalle palido dentro de esos circulos), dejando intactos los tonos piel/cabello/teal del personaje (no son azules). Se reemplazaron por `#132D46` (azul feria, los dos primeros) y `#D5F24A` (lima activa, el tercero) con `Edit`/`replace_all` directo sobre el SVG. Se agrego la ilustracion a `ContactSection.tsx` (columna izquierda, bajo el email, solo visible en `lg:` porque esa columna queda con espacio libre frente al formulario) via `next/image` con `unoptimized` (igual que el resto de SVGs locales del sitio) y la URL con el espacio del nombre de archivo escapado (`%20`). Verificado con `npx tsc --noEmit` sin errores. Archivos tocados: public/img/landing/Tech support and customer service.svg, src/components/landing/ContactSection.tsx.
+
+### 2026-10-28T21:26:05Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+desde "Datos de demostración · funciones propuestas" pon lo qu es los backounds de lo que ariba ismos esos span figuras que tenian Datos de demostración · funciones propuestas y y experciencia esas seciones que se replique en las seciones que faltan que se ve de la mejor manera
+
+**Salida:**
+Se creo un componente compartido `DemoBgShapes.tsx` con las mismas 11 figuras (bandas + rombos) de "visión multi-evento", para no duplicar el bloque en cada seccion. Se aplico a las secciones "Datos de demostración" que no lo tenian: `ActorsSection.tsx` (ya tenia `depthLayers(root)`, parallax automatico), `MapShowcaseSection.tsx` (no tenia fondo decorativo ni scroll suave; se le agrego ambos, sumando `depthLayers(root)` a su `playMap()`), `HowItWorksSection.tsx` (version de respaldo que solo se ve en mobile/touch/reduced-motion; se le puso el fondo estatico sin GSAP nuevo porque no tenia ninguna animacion propia). `MultiEventSection.tsx` se refactorizo para usar el mismo componente compartido en vez de la copia inline. No se tocaron NfcSection (cintas propias) ni ContactSection/FinalCTASection (decoracion propia ya establecida). Verificado con `npx tsc --noEmit` sin errores. Archivos: nuevo src/components/landing/DemoBgShapes.tsx; tocados ActorsSection.tsx, MapShowcaseSection.tsx, HowItWorksSection.tsx, MultiEventSection.tsx.
+
+### 2026-10-28T21:26:10Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+a las seciones de EXPERIENCIA INTERACTIVA · DEMOSTRACIÓN y Datos de demostración · funciones propuestas quitale esos span de figuras
+
+**Salida:**
+Se quitaron las 3 cintas diagonales lima de `NfcSection.tsx` ("EXPERIENCIA INTERACTIVA · DEMOSTRACIÓN"), dejando el fondo de puntos (`fx.dots`, textura distinta) intacto. Se revirtio el `<DemoBgShapes />` recien agregado a `ActorsSection.tsx` ("Datos de demostración · funciones propuestas") junto con su import, quedando sin cambio neto en ese archivo. `MapShowcaseSection.tsx` y `HowItWorksSection.tsx` no se tocaron (no se mencionaron). Verificado con `npx tsc --noEmit` sin errores. Archivos tocados: src/components/landing/NfcSection.tsx, src/components/landing/ActorsSection.tsx (sin diff neto).
+
+### 2026-10-28T21:26:15Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+solcuiona lo que es footer y que se vea bien
+
+**Salida:**
+En `LandingFooter.tsx`: se quito una linea en blanco muerta (resto de un bloque eliminado antes) y el import `PixelStar` sin uso; se cambio el `#132D46` fijo del wordmark "fexpo" por `var(--expo-navy)`; se envolvieron los enlaces en `<nav aria-label="Enlaces del pie de pagina">`; se agrego una animacion de entrada (fade + rise al hacer scroll, via `useScrollFx`/`playFooter`) porque era la unica seccion de toda la landing sin ningun tratamiento de movimiento, chocando con el resto. Verificado con `npx tsc --noEmit` sin errores.
+
+### 2026-10-28T21:26:20Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+[lista pegada: Inicio / Demo / Panel / Feedback / Privacidad / Terminos] que esten al medio
+
+**Salida:**
+En `LandingFooter.tsx`: se cambio el contenedor de `flex flex-col items-center justify-between gap-7 sm:flex-row` (que en desktop separaba el logo a la izquierda y los enlaces a la derecha, con un hueco grande en medio) a `flex flex-col items-center gap-7` sin el `sm:flex-row`, dejando logo, enlaces y copyright centrados en columna en todos los tamaños de pantalla. Verificado con `npx tsc --noEmit` sin errores.
