@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { ArrowRight, ChevronDown, Compass, Gift, Smartphone, Award } from "lucide-react";
 import { headingFont } from "./fonts";
-import heroImage from "../../../public/img/landing/1ra landing.png";
+import heroImage from "../../../public/img/landing/inicial landing.webp";
 
 const benefits = [
   {
