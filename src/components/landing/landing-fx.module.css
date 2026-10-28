@@ -156,11 +156,6 @@
 
 /* ── Multi-event ───────────────────────────────────────────────────────────────────────────────── */
 
-.pilot {
-  outline: 3px solid var(--expo-blue);
-  outline-offset: 4px;
-}
-
 .pin {
   display: inline-flex;
   transition: translate 160ms var(--ease-out), scale 160ms var(--ease-out);

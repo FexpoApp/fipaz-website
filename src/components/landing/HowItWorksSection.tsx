@@ -2,6 +2,7 @@
 
 import React from "react";
 import { motion } from "motion/react";
+import { DemoBgShapes } from "./DemoBgShapes";
 import { PixelStar } from "./PixelIcons";
 import styles from "./HowItWorksSection.module.css";
 import { Calendar, Search, MapPin, Smartphone } from "lucide-react";
@@ -133,7 +134,8 @@ export function HowItWorksBody({ scripted = false }: { scripted?: boolean }) {
 /** Normal document flow. On the desktop entrance it only remains as the `#como-funciona` anchor (see the CSS module). */
 export function HowItWorksSection() {
   return (
-    <section id="como-funciona" className={`${styles.section} scroll-mt-24 border-t border-[var(--expo-line)] bg-white py-16 md:py-24`}>
+    <section id="como-funciona" className={`${styles.section} relative overflow-hidden scroll-mt-24 border-t border-[var(--expo-line)] bg-white py-16 md:py-24`}>
+      <DemoBgShapes />
       <HowItWorksBody />
     </section>
   );

@@ -6,13 +6,15 @@ import { gsap } from "gsap";
 import { PixelMapPin } from "./PixelIcons";
 import { Navigation, ArrowRight, Utensils, Compass, Layers, Maximize2, Sparkles } from "lucide-react";
 import { ExpoInteractiveMap, expoStands } from "@/features/map";
+import { DemoBgShapes } from "./DemoBgShapes";
 import { headingFont } from "./fonts";
-import { UI_OUT, disposer, magnetic, revealHeading, useScrollFx } from "./scroll-fx";
+import { UI_OUT, depthLayers, disposer, magnetic, revealHeading, useScrollFx } from "./scroll-fx";
 import fx from "./landing-fx.module.css";
 
 /** The frame rises, then the map "opens" from its centre like a screen switching on. */
 function playMap(root: HTMLElement, finePointer: boolean) {
   const cleanup = disposer();
+  depthLayers(root);
   const heading = root.querySelector<HTMLElement>("[data-fx-heading]");
   if (heading) cleanup.add(revealHeading(heading));
 
@@ -61,6 +63,8 @@ export function MapShowcaseSection() {
       id="mapa"
       className="relative scroll-mt-24 overflow-hidden border-t border-[var(--expo-line)] bg-white py-20 md:py-28"
     >
+      <DemoBgShapes />
+
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mx-auto max-w-4xl text-center">

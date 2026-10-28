@@ -116,11 +116,6 @@ export function NfcSection() {
     <section ref={root} className="relative overflow-hidden border-t border-[var(--expo-line)] bg-[var(--expo-bg)] py-10 md:py-14">
       <div aria-hidden="true" data-fx-depth="30" className={`${fx.dots} pointer-events-none absolute inset-x-0 -top-24 -bottom-24`} />
 
-      {/* Diagonal lima ribbons, like the reference: bleed off the section edges, behind everything. */}
-      <div aria-hidden="true" className="pointer-events-none absolute -top-16 -left-20 h-72 w-40 -rotate-[24deg] rounded-[48px] bg-[var(--expo-yellow)]/35" />
-      <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 -left-24 h-80 w-48 -rotate-[20deg] rounded-[56px] bg-[var(--expo-yellow)]/35" />
-      <div aria-hidden="true" className="pointer-events-none absolute -right-20 -bottom-16 h-56 w-36 rotate-[18deg] rounded-[44px] bg-[var(--expo-yellow)]/35" />
-
       <div className="relative mx-auto flex w-full max-w-7xl flex-col justify-center overflow-hidden px-4 sm:px-6 lg:aspect-video lg:px-8">
         {/* Header */}
         <div className="mx-auto max-w-4xl text-center">

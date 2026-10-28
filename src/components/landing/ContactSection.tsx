@@ -2,6 +2,7 @@
 
 import React, { useRef, useState } from "react";
 import { gsap } from "gsap";
+import Image from "next/image";
 import { CheckCircle2, Loader2, Mail, Send, TriangleAlert } from "lucide-react";
 import { headingFont } from "./fonts";
 import { UI_OUT, revealHeading, useScrollFx } from "./scroll-fx";
@@ -145,6 +146,18 @@ export function ContactSection() {
             <Mail aria-hidden="true" className="h-5 w-5 shrink-0" />
             <span className="text-sm font-black break-all sm:text-base">{CONTACT_EMAIL}</span>
           </a>
+
+          <div data-fx-intro className="mt-10 hidden lg:block">
+            <Image
+              src="/img/landing/Tech%20support%20and%20customer%20service.svg"
+              alt=""
+              aria-hidden="true"
+              width={830}
+              height={568}
+              unoptimized
+              className="w-full max-w-md"
+            />
+          </div>
         </div>
 
         <div data-fx-plate className="lg:col-span-7">

@@ -569,3 +569,204 @@ pero que este centrado dentro de un circulo el logo y se vea bien
 Se cambio el fondo de rectangulo redondeado a circulo completo (circle r=50 en un viewBox 0 0 100 100). Para centrar el isotipo dentro del circulo se intento primero calcular a mano el bounding box del path (parser propio en Node parseando M/L/C/Z) pero dio un resultado inconsistente con el viewBox original del archivo (desbordaba por ~53 unidades en x), señal de un bug en el parseo de coordenadas relativas acumuladas -- no confiable para algo que tiene que "verse bien". Se descarto ese calculo y se uso en su lugar la tecnica robusta de SVG anidado: un <svg> interior con su propio viewBox (el original, 0 0 220.69336 310, sin tocar) y x/y/width/height definiendo su viewport dentro del circulo exterior; preserveAspectRatio por defecto (xMidYMid meet) hace que el motor SVG del navegador centre y ajuste el isotipo automaticamente, sin depender de un calculo manual propio. El path y su transform interno quedan exactamente iguales al archivo original (fexpo-isotipo.svg), solo cambia el fill a negro.
 
 No se pudo renderizar/capturar el resultado para confirmarlo visualmente en este entorno (sin navegador). Archivo tocado: public/assets/brand/fexpo-app-icon.svg (layout.tsx ya apuntaba a este archivo desde el cambio anterior, no requirio editarse de nuevo). Sin commits.
+
+### 2026-10-28T19:00:14Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+[captura de referencia: seccion "Datos de demostración · visión multi-evento" / "Un perfil. Múltiples eventos. Nuevas conexiones." -- 4 tarjetas de evento, la primera (FIPAZ 2026, piloto) mas grande y en azul feria, las otras 3 blancas y mas chicas, insignias de icono en forma de diamante, boton circular de flecha por tarjeta, circulos conectores entre tarjetas, fondo con diamantes decorativos] la seccion datos de demostracion realiza que se paresca a este estilo de esta imagen orientate que se vea lo mejor posible que tenga animaciones con lenis y gsap usa lo que es /emil-design-eng
+
+**Salida:**
+(pendiente -- nota: entre el turno anterior y este, la rama de trabajo en este directorio cambio de feat/mi-stand-datos-reales a feat/jhamil-landing sin que esta sesion lo hiciera -- aparentemente otra sesion concurrente hizo el checkout en el mismo working directory. El trabajo de backend (logo del stand) ya habia quedado commiteado en feat/mi-stand-datos-reales antes del cambio, no se perdio nada. Esta tarea es de landing (MultiEventSection.tsx), que vive en feat/jhamil-landing de todas formas, asi que se continua aqui sin necesidad de cambiar de rama.)
+
+Se invoco emil-design-eng (ya cargada en la sesion) y se autoconsultaron sus principios de motion antes de escribir codigo, dado que el GSAP/Lenis ya existente (`useScrollFx` -> `playMultiEvent`, con el timeline scrub que dibuja la linea conectora y hace entrar las tarjetas) debia preservarse, no reinventarse.
+
+Cambios en MultiEventSection.tsx + landing-fx.module.css:
+- Fondo: 5 diamantes decorativos (`rotate-45`) solo contorno o relleno lima, dispersos, recortados por el `overflow-hidden` de la seccion -- mismo recurso que las cintas diagonales de NfcSection, adaptado a la forma de la referencia.
+- Tarjeta 1 (FIPAZ 2026, piloto): fondo azul feria solido en vez de blanco con anillo (`fx.pilot`, que quedo sin uso y se elimino de landing-fx.module.css); ahora es la que visualmente "ancla" a las demas, igual que en la imagen. Las otras 3 siguen blancas.
+- Insignia de icono en forma de diamante (`rotate-45` en el contenedor, icono contrarrotado `-rotate-45` para que quede derecho) por tarjeta: Calendar/TrendingUp/Briefcase/Users segun el evento, relleno oscuro semitransparente en la tarjeta azul, lima tenue en las blancas.
+- Boton circular de flecha en el pie de cada tarjeta (lima para la activa, gris claro para las demas) -- se dejo como `<span aria-hidden>` decorativo, no como enlace real: 3 de los 4 eventos (Expocruz/La Paz Expone/Proximos Eventos) son "proyeccion"/"ejemplo"/"ecosistema", sin una pagina propia a la que apuntar; convertirlo en link habria implicado una promesa de navegacion que el producto no cumple (choca con la regla de voz de la guia de marca: las promesas coinciden con el estado del producto).
+- Puntos conectores (`data-fx-dot`): un circulo lima por tarjeta sobre la linea existente, en las posiciones horizontales aproximadas de cada tarjeta (12.5/37.5/62.5/87.5%). Se animan en el mismo timeline scrub que ya movia la linea y las tarjetas, con `scale: 0.4 -> 1` + opacidad (nunca desde scale(0), siguiendo el principio de emil-design-eng de que nada aparece de la nada), en sincronia con la llegada de cada tarjeta.
+- Se agrego `locationNote` (segunda linea de ubicacion, solo para FIPAZ 2026, con dato real de DEMO_FIXTURE.event.venueStatus) para igualar las 2 lineas de ubicacion de la tarjeta piloto en la referencia.
+- Se quito el grid de alturas iguales (`h-full` + stretch) para que la tarjeta piloto se vea mas alta que las otras 3, como en la imagen; el grid ahora usa `items-start`.
+
+Verificado con `npx tsc --noEmit` sin errores, detector de Impeccable sin hallazgos, y `npm test` 34/34. No se pudo renderizar/capturar visualmente (sin navegador en este entorno) -- se le pidio al usuario que lo revise el mismo antes de darlo por definitivo. Archivos tocados: src/components/landing/MultiEventSection.tsx, src/components/landing/landing-fx.module.css.
+
+### 2026-10-28T19:09:12Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+[misma imagen de referencia] pero has que el fondo se paresca a la imagen que te pase de esa seccion
+
+**Salida:**
+Se reviso la referencia con mas detalle: las formas de fondo no son diamantes de 45° (como los que quedaron del intento anterior) sino cuadrados redondeados inclinados ~15-18°, mas grandes, agrupados en 2-3 esquinas (arriba-izquierda dos formas superpuestas, medio-derecha una grande, abajo-izquierda otra grande) en vez de 5 acentos chicos repartidos parejo. Se reemplazaron los 5 `<span>` decorativos por 6: cluster arriba-izquierda (contorno gris + relleno lima tenue superpuestos, sangrando por el borde izquierdo), acento chico de contorno lima bajo el subtitulo, cuadrado lima solido arriba-derecha, forma grande de contorno medio-derecha, y forma grande de relleno gris abajo-izquierda -- todas con `rotate-[18deg]` o `rotate-[15deg]` en vez de `rotate-45`, consistente con el angulo de inclinacion ya usado en los listones diagonales de NfcSection (no es un patron nuevo, es el mismo recurso con otra forma). Las insignias de icono en diamante de las tarjetas (esas si con `rotate-45`, forma distinta y correcta) no se tocaron.
+
+Verificado con `npx tsc --noEmit` sin errores y detector de Impeccable sin hallazgos. No se pudo renderizar/capturar visualmente (sin navegador en este entorno). Archivo tocado: src/components/landing/MultiEventSection.tsx.
+
+### 2026-10-28T19:12:55Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+[prompt de generacion de imagen pegado textual: fondo 16:9 1920x1080 para la seccion multi-evento, paleta oficial Fexpo, modulos geometricos inclinados inspirados en el isotipo, elementos grandes recortados en los extremos, centro y zona inferior limpios para titulo/subtitulos/4 tarjetas, sin texto/logos/tarjetas/fotos/colores ajenos a la paleta]
+
+**Salida:**
+Imagen generada con exito via mcp__claude_ai_Canva__generate-image (media id MAHZU6QS9KU, 1680x944px reales segun get-assets): fondo marfil, dos bloques azul marino inclinados sangrando por los bordes izquierdo/derecho, acentos lima chicos, sin texto ni logos -- coincide bien con lo pedido, revisado visualmente via la miniatura devuelta por la herramienta.
+
+No se pudo descargar el archivo completo para usarlo en el repo: las herramientas de Canva disponibles solo devuelven una miniatura (200x112) de un asset MEDIA suelto; no hay endpoint para exportar un MEDIA directamente, solo `export-design` sobre un DESIGN (id "D..."). Se intento el rodeo obvio (generate-design tipo desktop_wallpaper con asset_ids=[MAHZU6QS9KU] -> create-design-from-candidate -> export-design PNG 1920x1080) pero el resultado exportado fue una composicion completamente distinta (circulos/triangulos verde oliva en las 4 esquinas, sin los bloques azul marino ni la paleta correcta): `generate-design` usa el asset como referencia/inspiracion para una nueva generacion por IA, no lo inserta tal cual, asi que el rodeo no resuelve el problema de fondo. No se forzo ni se guardo ese resultado alterado.
+
+Conclusion: la imagen generada SI cumple el brief (confirmable en el link de Canva https://www.canva.com/M/MAHZU6QS9KU, abrible por el usuario con su propia cuenta para descargar el original real), pero no se pudo traer el archivo al repo por una limitacion real de las herramientas disponibles en este entorno, no por falta de intento. Se le informo esto al usuario junto con el link, en vez de forzar un resultado alterado o inventar que si se guardo. El fondo CSS a mano que ya existe en MultiEventSection.tsx (bloques inclinados + acentos lima, mismo intento visual) se queda como esta mientras tanto.
+
+### 2026-10-28T19:13:20Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Haiku 5.5, claude-haiku-5-5)
+**Prompt:**
+Usa la herramienta `mcp__claude_ai_Canva__generate-image` para generar UNA imagen con estos parámetros exactos:
+
+- prompt: "Genera exclusivamente una imagen de fondo para una sección de landing page de Fexpo, formato horizontal 16:9, resolución 1920 × 1080 px, estética premium, tecnológica, geométrica y minimalista. Utiliza estrictamente la paleta oficial: marfil #F5F4EF como fondo predominante (55%), azul feria #132D46 (30%), lima activa #D5F24A (10%), tinta #111820 y gris lectura #626D78 (5% combinado). Crea una composición editorial amplia y refinada con módulos geométricos inclinados inspirados en los tres elementos del isotipo Fexpo, preservando su inclinación y sin modificar ni reconstruir el logotipo. Coloca elementos decorativos grandes, parcialmente recortados, principalmente en los extremos izquierdo y derecho; utiliza superficies azul marino, contornos finos, pequeñas formas lima y detalles grises discretos. Incorpora profundidad muy sutil mediante capas y transparencias, sin colores adicionales ni degradados multicolor. Mantén el centro y toda la zona inferior central muy limpios, con suficiente espacio negativo para superponer posteriormente un título grande, subtítulos y cuatro tarjetas de eventos. Resultado visual moderno, sofisticado, equilibrado, luminoso y profesional, coherente con un producto digital de ferias y eventos. IMPORTANTE: solo el fondo, sin textos, sin letras, sin logotipos, sin tarjetas, sin botones, sin navegación, sin fotografías, sin edificios, sin ilustraciones de personas, sin sombras excesivas, sin tonos violetas, celestes, rosas o amarillos ajenos a la paleta oficial."
+- aspectRatio: "LANDSCAPE_16_9"
+- user_intent: "Generar imagen de fondo para la sección multi-evento de la landing de Fexpo"
+
+El tool solo devuelve un jobId (no la imagen final). Si no aparece un widget que lo resuelva solo, usa `mcp__claude_ai_Canva__get-generate-image-job` con ese jobId, reintentando/esperando hasta que el job termine (success o failure).
+
+Cuando termine, repórtame EXACTAMENTE: el resultado completo de la llamada a generate-image (incluyendo el jobId), y el resultado completo de get-generate-image-job una vez terminado (incluyendo cualquier URL o mediaId de la imagen generada, y el estado final). Si falla, repórtame el error completo tal cual. No interpretes ni resumas de más, solo pega los resultados crudos de las tool calls.
+
+**Salida:**
+Se cargaron por ToolSearch las herramientas Canva generate-image y get-generate-image-job. Se llamo generate-image una vez con el prompt, aspectRatio LANDSCAPE_16_9 y user_intent indicados; devolvio jobId acs-quota-v1.ZW4eApUDCs... (truncado en este registro). get-generate-image-job devolvio PENDING dos veces y luego SUCCESS con result.results[0] = {type MEDIA, id MAHZU6QS9KU, version 1}; recurso Canva: https://www.canva.com/M/MAHZU6QS9KU (media id MAHZU6QS9KU). No se modificaron archivos del repo.
+
+### 2026-10-28T19:15:50Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+Ya generé una imagen con `mcp__claude_ai_Canva__generate-image` (fondo geométrico minimalista para una landing, paleta Fexpo: marfil #F5F4EF, azul feria #132D46, lima activa #D5F24A, tinta #111820, gris #626D78, 16:9). Quedó guardada en Canva como un asset MEDIA con id MAHZU6QS9KU (1680x944px reales, según get-assets). El problema: las herramientas de Canva solo me devuelven una vista previa en miniatura (200x112) de ese MEDIA; no hay una forma directa de descargar el archivo completo -- export-design solo exporta DESIGNS (id empieza con "D"), no MEDIA sueltos (empiezan con "M").
+
+Tarea: conseguir el archivo PNG completo de esa imagen y guardarlo en el repo, sin alterar su contenido visual. Pasos sugeridos: 1) generate-design con design_type "desktop_wallpaper", asset_ids ["MAHZU6QS9KU"], query pidiendo usar la imagen exactamente como esta, a pantalla completa, sin texto/logos/marcos; 2) create-design-from-candidate con el candidato elegido para obtener un design_id; 3) get-export-formats para confirmar soporte PNG; 4) export-design con format png 1920x1080 (o lo mas cercano); 5) descargar la URL resultante y guardar en public/img/landing/multi-evento-fondo.png. Verificar visualmente con Read antes de dar por bueno; si el resultado agrega texto/marcos/logos o se ve alterado, reportarlo en vez de darlo por bueno. No tocar otros archivos ni hacer commit.
+
+**Salida:**
+Se siguieron los pasos: generate-design (desktop_wallpaper, asset_ids ["MAHZU6QS9KU"]) devolvio 4 candidatos bajo job e400c489-03b0-47d4-af70-399727f2ed6e; se tomo el primero (dg-029276e5-5905-41e2-a9e9-ebcb47387ef2) y create-design-from-candidate genero el design DAHZU8yTLPQ; get-export-formats confirmo soporte png; export-design (png 1920x1080) devolvio una URL S3 firmada que se descargo con curl a un archivo temporal (1920x1080 PNG valido, 513KB) en el scratchpad de la sesion.
+
+Verificacion visual con Read: el resultado NO coincide con el asset original. La miniatura real de MAHZU6QS9KU (via get-assets) muestra fondo marfil con dos bloques azul marino (#132D46) inclinados sangrando por los bordes izquierdo y derecho y acentos lima chicos, tal como se describio. El PNG exportado del design generado por desktop_wallpaper en cambio muestra una composicion completamente distinta: circulos y triangulos verde oliva/caqui en las cuatro esquinas, sin los bloques azul marino, sin la paleta correcta -- es claramente una composicion nueva generada por IA a partir del asset como referencia/inspiracion, no una incrustacion literal de la imagen original. Por lo tanto NO se guardo nada en public/img/landing/multi-evento-fondo.png y se reporto el fallo al usuario en vez de darlo por bueno. No se modificaron otros archivos del repo ni se hizo commit.
+
+### 2026-10-28T21:25:44Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Nota:** las 8 entradas siguientes se registran de forma retroactiva en este mismo momento -- la sesion se reinicio por compactacion de contexto entre el primer prompt de este bloque y este registro, y el habito de anadir la entrada antes de empezar a trabajar no se mantuvo turno a turno tras la compactacion. Se reconstruyen a partir del propio historial de la conversacion, con el prompt literal de cada turno y un resumen fiel de lo que se hizo.
+
+**Prompt:**
+para datros de desmotracion esa seccion que tenga este background
+
+```css
+.fexpo-eventos {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #F5F4EF;
+  min-height: 800px;
+}
+
+.fexpo-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.fexpo-eventos-content {
+  position: relative;
+  z-index: 1;
+}
+
+.fx-band {
+  position: absolute;
+  display: block;
+  transform: rotate(45deg);
+  border-radius: 30px;
+}
+
+.fx-left-1 { width: 35%; height: 12%; top: 8%; left: -18%; background: rgba(213, 242, 74, 0.17); }
+.fx-left-2 { width: 38%; height: 12%; top: 41%; left: -21%; background: rgba(213, 242, 74, 0.14); }
+.fx-left-3 { width: 22%; height: 9%; top: 74%; left: -15%; background: rgba(213, 242, 74, 0.07); }
+.fx-right-1 { width: 35%; height: 12%; top: 0; right: -20%; background: rgba(98, 109, 120, 0.065); }
+.fx-right-2 { width: 36%; height: 13%; top: 32%; right: -21%; background: rgba(98, 109, 120, 0.15); }
+.fx-right-3 { width: 32%; height: 11%; top: 73%; right: -20%; background: rgba(98, 109, 120, 0.065); }
+
+.fx-diamond { position: absolute; display: block; aspect-ratio: 1; transform: rotate(45deg); border-radius: 13%; }
+.fx-d1 { top: 22%; left: 16%; width: 4.5%; border: 1.5px solid rgba(213, 242, 74, 0.8); }
+.fx-d2 { top: 27%; left: 19%; width: 7%; background: rgba(98, 109, 120, 0.18); }
+.fx-d3 { top: 12%; right: 16%; width: 3.4%; background: rgba(213, 242, 74, 0.76); }
+.fx-d4 { top: 33%; right: 9%; width: 8%; border: 1.5px solid rgba(213, 242, 74, 0.73); }
+.fx-d5 { top: 44%; right: 5%; width: 5%; background: rgba(98, 109, 120, 0.24); }
+
+@media (max-width: 768px) {
+  .fexpo-eventos { min-height: auto; }
+  .fx-band { border-radius: 15px; }
+  .fx-left-1, .fx-left-2 { width: 65%; left: -45%; }
+  .fx-right-1, .fx-right-2 { width: 65%; right: -45%; }
+  .fx-d2, .fx-d5 { opacity: 0.5; }
+}
+```
+
+```jsx
+export default function FondoFexpo({ children }) {
+  return (
+    <section className="fexpo-eventos">
+      <div className="fexpo-bg" aria-hidden="true">
+        <span className="fx-band fx-left-1" />
+        <span className="fx-band fx-left-2" />
+        <span className="fx-band fx-left-3" />
+        <span className="fx-band fx-right-1" />
+        <span className="fx-band fx-right-2" />
+        <span className="fx-band fx-right-3" />
+        <span className="fx-diamond fx-d1" />
+        <span className="fx-diamond fx-d2" />
+        <span className="fx-diamond fx-d3" />
+        <span className="fx-diamond fx-d4" />
+        <span className="fx-diamond fx-d5" />
+      </div>
+      <div className="fexpo-eventos-content">{children}</div>
+    </section>
+  );
+}
+```
+
+que se vea de al mejor maneraa
+
+**Salida:**
+Se tradujo el patron CSS/JSX pegado (bandas diagonales + rombos, en los mismos rgba de lima/gris que ya son los colores de marca D5F24A/626D78) a clases Tailwind arbitrarias dentro de `MultiEventSection.tsx`, reemplazando los cuadrados rotados que tenia la seccion antes. Breakpoint mobile->desktop replicado con clases sin prefijo (mobile, igual que el `@media max-width:768px` del original) y `md:` (desktop, igual que los valores base del CSS original). Verificado con `npx tsc --noEmit` sin errores. Archivo tocado: src/components/landing/MultiEventSection.tsx.
+
+### 2026-10-28T21:25:49Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+que esos span tenga lo que es movimientos suaves al hacer scrolling
+
+**Salida:**
+Se reutilizo `depthLayers()` (scroll-fx.ts), ya usado en FinalCTASection/ActorsSection/NfcSection para dar parallax por scroll a capas decorativas -- no se invento una animacion nueva. Se le agrego `data-fx-depth` (valores 10-34px) a cada una de las 11 figuras de fondo y se llamo `depthLayers(root)` dentro de `playMultiEvent()`. Respeta `prefers-reduced-motion` automaticamente via `useScrollFx`. Verificado con `npx tsc --noEmit` sin errores. Archivo tocado: src/components/landing/MultiEventSection.tsx.
+
+### 2026-10-28T21:25:54Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+en las cards de fipaz 2026 tengan todos una sola altura y que no tenga lo de abjao que dice plataforma
+
+**Salida:**
+En `MultiEventSection.tsx`: se cambio el grid de `items-start` a `items-stretch` y se agrego `h-full` al `<li>` y a la tarjeta para que las 4 tarjetas de eventos midan lo mismo (antes la tarjeta piloto tenia `lg:py-8` extra que la hacia mas alta). Se elimino el bloque inferior "Plataforma" con el boton de flecha decorativo de las 4 tarjetas, y el import de `ArrowRight` (ya sin uso). Verificado con `npx tsc --noEmit` sin errores.
+
+### 2026-10-28T21:26:00Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+en esta seccion "Hablemos de tu próxima feria." ponle lo que es el svg C:\proyectos 2026\fipaz proyecto\fipaz-website\public\img\landing\Tech support and customer service.svg pero a ese svg cambiale los colores que tienen adaptalo su colores asules a lo que es nuestra paleta de colores
+
+**Salida:**
+Se identificaron por `fill="#......"` los 3 tonos realmente azules del SVG (`#01527f`, `#015e95`: los blobs decorativos grandes y los circulos de fondo de los iconos flotantes; `#c8e9f0`: el detalle palido dentro de esos circulos), dejando intactos los tonos piel/cabello/teal del personaje (no son azules). Se reemplazaron por `#132D46` (azul feria, los dos primeros) y `#D5F24A` (lima activa, el tercero) con `Edit`/`replace_all` directo sobre el SVG. Se agrego la ilustracion a `ContactSection.tsx` (columna izquierda, bajo el email, solo visible en `lg:` porque esa columna queda con espacio libre frente al formulario) via `next/image` con `unoptimized` (igual que el resto de SVGs locales del sitio) y la URL con el espacio del nombre de archivo escapado (`%20`). Verificado con `npx tsc --noEmit` sin errores. Archivos tocados: public/img/landing/Tech support and customer service.svg, src/components/landing/ContactSection.tsx.
+
+### 2026-10-28T21:26:05Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+desde "Datos de demostración · funciones propuestas" pon lo qu es los backounds de lo que ariba ismos esos span figuras que tenian Datos de demostración · funciones propuestas y y experciencia esas seciones que se replique en las seciones que faltan que se ve de la mejor manera
+
+**Salida:**
+Se creo un componente compartido `DemoBgShapes.tsx` con las mismas 11 figuras (bandas + rombos) de "visión multi-evento", para no duplicar el bloque en cada seccion. Se aplico a las secciones "Datos de demostración" que no lo tenian: `ActorsSection.tsx` (ya tenia `depthLayers(root)`, parallax automatico), `MapShowcaseSection.tsx` (no tenia fondo decorativo ni scroll suave; se le agrego ambos, sumando `depthLayers(root)` a su `playMap()`), `HowItWorksSection.tsx` (version de respaldo que solo se ve en mobile/touch/reduced-motion; se le puso el fondo estatico sin GSAP nuevo porque no tenia ninguna animacion propia). `MultiEventSection.tsx` se refactorizo para usar el mismo componente compartido en vez de la copia inline. No se tocaron NfcSection (cintas propias) ni ContactSection/FinalCTASection (decoracion propia ya establecida). Verificado con `npx tsc --noEmit` sin errores. Archivos: nuevo src/components/landing/DemoBgShapes.tsx; tocados ActorsSection.tsx, MapShowcaseSection.tsx, HowItWorksSection.tsx, MultiEventSection.tsx.
+
+### 2026-10-28T21:26:10Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+a las seciones de EXPERIENCIA INTERACTIVA · DEMOSTRACIÓN y Datos de demostración · funciones propuestas quitale esos span de figuras
+
+**Salida:**
+Se quitaron las 3 cintas diagonales lima de `NfcSection.tsx` ("EXPERIENCIA INTERACTIVA · DEMOSTRACIÓN"), dejando el fondo de puntos (`fx.dots`, textura distinta) intacto. Se revirtio el `<DemoBgShapes />` recien agregado a `ActorsSection.tsx` ("Datos de demostración · funciones propuestas") junto con su import, quedando sin cambio neto en ese archivo. `MapShowcaseSection.tsx` y `HowItWorksSection.tsx` no se tocaron (no se mencionaron). Verificado con `npx tsc --noEmit` sin errores. Archivos tocados: src/components/landing/NfcSection.tsx, src/components/landing/ActorsSection.tsx (sin diff neto).
+
+### 2026-10-28T21:26:15Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+solcuiona lo que es footer y que se vea bien
+
+**Salida:**
+En `LandingFooter.tsx`: se quito una linea en blanco muerta (resto de un bloque eliminado antes) y el import `PixelStar` sin uso; se cambio el `#132D46` fijo del wordmark "fexpo" por `var(--expo-navy)`; se envolvieron los enlaces en `<nav aria-label="Enlaces del pie de pagina">`; se agrego una animacion de entrada (fade + rise al hacer scroll, via `useScrollFx`/`playFooter`) porque era la unica seccion de toda la landing sin ningun tratamiento de movimiento, chocando con el resto. Verificado con `npx tsc --noEmit` sin errores.
+
+### 2026-10-28T21:26:20Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+[lista pegada: Inicio / Demo / Panel / Feedback / Privacidad / Terminos] que esten al medio
+
+**Salida:**
+En `LandingFooter.tsx`: se cambio el contenedor de `flex flex-col items-center justify-between gap-7 sm:flex-row` (que en desktop separaba el logo a la izquierda y los enlaces a la derecha, con un hueco grande en medio) a `flex flex-col items-center gap-7` sin el `sm:flex-row`, dejando logo, enlaces y copyright centrados en columna en todos los tamaños de pantalla. Verificado con `npx tsc --noEmit` sin errores.
