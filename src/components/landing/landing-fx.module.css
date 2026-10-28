@@ -40,11 +40,6 @@
 
 /* ── Actors ────────────────────────────────────────────────────────────────────────────────────── */
 
-.actorBand {
-  background-image: radial-gradient(rgb(255 255 255 / 28%) 1.5px, transparent 1.5px);
-  background-size: 14px 14px;
-}
-
 .actorIcon,
 .check {
   transition: translate 160ms var(--ease-out), rotate 160ms var(--ease-out), scale 160ms var(--ease-out);
@@ -160,11 +155,6 @@
 }
 
 /* ── Multi-event ───────────────────────────────────────────────────────────────────────────────── */
-
-.pilot {
-  outline: 3px solid var(--expo-blue);
-  outline-offset: 4px;
-}
 
 .pin {
   display: inline-flex;

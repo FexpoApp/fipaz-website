@@ -2,21 +2,27 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f4fafc;
-  --foreground: #2f2d4c;
-  --expo-blue: #1677b8;
-  --expo-navy: #2f2d4c;
+  --font-sora: var(--font-poppins);
+  --font-jakarta: var(--font-poppins);
+  --background: #f5f4ef;
+  --foreground: #132d46;
+  --expo-blue: #132d46;
+  --expo-navy: #132d46;
   --expo-lilac: #b984b6;
   --expo-pink: #f4a2c0;
-  --expo-yellow: #ffc21a;
+  --expo-yellow: #d5f24a;
+  --expo-lime: #d5f24a;
+  --expo-marfil: #f5f4ef;
+  --expo-ink: #111820;
+  --expo-gray: #626d78;
   --expo-green: #62be5a;
   --expo-mint: #9ed8c9;
   --expo-sky: #82b5e3;
   --expo-purple: #8357a5;
   --expo-coral: #f28a72;
-  --expo-bg: #f4fafc;
+  --expo-bg: #f5f4ef;
   --expo-card: #ffffff;
-  --expo-line: #d8e5ec;
+  --expo-line: #e2e0d8;
 
   /* Motion curves shared by CSS and GSAP ("uiOut" in landing/scroll-fx.ts). */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -28,6 +34,10 @@
   --color-foreground: var(--foreground);
   --color-expo-blue: var(--expo-blue);
   --color-expo-navy: var(--expo-navy);
+  --color-expo-lime: var(--expo-lime);
+  --color-expo-marfil: var(--expo-marfil);
+  --color-expo-ink: var(--expo-ink);
+  --color-expo-gray: var(--expo-gray);
   --color-expo-lilac: var(--expo-lilac);
   --color-expo-pink: var(--expo-pink);
   --color-expo-yellow: var(--expo-yellow);
@@ -36,8 +46,7 @@
   --color-expo-sky: var(--expo-sky);
   --color-expo-purple: var(--expo-purple);
   --color-expo-coral: var(--expo-coral);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-poppins);
 }
 
 * {
@@ -58,7 +67,7 @@ body {
   overflow-x: clip;
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-poppins), Arial, Helvetica, sans-serif;
 }
 
 button,
@@ -80,12 +89,12 @@ a {
 }
 
 ::selection {
-  background: var(--expo-yellow);
+  background: var(--expo-lime);
   color: var(--expo-navy);
 }
 
 .pixel-label {
-  font-family: var(--font-geist-mono), monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.13em;

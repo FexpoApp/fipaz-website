@@ -1,29 +1,46 @@
-import { Plus_Jakarta_Sans, Sora, Space_Mono } from "next/font/google";
+import localFont from "next/font/local";
+import { Space_Mono } from "next/font/google";
 
-// Tipografía de la landing: antes una fuente "pixel art" (Pixelify Sans / Press Start 2P),
-// ahora una grotesca limpia y moderna. `headingFont` viste los títulos grandes de cada
-// sección; `eyebrowFont` las etiquetas pequeñas en mayúsculas (el "ojo" sobre el título).
-export const headingFont = Sora({
-  subsets: ["latin"],
-  weight: ["600", "700", "800"],
+// Tipografía oficial única de Fexpo según la Guía de marca v1.0: Poppins (Google Fonts).
+// Se cargan todos los pesos requeridos desde src/app/fonts/ para toda la landing.
+
+export const headingFont = localFont({
+  src: [
+    { path: "../../app/fonts/Poppins-SemiBold.ttf", weight: "600", style: "normal" },
+    { path: "../../app/fonts/Poppins-Bold.ttf", weight: "700", style: "normal" },
+    { path: "../../app/fonts/Poppins-ExtraBold.ttf", weight: "800", style: "normal" },
+  ],
+  variable: "--font-heading-poppins",
   display: "swap",
 });
 
-export const eyebrowFont = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["600", "700"],
+export const eyebrowFont = localFont({
+  src: [
+    { path: "../../app/fonts/Poppins-Medium.ttf", weight: "500", style: "normal" },
+    { path: "../../app/fonts/Poppins-SemiBold.ttf", weight: "600", style: "normal" },
+    { path: "../../app/fonts/Poppins-Bold.ttf", weight: "700", style: "normal" },
+  ],
+  variable: "--font-eyebrow-poppins",
   display: "swap",
 });
 
-// Typography for the "problema" section; exposed as CSS variables so the module CSS can reference them.
-export const soraFont = Sora({
-  subsets: ["latin"],
+// Variables compatibles para módulos CSS de la landing (parallax, solution, demos)
+// Todas alimentadas por Poppins en sus respectivos pesos según la guía:
+export const soraFont = localFont({
+  src: [
+    { path: "../../app/fonts/Poppins-Bold.ttf", weight: "700", style: "normal" },
+    { path: "../../app/fonts/Poppins-ExtraBold.ttf", weight: "800", style: "normal" },
+  ],
   variable: "--font-sora",
   display: "swap",
 });
 
-export const jakartaFont = Plus_Jakarta_Sans({
-  subsets: ["latin"],
+export const jakartaFont = localFont({
+  src: [
+    { path: "../../app/fonts/Poppins-Regular.ttf", weight: "400", style: "normal" },
+    { path: "../../app/fonts/Poppins-Medium.ttf", weight: "500", style: "normal" },
+    { path: "../../app/fonts/Poppins-SemiBold.ttf", weight: "600", style: "normal" },
+  ],
   variable: "--font-jakarta",
   display: "swap",
 });
