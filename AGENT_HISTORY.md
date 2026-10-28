@@ -448,3 +448,106 @@ Verificación previa completada con 0 errores en `npx tsc --noEmit` y suite unit
    - Unificación de tipografía Poppins y paleta oficial (#132D46, #D5F24A, #F5F4EF, #626D78).
    - Rediseño de las 6 tarjetas de recorrido interactivo con bordes suaves, píldoras numéricas y elevación difusa.
    - Estandarización de `--ink` y tokens de marca en los 6 módulos de demo interactiva (Search, Map, Route, NFC, Reward, Connect) y unificación del acento `stepAccent: #D5F24A` en `journey-data.ts`.
+
+### 2026-10-28T06:35:54Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+mejora la landing para lo que es la UI UX mobile usa lo que es /impeccable
+
+**Salida:**
+Se invoco impeccable (`impeccable context` ya corrido antes en la sesion, no se reejecuto; se cargo reference/adapt.md). Sin acceso a navegador/dispositivo real en este entorno (no hay herramienta de screenshot disponible), por lo que el pase se hizo por lectura de codigo, no visual, y se reporta asi explicitamente en vez de simular verificacion. Revisados: LandingHeader, HeroSection, ActorsSection, ContactSection, NfcSection, MapShowcaseSection, MultiEventSection, FinalCTASection, LandingFooter y la configuracion de viewport/safe-area (layout.tsx, globals.css). La mayoria ya estaba bien adaptada a mobile (grids que colapsan a 1 columna, texto con variantes sm/lg, `min-h-12` en las pildoras de HeroSection, `svh` en el alto del mapa, `viewportFit: cover` + `env(safe-area-inset-*)` ya usado en status bar y mobile-demo).
+
+Cambio aplicado (verificable sin ambiguedad por aritmetica de clases, sin necesidad de render): en LandingHeader.tsx el boton de hamburguesa movil (`h-10 w-10` = 40px) y el pill de Login movil (`min-h-10` = 40px) quedaban por debajo del objetivo tactil minimo de 44x44px; se subieron a `h-11 w-11` / `min-h-11`.
+
+Riesgo detectado pero NO corregido por falta de verificacion visual: en MapShowcaseSection.tsx, la vista "Vista Panoramica" (toggle secundario, no el mapa interactivo principal) posiciona 3 tarjetas "Pabellon" con `absolute` y anchos fijos (w-36/w-44/w-40, ~144-176px) dentro de un contenedor que en un telefono angosto puede quedar en ~280-300px de ancho; el calculo de posiciones (left-8/right-8/left-1/3) sugiere solapamiento horizontal entre Pabellon A y B, aunque el offset vertical distinto (top-8 / top-1/3 / bottom-6) podria evitar que se vean encimadas en la practica. Se deja señalado para revisar con un dispositivo real o captura de pantalla en vez de parchear a ciegas un componente ya ajustado por otras sesiones.
+
+No se toco la escena de entrada con scroll pineado (FexpoParallax/FairScene/EntrancePortal, GSAP ScrollTrigger pin + Lenis): en mobile ya usa un timeline mas corto (`total=1.15` en vez de ~2.4+ en desktop, por el gate `withSolution` ligado a `journeyOverlayQuery` que excluye mobile) y Lenis ya tiene `syncTouch:false` (no toma el scroll tactil), ambas decisiones ya mobile-conscientes de sesiones previas; tocar la mecanica de scrolljacking sin poder verla en un dispositivo real era mas riesgo que beneficio.
+
+Verificado con `npx tsc --noEmit` (sin errores) e `impeccable detect --json` sobre LandingHeader.tsx (sin hallazgos). Archivo tocado: src/components/landing/LandingHeader.tsx. Sin commits.
+
+### 2026-10-28T06:47:23Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+[captura de pantalla del hero de la landing en móvil] mejora esa parte de diseño para mobile que se vea mejor y que este sentrado y se vea como una app premium
+
+**Salida:**
+Ponytail activo (full): cambio minimo, un solo archivo. En src/components/landing/HeroSection.tsx (el hero "Explora. Conecta. Vive Fexpo.") el titular, el subtitulo y su contenedor eran `text-left` sin condicion, lo que en movil (<640px, donde `max-w-xl`/`max-w-2xl` no limitan nada porque el viewport ya es mas angosto) los dejaba pegados al borde izquierdo en vez de centrados, pese a que los dos grupos de botones y las 4 pildoras ya eran grids simetricos de ancho completo (sin cambios ahi). Se cambio a `text-center sm:text-left` en las 3 clases (contenedor, h1, p), con `mx-auto sm:mx-0` agregado al subtitulo para que su propio `max-w-xl` tambien quede centrado si llega a limitar en anchos intermedios. Desktop/tablet (`sm:` en adelante) no cambia: sigue alineado a la izquierda como antes. El subrayado lima de "Vive Fexpo." no necesito ajuste (es relativo al `inline-block` del propio texto). Verificado con `npx tsc --noEmit` sin errores. No hay navegador real en este entorno para confirmar visualmente. Archivo tocado: src/components/landing/HeroSection.tsx. Sin commits.
+
+### 2026-10-28T15:08:18Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+Datos de demostración · funciones propuestas mejora esa seccion lo que son las cards seguindo la linea visual de la branding usa /emil-design-eng que se vea bien que tenga lo que es gsap lenis que se vea bien la seccion
+
+**Salida:**
+Ponytail activo (full). Seccion: ActorsSection.tsx (3 tarjetas Visitante/Expositor/Organizador). Se invoco emil-design-eng y se reviso el motion existente (landing-fx.module.css + scroll-fx.ts: curva --ease-out cubic-bezier(0.23,1,0.32,1) compartida con GSAP via CustomEase, hover gated (hover:hover) and (pointer:fine), press scale(0.97), transiciones puntuales no `transition:all`, nada de keyframes para hover/press, duraciones 80-260ms, tilt()/magnetic() ya usan gsap.quickTo -- el patron "spring" que la skill recomienda para seguir el mouse en vez de asignacion instantanea) -- no se encontro ninguna violacion de sus principios, asi que no se toco el motion, solo el color.
+
+Cambio minimo (5 tokens, mismo archivo): headerBg/badgeColor/accent de Expositor usaban --expo-purple/pink (#8357a5/#f4a2c0, fuera de paleta); Organizador usaba --expo-mint (#9ed8c9); el check de las 6 features x3 tarjetas usaba --expo-green (#62be5a). --expo-blue/navy/yellow NO se tocaron por ya resolver exacto a los HEX de marca (#132D46 y #D5F24A respectivamente, nombres heredados pre-rebrand). Resultado: Visitante = header azul feria + badge lima/navy (ya tenia el header bien, solo cambio el badge); Expositor = header lima + badge azul feria/blanco; Organizador = header Tinta #111820 (literal, no habia var para ese tercer tono neutro-oscuro de la guia) + badge lima/navy -- 3 headers distintos sin salir de los 5 colores de la guia v1.0. Checks de las features: --expo-green -> --expo-blue en las 3 tarjetas (una sola clase compartida). Verificado con `npx tsc --noEmit` sin errores. Archivo tocado: src/components/landing/ActorsSection.tsx. Sin commits.
+
+### 2026-10-28T15:13:13Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+[captura] pero si te fijas no se nota lo que es las letras de lagunas cardas quitale las marcas de agua como puntos de aguas de las cads
+
+**Salida:**
+No eran marcas de agua: el h3 (titulo) y el p (subtitulo) del header de cada tarjeta tenian `text-slate-900`/`text-slate-800` hardcodeados en vez de heredar el `text-white` que ya esta puesto en el div padre (`.actorBand`), bug preexistente (no introducido por el cambio de colores anterior) que la nueva cabecera Tinta #111820 de Organizador (casi negro sobre casi negro) volvio invisible; en Visitante (navy) y Expositor (lima) tambien quedaba con bajo contraste, solo menos notorio. Fix: se agrego un campo `headerText` por actor -- igual al patron que ya seguia el icono de cada tarjeta -- y h3/p pasaron a usar `${actor.headerText}` en vez del gris fijo: Visitante y Organizador (headers oscuros) = `text-white`; Expositor (header lima) = `text-[var(--expo-navy)]` (el mismo token que ya usaba su icono). El subtitulo ademas lleva `opacity-80` para diferenciarse del titulo sin perder contraste (sobre fondos tan oscuros, 80% de blanco o de navy se queda muy por encima de AA). Las 3 combinaciones resultantes ya estaban validadas por la guia (blanco/marfil sobre azul feria 12.79:1, lima sobre azul feria 11.15:1 en su version navy-sobre-lima, blanco sobre tinta aun mas alto contraste). Verificado con `npx tsc --noEmit` sin errores. Archivo tocado: src/components/landing/ActorsSection.tsx. Sin commits.
+
+### 2026-10-28T15:17:53Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+[captura] pero por que no sigue apareciendo eso puntos dentro de la card no las quiero
+
+**Salida:**
+Eran los puntos de `.actorBand` en landing-fx.module.css (`background-image: radial-gradient(rgb(255 255 255 / 28%) 1.5px, transparent 1.5px); background-size: 14px 14px;`), la textura de puntos en el header de las 3 tarjetas. Se elimino la regla completa. Como la clase `fx.actorBand` ya no existia en el CSS module, se quito tambien su referencia en ActorsSection.tsx (`${fx.actorBand}` en el div del header) para no dejar un "undefined" colgando en el className -- CSS Modules devuelve `undefined` para una clase que ya no existe en el archivo. Verificado con `npx tsc --noEmit` sin errores. Archivos tocados: src/components/landing/landing-fx.module.css, src/components/landing/ActorsSection.tsx. Sin commits.
+
+### 2026-10-28T15:25:56Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+desde la seccion de MAPA DE DEMOSTRACIÓN para abajo mejora lo que es el estilo visual con lo que es nuestr linea grafica y paleta de colores que no sean otros colores que se mantenga en nuestra paleta de colores
+
+**Salida:**
+Ponytail activo (full). Alcance literal: MapShowcaseSection -> NfcSection -> MultiEventSection -> ContactSection -> FinalCTASection -> LandingFooter (orden real en src/app/page.tsx). Auditoria por grep de clases Tailwind de color (sky/indigo/emerald/amber/purple/rose/pink/etc.) y hex sueltos en los 6 archivos + PixelIcons.tsx (iconos compartidos). Descubri que globals.css ya tenia vars para los 5 colores de la guia bajo nombres heredados: --expo-blue/--expo-navy=#132D46, --expo-yellow=#D5F24A, --expo-bg=#F5F4EF, --expo-ink=#111820 (Tinta), --expo-gray=#626d78 (Gris lectura) -- las reuse en vez de hex sueltos donde fue posible.
+
+Cambios por archivo (todo con var(--expo-*) o hex exacto de marca):
+- MapShowcaseSection.tsx: badge "MAPA DE DEMOSTRACIÓN" (emerald->patron blanco/azul feria ya usado en otras secciones), boton "Vista Panorámica" activo (purple->Tinta), hover de "Pantalla Completa"/"Abrir mapa completo" (#FFE066/sky-600 -> #c9e63e/#1a3b5c, mismo convenio de hover ya usado en Hero/Header), marco oscuro del mapa (slate-900/700/800 -> Tinta + blanco translucido), ruta/pines SVG del mock (verde/azul-cielo/amber -> lima/marfil-navy/lima), los 3 "Pabellon" (sky/emerald/purple -> azul feria/lima/Tinta, mismo trio que ya se uso en las 3 tarjetas de ActorsSection), iconos Entrada Principal/Patio de Comidas (sky/amber->lima), PixelMapPin y badge demo (amber->lima/Tinta).
+- NfcSection.tsx: 4 pasos de la secuencia NFC (sky/indigo/emerald/amber -> azul feria tenue x3 + lima en el paso de puntos), badge "INTERACCIÓN SIMULADA" y "SIMULACIÓN" (emerald->patron blanco/azul feria y lima/navy), icono+label "Misión de ejemplo" (purple->azul feria), barra de progreso (gradiente purple/lilac->azul feria/lima), tarjeta de recompensa (bg rosa #fdeef4 -> lima al 10%), badge "Propuesta de recompensa" (purple/amber->navy/lima), sombra del cofre (rgba morado->rgba azul feria).
+- MultiEventSection.tsx: 3 de los 4 statusColor (sky/purple/emerald -> azul feria/Tinta/Gris lectura tenues, PILOTO ya era lima), badge "visión multi-evento" (sky->patron blanco/azul feria), icono MapPin (rose->azul feria), linea conectora (gradiente 3 tonos azul-cielo/lila/amber -> 2 tonos azul feria/lima).
+- ContactSection.tsx: icono de exito (mint->lima), alerta de error (--expo-coral, fuera de los 5 colores -> Tinta, ya que la guia no define un color de error propio), hover del boton enviar (#FFE066->#c9e63e).
+- FinalCTASection.tsx: gradiente de fondo (parada intermedia #3D2D5B morado -> Tinta), confeti (pink/mint/sky/lilac -> alterna lima/marfil), badge "Validación y mejora continua" (sky/amber->lima), hover del boton (#FFE066->#c9e63e).
+- LandingFooter.tsx: sin colores fuera de paleta: solo se agrego color="#D5F24A" explicito al PixelStar (no tenia color propio, heredaba el default de PixelIcons.tsx).
+- PixelIcons.tsx: PixelRewardChest y PixelNfcPlaque reescritos a colores de marca (lila/purpura/verde/amber -> azul feria/Tinta/lima) -- se verifico primero que ambos solo se usan dentro de las secciones en alcance (Nfc y FinalCTA), sin otros llamadores. PixelStar y PixelMapPin NO se tocaron en su valor por defecto (#FFC21A/#F28A72) porque PixelStar tambien se usa en ActorsSection y HowItWorksSection (fuera del alcance pedido) y PixelMapPin ya recibia su color explicito en el unico sitio donde se usa; en vez de tocar el default, se paso `color="#D5F24A"` explicito en cada llamada de PixelStar dentro de las 6 secciones en alcance (LandingFooter, MultiEventSection, NfcSection, FinalCTASection ya lo tenia pero en amber, se corrigio a lima), dejando intacto lo que esta fuera del pedido de hoy. PixelLogo (usado solo en /feedback, fuera de alcance) y PixelTrophy/PixelCharacter (sin ningun uso en el repo) no se tocaron.
+
+Verificado con `npx tsc --noEmit` sin errores en los 7 archivos. Sin commits.
+
+### 2026-10-28T16:01:56Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+[captura de referencia: dos tarjetas "Cada visita cuenta." -- izquierda azul feria con 3 pasos numerados + ilustracion telefono/NFC, derecha blanca "Ruta FIPAZ" con checklist de 3 stands, barra de progreso 2/3 67% y propuesta de recompensa] esa seccion quiero que se paresca a esa imagen que te pse de referencia que se vea de la mejor manera
+
+**Salida:**
+Identificada la seccion objetivo por el texto exacto "Ruta FIPAZ" + los 3 stands (Altura Labs/Kawsay Salud/Sabor Andino, 50 puntos c/u) que coinciden literalmente con DEMO_FIXTURE.mission en src/data/demo-fixture.ts: es NfcSection.tsx. Se reescribio completo (antes: tarjeta "Secuencia de Check-in NFC" de 4 pasos a la izquierda + 3 tarjetas apiladas a la derecha -- mision/recompensa/cita). Ahora: 2 tarjetas lado a lado como la referencia.
+- Izquierda, fondo azul feria solido: ficha lima con icono Map, "Explora la feria / a tu ritmo." (segunda linea en lima), descripcion, ilustracion telefono+NFC (div con texto "fexpo" + PixelNfcPlaque ya corregido a marca superpuesto), y 3 pasos (Descubre stands/Registra tu visita/Sigue avanzando) con rail vertical lima que se llena al hacer scroll (mismo mecanismo GSAP que ya existia, solo recoloreado de blanco/azul a transparente/lima-sobre-navy para encajar en la tarjeta oscura).
+- Derecha, blanca: eyebrow "TU RECORRIDO" + badge "Demostración simulada", titulo y descripcion tomados de DEMO_FIXTURE.mission (reales, no inventados), contador "2/3 stands visitados" y "67%" calculados en codigo (`DEMO_FIXTURE.stands.filter(s=>s.featured).length` -- 2 de los 3 stands del fixture ya tienen featured:true, asi que el checklist marca exactamente esos 2 como visitados y el tercero como pendiente, igual que en la referencia), barra de progreso (mismo clip-path animado), lista de los 3 stands con check/circulo punteado + puntos, y la propuesta de recompensa (promotion real del stand destacado) con una animacion de caida tipo "back.out" al entrar en vista.
+
+Una desviacion deliberada de la referencia: los circulos de check de la referencia se ven en VERDE; se uso Lima activa en su lugar (fill lima + check/borde navy) para no romper la regla de paleta cerrada que el usuario pidio explicitamente hace un rato ("que no sean otros colores"). Se aviso al usuario en la respuesta por si prefiere el verde literal.
+
+Verificado con `npx tsc --noEmit` sin errores. Archivo tocado: src/components/landing/NfcSection.tsx (reescritura completa via Write). Sin commits.
+
+### 2026-10-28T16:10:13Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+pero no respetaste lo que es el fondo de la imagen que sugirio has tal cual ydentico pero que entre todo esa secion en 16:9
+
+**Salida:**
+Dos cambios en NfcSection.tsx. (1) Fondo: se agregaron 3 formas diagonales lima (rounded-[40-56px], rotadas -24/-20/+18deg, lima al 35% de opacidad) sangrando por las esquinas superior-izquierda, inferior-izquierda e inferior-derecha de la seccion, detras del contenido, igual que las cintas diagonales de la imagen de referencia; se dejo el patron de puntos (fx.dots) que ya existia. (2) 16:9: el contenedor interno (header + 2 columnas + leyenda) ahora lleva `lg:aspect-video` -- solo desde 1024px, NO en movil, porque forzar 16:9 en una pantalla angosta con las 2 tarjetas apiladas habria roto el layout movil que se arreglo hace varios turnos en esta misma sesion. Para que el contenido real quepa dentro de esa relacion 16:9 (~720px de alto a max-w-7xl) se compacto el espaciado en cascada: padding de la seccion (py-20/28 -> py-10/14), margenes del encabezado, tamaño de h2 (4xl/5xl/6xl -> 3xl/4xl/5xl), gap entre columnas (16->6), padding interno de ambas tarjetas (p-7/8 -> p-5/6), espaciado entre los 3 pasos, items de la lista de stands y la tarjeta de recompensa. El contenedor lleva overflow-hidden como respaldo si algo no cabe por poco, en vez de romper el alto fijo.
+
+No se pudo verificar visualmente si el contenido cabe exacto en los 720px sin recorte (sin navegador en este entorno); el calculo a mano de las alturas da margen razonable pero no es una confirmacion real -- pedirle al usuario que lo revise en el navegador es lo honesto aqui. Verificado con `npx tsc --noEmit` sin errores. Archivo tocado: src/components/landing/NfcSection.tsx. Sin commits.
+
+
+### 2026-10-28T15:32:54Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Antigravity (Gemini 3.8 Flash)
+**Prompt:**
+en la landing lo que es l footer esta con este logo C:\\proyectos 2026\\fipaz proyecto\\fipaz-website\\public\\img\\landing\\fexpo-logo.png quiero que le quites y ponga el nuevo logo con la letras y tipogrfia que ya se tiene
+
+**Salida:**
+Reemplazo del logotipo estático PNG (`fexpo-logo.png`) por la identidad gráfica vectorial oficial en `src/components/landing/LandingFooter.tsx`:
+1. Se sustituyó la imagen PNG por la misma estructura visual del header (`LandingHeader.tsx`): enlace interactivo con el isotipo oficial (`/img/landing/fexpo-isotipo.svg`, h-26px/30px) y el texto de marca `fexpo` en Azul feria (`#132D46`) con tipografía Poppins Bold (`text-2xl sm:text-3xl font-bold leading-none tracking-tight`).
+2. Se mantuvo la interactividad con hover sutil (`hover:scale-105`) y enlace al ancla `#inicio`.
+3. Verificación: `npx tsc --noEmit` completado sin errores y suite unitaria al 100% (34/34 passing). Sin commits.
+
+### 2026-10-28T16:42:39Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+has los commits necesarios de los cambios que hicimos
+
+**Salida:**
+Se hicieron 8 commits en feat/jhamil-landing (sin push), separando por tema: ee3faa5 objetivo tactil del header movil, e0d31dc centrado del hero en movil, 11d0e85 reemplazo de la imagen de fondo del hero (1ra landing.png -> inicial landing.webp, cambio externo detectado en el import de HeroSection.tsx, separado del centrado porque eran dos cambios distintos en el mismo archivo), e24282e quitar el icono de la insignia "paso a paso" en HowItWorksSection.tsx (tambien externo), 1c2ff78 paleta y contraste de las 3 tarjetas de audiencia + quitar textura de puntos, e803b7e paleta de marca desde Mapa de demostracion hacia abajo (Map/MultiEvent/Contact/FinalCTA/Footer/PixelIcons), 7fc8931 rediseno de la seccion "Cada visita cuenta" (NfcSection) segun la imagen de referencia. Para separar el centrado del hero del cambio de imagen (mismo archivo, dos cambios no relacionados) se edito temporalmente el import de vuelta al PNG, se commiteo el centrado, y se restauro el import al webp para el commit del asset. Sin commits de AGENT_HISTORY.md todavia (se hace aparte, al final).
