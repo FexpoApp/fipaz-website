@@ -30,18 +30,22 @@ export function PanelVisitsChart({ visits }: { visits: StandCheckin[] }) {
 
   const summary = `Check-ins de los últimos siete días: ${counts.join(", ")}`;
 
+  if (counts.every((count) => count === 0)) {
+    return <div role="img" aria-label={summary} className="flex min-h-48 items-center justify-center rounded-xl bg-[#F5F4EF] px-4 text-center text-sm text-[#626D78]">Aún no hay visitas registradas en los últimos 7 días.</div>;
+  }
+
   return (
     <div className="w-full">
       <div role="img" aria-label={summary} className="flex h-48 items-end justify-between gap-1.5 pt-5 sm:hidden">
         {counts.map((count, index) => <div key={days[index].key} className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-2">
-          <span className="text-[10px] font-bold text-[#60779f]">{count}</span>
-          <span className="w-full rounded-t-md bg-[linear-gradient(180deg,#1689ff,#a8d4ff)]" style={{ height: `${Math.max(3, count / maximum * 122)}px` }} />
-          <span className="whitespace-nowrap text-[9px] font-medium text-[#8092af]">{days[index].label.split(" ")[0]}</span>
+          <span className="text-[10px] font-bold text-[#626D78]">{count}</span>
+          <span className="w-full rounded-t-md bg-[linear-gradient(180deg,#132D46,#D5F24A)]" style={{ height: `${Math.max(3, count / maximum * 122)}px` }} />
+          <span className="whitespace-nowrap text-[9px] font-medium text-[#626D78]">{days[index].label.split(" ")[0]}</span>
         </div>)}
       </div>
       <svg viewBox="0 0 710 226" role="img" aria-label={summary} className="hidden h-auto w-full sm:block">
         <defs>
-          <linearGradient id="panel-visits-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="#1889ff" stopOpacity="0.22" /><stop offset="100%" stopColor="#1889ff" stopOpacity="0.01" /></linearGradient>
+          <linearGradient id="panel-visits-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="#132D46" stopOpacity="0.22" /><stop offset="100%" stopColor="#132D46" stopOpacity="0.01" /></linearGradient>
         </defs>
         <g className="panel-chart-grid">
           {[0, 0.25, 0.5, 0.75, 1].map((fraction) => {
@@ -51,8 +55,8 @@ export function PanelVisitsChart({ visits }: { visits: StandCheckin[] }) {
           {days.map((day, index) => <text key={day.key} x={x(index)} y="210" textAnchor="middle">{day.label}</text>)}
         </g>
         <path d={area} fill="url(#panel-visits-fill)" />
-        <path d={line} fill="none" stroke="#0878f9" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-        {counts.map((count, index) => <circle key={days[index].key} cx={x(index)} cy={y(count)} r="5.5" fill="#0878f9" stroke="#fff" strokeWidth="2.5"><title>{days[index].label}: {count} check-ins</title></circle>)}
+        <path d={line} fill="none" stroke="#132D46" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        {counts.map((count, index) => <circle key={days[index].key} cx={x(index)} cy={y(count)} r="5.5" fill="#132D46" stroke="#fff" strokeWidth="2.5"><title>{days[index].label}: {count} check-ins</title></circle>)}
       </svg>
     </div>
   );

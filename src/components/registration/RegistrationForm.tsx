@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, type ReactNode } from "react";
-import Image from "next/image";
+import { FexpoBrand } from "@/components/shared/fexpo-brand";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -551,7 +551,7 @@ export function RegistrationForm() {
 
         <div className="relative mx-auto flex min-h-dvh w-full max-w-[1320px] flex-col px-4 sm:px-8">
           <header className="flex items-center gap-4 py-4">
-            <Image src="/img/landing/fexpo-logo.png" alt="Fexpo" width={132} height={40} priority className="h-8 w-auto sm:h-9" />
+            <FexpoBrand />
             <span aria-hidden="true" className="h-7 w-px bg-slate-300" />
             <Link
               href="/"
