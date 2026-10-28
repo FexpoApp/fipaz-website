@@ -12,11 +12,11 @@ import fx from "./landing-fx.module.css";
 /** Pixel confetti at different depths: position, size, colour and how far each drifts while the section passes. */
 const confetti = [
   { className: "top-[18%] left-[12%]", size: 12, color: "var(--expo-yellow)", depth: 70 },
-  { className: "top-[62%] left-[7%]", size: 8, color: "var(--expo-pink)", depth: 30 },
-  { className: "top-[30%] right-[10%]", size: 14, color: "var(--expo-mint)", depth: 90 },
-  { className: "top-[74%] right-[16%]", size: 10, color: "var(--expo-sky)", depth: 45 },
-  { className: "top-[12%] right-[30%]", size: 8, color: "var(--expo-lilac)", depth: 25 },
-  { className: "top-[80%] left-[28%]", size: 10, color: "var(--expo-yellow)", depth: 55 },
+  { className: "top-[62%] left-[7%]", size: 8, color: "var(--expo-bg)", depth: 30 },
+  { className: "top-[30%] right-[10%]", size: 14, color: "var(--expo-yellow)", depth: 90 },
+  { className: "top-[74%] right-[16%]", size: 10, color: "var(--expo-bg)", depth: 45 },
+  { className: "top-[12%] right-[30%]", size: 8, color: "var(--expo-yellow)", depth: 25 },
+  { className: "top-[80%] left-[28%]", size: 10, color: "var(--expo-bg)", depth: 55 },
 ];
 
 /** The question lands line by line, the actions follow, and the buttons lean toward the pointer. */
@@ -46,7 +46,7 @@ export function FinalCTASection() {
     <section
       ref={root}
       id="contacto"
-      className="relative scroll-mt-24 overflow-hidden bg-gradient-to-br from-[var(--expo-navy)] via-[#3D2D5B] to-[var(--expo-blue)] py-24 text-white md:py-32"
+      className="relative scroll-mt-24 overflow-hidden bg-gradient-to-br from-[var(--expo-navy)] via-[var(--expo-ink)] to-[var(--expo-blue)] py-24 text-white md:py-32"
     >
       {/* Pixel grid and confetti drift at their own speeds */}
       <div
@@ -67,7 +67,7 @@ export function FinalCTASection() {
       {/* Floating ornaments: parallax on the wrapper, idle float on the child */}
       <div aria-hidden="true" data-fx-depth="50" className="absolute top-10 left-10 hidden md:block">
         <span className={`${fx.float} inline-flex`}>
-          <PixelStar className="h-9 w-9 opacity-90" color="#FFC21A" />
+          <PixelStar className="h-9 w-9 opacity-90" color="#D5F24A" />
         </span>
       </div>
       <div aria-hidden="true" data-fx-depth="40" className="absolute right-12 bottom-10 hidden md:block">
@@ -79,9 +79,9 @@ export function FinalCTASection() {
       <div className="relative mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
         <div
           data-fx-eyebrow
-          className="mb-7 inline-flex items-center gap-2 rounded-full border border-sky-300/30 bg-white/10 px-4 py-1.5 text-xs font-bold tracking-wide text-sky-200"
+          className="mb-7 inline-flex items-center gap-2 rounded-full border border-[var(--expo-yellow)]/30 bg-white/10 px-4 py-1.5 text-xs font-bold tracking-wide text-[var(--expo-yellow)]"
         >
-          <Sparkles className="h-3.5 w-3.5 text-amber-300" />
+          <Sparkles className="h-3.5 w-3.5 text-[var(--expo-yellow)]" />
           Validación y mejora continua
         </div>
 
@@ -110,7 +110,7 @@ export function FinalCTASection() {
             <span data-fx-magnet className="inline-block">
               <Link
                 href="/demo"
-                className={`${fx.slab} ${fx.press} group inline-flex items-center gap-3 rounded-xl bg-[var(--expo-yellow)] px-8 py-4 text-[var(--expo-navy)] [--slab-color:rgba(0,0,0,0.45)] [--slab-offset:10px] hover:bg-[#FFE066]`}
+                className={`${fx.slab} ${fx.press} group inline-flex items-center gap-3 rounded-xl bg-[var(--expo-yellow)] px-8 py-4 text-[var(--expo-navy)] [--slab-color:rgba(0,0,0,0.45)] [--slab-offset:10px] hover:bg-[#c9e63e]`}
               >
                 <span className="text-lg font-black">Probar demo</span>
                 <ArrowRight className="h-5 w-5 stroke-[3] transition-transform duration-200 ease-[var(--ease-out)] group-hover:translate-x-1 motion-reduce:group-hover:translate-x-0" />

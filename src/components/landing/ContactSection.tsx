@@ -151,7 +151,7 @@ export function ContactSection() {
           <div className="rounded-3xl border border-black/5 bg-white p-6 shadow-[0_24px_60px_-28px_rgba(47,45,76,0.35)] sm:p-8">
             {status === "sent" ? (
               <div role="status" className="flex flex-col items-start gap-5 py-6">
-                <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--expo-mint)]">
+                <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--expo-yellow)]">
                   <CheckCircle2 aria-hidden="true" className="h-8 w-8 text-[var(--expo-navy)]" />
                 </span>
                 <div>
@@ -266,9 +266,9 @@ export function ContactSection() {
                   {status === "error" && (
                     <p
                       role="alert"
-                      className="flex items-start gap-2.5 rounded-xl border border-[var(--expo-coral)]/40 bg-[var(--expo-coral)]/10 px-4 py-3 text-sm font-bold text-[var(--expo-navy)]"
+                      className="flex items-start gap-2.5 rounded-xl border border-[var(--expo-ink)]/30 bg-[var(--expo-ink)]/5 px-4 py-3 text-sm font-bold text-[var(--expo-navy)]"
                     >
-                      <TriangleAlert aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-[var(--expo-coral)]" />
+                      <TriangleAlert aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-[var(--expo-ink)]" />
                       <span>
                         No pudimos enviar tu mensaje. Inténtalo de nuevo o{" "}
                         <a
@@ -287,7 +287,7 @@ export function ContactSection() {
                   <button
                     type="submit"
                     disabled={sending}
-                    className={`${fx.slab} ${fx.press} inline-flex items-center gap-3 rounded-xl bg-[var(--expo-yellow)] px-7 py-3.5 text-[var(--expo-navy)] [--slab-offset:9px] hover:bg-[#FFE066] disabled:cursor-progress disabled:opacity-70`}
+                    className={`${fx.slab} ${fx.press} inline-flex items-center gap-3 rounded-xl bg-[var(--expo-yellow)] px-7 py-3.5 text-[var(--expo-navy)] [--slab-offset:9px] hover:bg-[#c9e63e] disabled:cursor-progress disabled:opacity-70`}
                   >
                     <span className="text-base font-black">{sending ? "Enviando…" : "Enviar mensaje"}</span>
                     {sending ? (

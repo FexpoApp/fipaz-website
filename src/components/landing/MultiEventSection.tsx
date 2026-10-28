@@ -22,7 +22,7 @@ const events = [
     name: "Expocruz",
     location: "Santa Cruz, Bolivia",
     status: "PROYECCIÓN",
-    statusColor: "bg-sky-100 text-[var(--expo-blue)]",
+    statusColor: "bg-[var(--expo-blue)]/10 text-[var(--expo-blue)]",
     desc: "Expansión proyectada para ferias multisectoriales de gran escala.",
     active: false,
   },
@@ -30,7 +30,7 @@ const events = [
     name: "La Paz Expone",
     location: "La Paz, Bolivia",
     status: "EJEMPLO",
-    statusColor: "bg-purple-100 text-[var(--expo-purple)]",
+    statusColor: "bg-[var(--expo-ink)]/10 text-[var(--expo-ink)]",
     desc: "Integración modular para eventos empresariales e industriales.",
     active: false,
   },
@@ -38,7 +38,7 @@ const events = [
     name: "Próximos Eventos",
     location: "Nivel Nacional e Internacional",
     status: "ECOSISTEMA",
-    statusColor: "bg-emerald-100 text-emerald-800",
+    statusColor: "bg-[var(--expo-gray)]/15 text-[var(--expo-gray)]",
     desc: "Un perfil común es parte de la propuesta; esta demo no sincroniza datos entre eventos.",
     active: false,
   },
@@ -91,9 +91,9 @@ export function MultiEventSection() {
         <div className="mx-auto max-w-4xl text-center">
           <div
             data-fx-intro
-            className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-sky-200 bg-sky-50 px-3.5 py-1.5 text-xs font-bold tracking-wide text-[var(--expo-blue)]"
+            className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-[var(--expo-blue)]/15 bg-white px-3.5 py-1.5 text-xs font-bold tracking-wide text-[var(--expo-navy)] shadow-sm"
           >
-            <Globe aria-hidden="true" className="h-3.5 w-3.5" />
+            <Globe aria-hidden="true" className="h-3.5 w-3.5 text-[var(--expo-blue)]" />
             Datos de demostración · visión multi-evento
           </div>
 
@@ -118,7 +118,7 @@ export function MultiEventSection() {
           <div
             aria-hidden="true"
             data-fx-line
-            className="absolute top-[calc(50%-2px)] right-12 left-12 z-0 hidden h-1 origin-left rounded-full bg-[linear-gradient(to_right,#1677B8_0%,#B984B6_50%,#FFC21A_100%)] lg:block"
+            className="absolute top-[calc(50%-2px)] right-12 left-12 z-0 hidden h-1 origin-left rounded-full bg-[linear-gradient(to_right,#132D46_0%,#D5F24A_100%)] lg:block"
           />
 
           <ul className="relative z-10 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
@@ -134,14 +134,14 @@ export function MultiEventSection() {
                       <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold tracking-wide uppercase ${evt.statusColor}`}>
                         {evt.status}
                       </span>
-                      {evt.active && <PixelStar className="h-4 w-4" />}
+                      {evt.active && <PixelStar className="h-4 w-4" color="#D5F24A" />}
                     </div>
 
                     <h3 className="mt-4 text-xl font-black text-[var(--expo-navy)]">{evt.name}</h3>
 
                     <p className="mt-1 flex items-center gap-1 font-mono text-xs font-bold text-slate-500">
                       <span className={fx.pin}>
-                        <MapPin aria-hidden="true" className="h-3.5 w-3.5 text-rose-500" />
+                        <MapPin aria-hidden="true" className="h-3.5 w-3.5 text-[var(--expo-blue)]" />
                       </span>
                       {evt.location}
                     </p>

@@ -66,9 +66,9 @@ export function MapShowcaseSection() {
         <div className="mx-auto max-w-4xl text-center">
           <div
             data-fx-intro
-            className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-emerald-300 bg-emerald-100 px-3.5 py-1 text-xs font-black tracking-wider text-emerald-800 uppercase"
+            className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-[var(--expo-blue)]/15 bg-white px-3.5 py-1.5 text-xs font-bold tracking-wide text-[var(--expo-navy)] shadow-sm"
           >
-            <Compass className="h-3.5 w-3.5 text-emerald-600" />
+            <Compass className="h-3.5 w-3.5 text-[var(--expo-blue)]" />
             MAPA DE DEMOSTRACIÓN
           </div>
 
@@ -103,7 +103,7 @@ export function MapShowcaseSection() {
             aria-pressed={viewMode === "overview"}
             onClick={() => setViewMode("overview")}
             className={`${toggleBase} ${
-              viewMode === "overview" ? "bg-[var(--expo-purple)] text-white" : "bg-white text-[var(--expo-navy)] hover:bg-slate-50"
+              viewMode === "overview" ? "bg-[var(--expo-ink)] text-white" : "bg-white text-[var(--expo-navy)] hover:bg-slate-50"
             }`}
           >
             <Layers className="h-4 w-4" />
@@ -112,7 +112,7 @@ export function MapShowcaseSection() {
 
           <Link
             href="/demo/map"
-            className={`${toggleBase} bg-[var(--expo-yellow)] text-[var(--expo-navy)] hover:bg-[#FFE066]`}
+            className={`${toggleBase} bg-[var(--expo-yellow)] text-[var(--expo-navy)] hover:bg-[#c9e63e]`}
           >
             <Maximize2 className="h-3.5 w-3.5" />
             <span className="text-xs font-extrabold">Pantalla Completa</span>
@@ -121,12 +121,12 @@ export function MapShowcaseSection() {
 
         {/* Map frame: the section's one peak */}
         <div data-fx-frame className="mt-12">
-          <div className="relative overflow-hidden rounded-3xl bg-slate-900 p-3 shadow-[0_40px_90px_-30px_rgba(15,23,42,0.55)] sm:p-6">
+          <div className="relative overflow-hidden rounded-3xl bg-[var(--expo-ink)] p-3 shadow-[0_40px_90px_-30px_rgba(17,24,32,0.55)] sm:p-6">
             {/* Top bar inside the frame */}
-            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4 text-white">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4 text-white">
               <div data-fx-bar className="flex items-center gap-2">
-                <span className="h-3 w-3 animate-pulse rounded-full bg-emerald-400 motion-reduce:animate-none" />
-                <span className="font-mono text-xs font-black tracking-widest text-emerald-400 uppercase">
+                <span className="h-3 w-3 animate-pulse rounded-full bg-[var(--expo-yellow)] motion-reduce:animate-none" />
+                <span className="font-mono text-xs font-black tracking-widest text-[var(--expo-yellow)] uppercase">
                   {viewMode === "interactive" ? "FIPAZ 2026 — MAPA DE EJEMPLO" : "FIPAZ 2026 — PLANO REFERENCIAL"}
                 </span>
               </div>
@@ -134,7 +134,7 @@ export function MapShowcaseSection() {
               {/* Mandatory tag label */}
               <span
                 data-fx-bar
-                className="rounded-md border border-amber-500/40 bg-amber-950/60 px-3 py-1 font-mono text-[10px] font-black text-amber-300 uppercase"
+                className="rounded-md border border-[var(--expo-yellow)]/40 bg-[var(--expo-ink)]/60 px-3 py-1 font-mono text-[10px] font-black text-[var(--expo-yellow)] uppercase"
               >
                 Datos de demostración · Ubicaciones ficticias
               </span>
@@ -143,7 +143,7 @@ export function MapShowcaseSection() {
             {/* Map content */}
             <div
               data-fx-screen
-              className="relative mt-4 h-[min(560px,78svh)] w-full overflow-hidden rounded-2xl border-2 border-slate-700 bg-[#eef7fb] sm:h-[520px]"
+              className="relative mt-4 h-[min(560px,78svh)] w-full overflow-hidden rounded-2xl border-2 border-white/10 bg-[var(--expo-bg)] sm:h-[520px]"
             >
               {viewMode === "interactive" ? (
                 <div className="relative h-full w-full">
@@ -157,65 +157,65 @@ export function MapShowcaseSection() {
                 </div>
               ) : (
                 /* Conceptual panorama view */
-                <div className="relative h-full w-full overflow-hidden bg-[#0f172a] p-4">
-                  <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:24px_24px] opacity-60" />
+                <div className="relative h-full w-full overflow-hidden bg-[var(--expo-ink)] p-4">
+                  <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(19,45,70,0.6)_1px,transparent_1px),linear-gradient(to_bottom,rgba(19,45,70,0.6)_1px,transparent_1px)] bg-[size:24px_24px] opacity-60" />
 
                   <svg className="absolute inset-0 h-full w-full" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <path
                       d="M 80 340 Q 180 240, 280 260 T 480 180 T 650 140"
                       fill="none"
-                      stroke="#62BE5A"
+                      stroke="#D5F24A"
                       strokeWidth="4"
                       strokeDasharray="8 6"
                       className={fx.route}
                     />
-                    <circle cx="80" cy="340" r="7" fill="#82B5E3" stroke="#FFFFFF" strokeWidth="2" />
-                    <circle cx="650" cy="140" r="9" fill="#FFC21A" stroke="#FFFFFF" strokeWidth="2.5" />
+                    <circle cx="80" cy="340" r="7" fill="#F5F4EF" stroke="#132D46" strokeWidth="2" />
+                    <circle cx="650" cy="140" r="9" fill="#D5F24A" stroke="#FFFFFF" strokeWidth="2.5" />
                   </svg>
 
                   <div
-                    className={`${fx.pavilion} absolute top-8 left-8 w-36 rounded-xl border-2 border-sky-400/40 bg-sky-950/70 p-3 text-white shadow-lg backdrop-blur-xs sm:left-14 sm:w-48`}
+                    className={`${fx.pavilion} absolute top-8 left-8 w-36 rounded-xl border-2 border-[var(--expo-blue)]/50 bg-[var(--expo-blue)]/80 p-3 text-white shadow-lg backdrop-blur-xs sm:left-14 sm:w-48`}
                   >
-                    <span className="font-mono text-[9px] font-black tracking-wider text-sky-400 uppercase">PABELLÓN A</span>
+                    <span className="font-mono text-[9px] font-black tracking-wider text-[var(--expo-yellow)] uppercase">PABELLÓN A</span>
                     <p className="text-xs font-black text-white sm:text-sm">Tecnología e Innovación</p>
-                    <div className="mt-2 grid grid-cols-2 gap-1 font-mono text-[9px] text-sky-200">
-                      <span className="rounded bg-sky-900/60 p-1">Andes Cloud</span>
-                      <span className="rounded bg-sky-900/60 p-1">Ruta IoT</span>
+                    <div className="mt-2 grid grid-cols-2 gap-1 font-mono text-[9px] text-white/80">
+                      <span className="rounded bg-black/20 p-1">Andes Cloud</span>
+                      <span className="rounded bg-black/20 p-1">Ruta IoT</span>
                     </div>
                   </div>
 
                   <div
-                    className={`${fx.pavilion} absolute top-1/3 right-8 w-44 rounded-xl border-2 border-emerald-400 bg-emerald-950/80 p-3 text-white shadow-xl ring-2 ring-emerald-400/30 backdrop-blur-xs sm:right-20 sm:w-56`}
+                    className={`${fx.pavilion} absolute top-1/3 right-8 w-44 rounded-xl border-2 border-[var(--expo-yellow)] bg-[var(--expo-ink)]/90 p-3 text-white shadow-xl ring-2 ring-[var(--expo-yellow)]/30 backdrop-blur-xs sm:right-20 sm:w-56`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-[9px] font-black tracking-wider text-emerald-400 uppercase">PABELLÓN B</span>
-                      <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400 motion-reduce:animate-none" />
+                      <span className="font-mono text-[9px] font-black tracking-wider text-[var(--expo-yellow)] uppercase">PABELLÓN B</span>
+                      <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--expo-yellow)] motion-reduce:animate-none" />
                     </div>
                     <p className="text-xs font-black text-white sm:text-sm">Comercio & Soluciones</p>
                     <div className="mt-2 grid grid-cols-2 gap-1 font-mono text-[9px]">
-                      <span className="rounded border border-emerald-400 bg-emerald-800/80 p-1 font-bold text-white">★ Vita Check</span>
-                      <span className="rounded bg-emerald-900/60 p-1 text-emerald-200">Bio Feria</span>
+                      <span className="rounded border border-[var(--expo-yellow)] bg-[var(--expo-yellow)] p-1 font-bold text-[var(--expo-navy)]">★ Vita Check</span>
+                      <span className="rounded bg-black/30 p-1 text-white/80">Bio Feria</span>
                     </div>
                   </div>
 
                   <div
-                    className={`${fx.pavilion} absolute bottom-6 left-1/3 w-40 rounded-xl border-2 border-purple-400/40 bg-purple-950/70 p-3 text-white shadow-lg backdrop-blur-xs sm:w-52`}
+                    className={`${fx.pavilion} absolute bottom-6 left-1/3 w-40 rounded-xl border-2 border-white/15 bg-[var(--expo-ink)]/90 p-3 text-white shadow-lg backdrop-blur-xs sm:w-52`}
                   >
-                    <span className="font-mono text-[9px] font-black tracking-wider text-purple-400 uppercase">PABELLÓN C</span>
+                    <span className="font-mono text-[9px] font-black tracking-wider text-[var(--expo-yellow)] uppercase">PABELLÓN C</span>
                     <p className="text-xs font-black text-white sm:text-sm">Gastronomía & Servicios</p>
-                    <div className="mt-2 grid grid-cols-2 gap-1 font-mono text-[9px] text-purple-200">
-                      <span className="rounded bg-purple-900/60 p-1">Sabor Paceño</span>
-                      <span className="rounded bg-purple-900/60 p-1">Cafe Altura</span>
+                    <div className="mt-2 grid grid-cols-2 gap-1 font-mono text-[9px] text-white/70">
+                      <span className="rounded bg-black/30 p-1">Sabor Paceño</span>
+                      <span className="rounded bg-black/30 p-1">Cafe Altura</span>
                     </div>
                   </div>
 
-                  <div className="absolute bottom-6 left-6 flex items-center gap-1.5 rounded-lg border border-slate-600 bg-slate-800/90 px-3 py-1.5 text-xs font-bold text-slate-200">
-                    <Navigation className="h-3.5 w-3.5 text-sky-400" />
+                  <div className="absolute bottom-6 left-6 flex items-center gap-1.5 rounded-lg border border-white/15 bg-black/30 px-3 py-1.5 text-xs font-bold text-white/80">
+                    <Navigation className="h-3.5 w-3.5 text-[var(--expo-yellow)]" />
                     Entrada Principal
                   </div>
 
-                  <div className="absolute top-6 right-6 hidden items-center gap-1.5 rounded-lg border border-slate-600 bg-slate-800/90 px-3 py-1.5 text-xs font-bold text-slate-200 sm:flex">
-                    <Utensils className="h-3.5 w-3.5 text-amber-400" />
+                  <div className="absolute top-6 right-6 hidden items-center gap-1.5 rounded-lg border border-white/15 bg-black/30 px-3 py-1.5 text-xs font-bold text-white/80 sm:flex">
+                    <Utensils className="h-3.5 w-3.5 text-[var(--expo-yellow)]" />
                     Patio de Comidas
                   </div>
 
@@ -224,7 +224,7 @@ export function MapShowcaseSection() {
                       <span className="rounded border border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-2 py-0.5 font-mono text-[9px] font-black text-[var(--expo-navy)] shadow-xs">
                         Punto simulado
                       </span>
-                      <PixelMapPin className="h-7 w-7" color="#FFC21A" />
+                      <PixelMapPin className="h-7 w-7" color="#D5F24A" />
                     </div>
                   </div>
                 </div>
@@ -232,8 +232,8 @@ export function MapShowcaseSection() {
             </div>
 
             {/* Bottom CTA bar */}
-            <div className="mt-5 flex flex-col items-center justify-between gap-4 border-t border-slate-800 pt-4 text-white sm:flex-row">
-              <p data-fx-bar className="text-center text-xs font-medium text-slate-300 sm:text-left sm:text-sm">
+            <div className="mt-5 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-4 text-white sm:flex-row">
+              <p data-fx-bar className="text-center text-xs font-medium text-white/70 sm:text-left sm:text-sm">
                 Prueba el zoom, los filtros y las rutas ilustrativas del mapa de demostración.
               </p>
 
@@ -241,7 +241,7 @@ export function MapShowcaseSection() {
                 <span data-fx-magnet className="inline-block">
                   <Link
                     href="/demo/map"
-                    className={`${fx.slab} ${fx.press} inline-flex items-center gap-2 rounded-xl bg-[var(--expo-blue)] px-5 py-2.5 text-white [--slab-color:rgba(0,0,0,0.4)] [--slab-lift:2px] [--slab-offset:6px] hover:bg-sky-600`}
+                    className={`${fx.slab} ${fx.press} inline-flex items-center gap-2 rounded-xl bg-[var(--expo-blue)] px-5 py-2.5 text-white [--slab-color:rgba(0,0,0,0.4)] [--slab-lift:2px] [--slab-offset:6px] hover:bg-[#1a3b5c]`}
                   >
                     <span className="text-sm font-black">Abrir mapa completo</span>
                     <ArrowRight className="h-4 w-4 stroke-[3]" />
@@ -251,7 +251,7 @@ export function MapShowcaseSection() {
                 <span data-fx-magnet className="inline-block">
                   <Link
                     href="/demo"
-                    className={`${fx.slab} ${fx.press} inline-flex items-center gap-2 rounded-xl bg-[var(--expo-yellow)] px-5 py-2.5 text-[var(--expo-navy)] [--slab-color:rgba(0,0,0,0.3)] [--slab-lift:2px] [--slab-offset:6px] hover:bg-[#FFE066]`}
+                    className={`${fx.slab} ${fx.press} inline-flex items-center gap-2 rounded-xl bg-[var(--expo-yellow)] px-5 py-2.5 text-[var(--expo-navy)] [--slab-color:rgba(0,0,0,0.3)] [--slab-lift:2px] [--slab-offset:6px] hover:bg-[#c9e63e]`}
                   >
                     <span className="text-sm font-black">Probar demo</span>
                   </Link>

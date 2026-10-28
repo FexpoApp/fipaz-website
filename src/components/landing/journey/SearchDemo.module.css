@@ -1,5 +1,5 @@
 /* "Buscar" preview. The list height follows the viewport because the panel sits between the title and the cards. */
-.root { --list-h: 196px; container-type: inline-size; display: flex; flex-direction: column; gap: 8px; color: #20234a; font-family: var(--font-jakarta), system-ui, sans-serif; }
+.root { --list-h: 196px; container-type: inline-size; display: flex; flex-direction: column; gap: 8px; color: #132D46; font-family: var(--font-poppins), system-ui, sans-serif; }
 .srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 .field { position: relative; display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 12px; overflow: hidden; border: 1.5px solid #cdd6e6; border-radius: 12px; background: #fff; color: #7b86a0; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
@@ -7,7 +7,7 @@
 .field:focus-within > svg:first-child, .field[data-typing="true"] > svg:first-child { color: var(--accent); }
 .inputWrap { position: relative; display: flex; flex: 1; align-items: center; min-width: 0; height: 100%; }
 .input, .ghost { font-family: inherit; font-size: 14px; font-weight: 600; }
-.input { width: 100%; min-width: 0; padding: 0; border: 0; background: transparent; color: #20234a; outline: none; }
+.input { width: 100%; min-width: 0; padding: 0; border: 0; background: transparent; color: #132D46; outline: none; }
 .input::placeholder { color: #8b94ab; font-weight: 500; }
 /* While the demo types by itself the input is not focused, so a fake caret follows the text. */
 .ghost { position: absolute; left: 0; display: flex; align-items: center; white-space: pre; pointer-events: none; }
@@ -25,12 +25,12 @@
 .chip[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, #fff); color: #0f3d86; }
 
 .meta { display: flex; align-items: center; min-height: 16px; color: #626b82; font-size: 11px; font-weight: 600; }
-.meta strong { color: #20234a; }
+.meta strong { color: #132D46; }
 .dots::after { content: ""; animation: dots 1.2s steps(4, end) infinite; }
 
 .list { max-height: var(--list-h); margin: 0; padding: 0; overflow-y: auto; overscroll-behavior: contain; list-style: none; scrollbar-width: thin; transition: opacity 0.2s ease; }
 .list[data-searching="true"] { opacity: 0.45; }
-.result { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 5px 8px; border: 1px solid transparent; border-radius: 12px; background: transparent; color: #20234a; font-family: inherit; text-align: left; cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease; }
+.result { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 5px 8px; border: 1px solid transparent; border-radius: 12px; background: transparent; color: #132D46; font-family: inherit; text-align: left; cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease; }
 .result:hover, .result:focus-visible { border-color: color-mix(in srgb, var(--accent) 28%, #fff); background: color-mix(in srgb, var(--accent) 8%, #fff); }
 .result > svg { flex: none; color: #8a93aa; transition: transform 0.2s ease; }
 .result:hover > svg { transform: translateX(3px); }

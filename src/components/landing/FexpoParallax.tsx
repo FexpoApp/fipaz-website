@@ -15,17 +15,45 @@ import { appendEntrance, arrivalOverlap, entranceDuration } from "./entrance-mot
 import entranceStyles from "./FexpoEntranceExperience.module.css";
 import styles from "./FexpoParallax.module.css";
 
+
 const problems = [
-  { title: "Visitante", badge: "DESORIENTACIÓN", icon: User, color: "pink", problem: "No siempre sabe qué empresas existen, dónde están o cuál puede resolver lo que busca.", detail: "Se pierden buenas oportunidades por falta de guía clara dentro del recinto." },
-  { title: "Expositor", badge: "SIN SEGUIMIENTO", icon: Store, color: "yellow", problem: "Recibe visitantes, pero muchas interacciones terminan sin seguimiento ni métricas claras.", detail: "Dificultad para convertir el tráfico del stand en prospectos calificados." },
-  { title: "Organizador", badge: "FALTA DE CAPA DIGITAL", icon: Building2, color: "mint", problem: "Gestiona espacios, expositores y actividades sin una capa digital integrada para toda la experiencia.", detail: "Falta de analítica en tiempo real sobre el flujo real de asistentes." },
+  {
+    title: "Visitante",
+    badge: "DESORIENTACIÓN",
+    icon: User,
+    headerVariant: "navy",
+    badgeVariant: "lime",
+    iconVariant: "white",
+    problem: "No siempre sabe qué empresas existen, dónde están o cuál puede resolver lo que busca.",
+    detail: "Se pierden buenas oportunidades por falta de guía clara dentro del recinto.",
+  },
+  {
+    title: "Expositor",
+    badge: "SIN SEGUIMIENTO",
+    icon: Store,
+    headerVariant: "lime",
+    badgeVariant: "navy",
+    iconVariant: "navy",
+    problem: "Recibe visitantes, pero muchas interacciones terminan sin seguimiento ni métricas claras.",
+    detail: "Dificultad para convertir el tráfico del stand en prospectos calificados.",
+  },
+  {
+    title: "Organizador",
+    badge: "FALTA DE CAPA DIGITAL",
+    icon: Building2,
+    headerVariant: "navy",
+    badgeVariant: "white",
+    iconVariant: "white",
+    problem: "Gestiona espacios, expositores y actividades sin una capa digital integrada para toda la experiencia.",
+    detail: "Falta de analítica en tiempo real sobre el flujo real de asistentes.",
+  },
 ] as const;
 
 function ContentOverlay() {
   return (
     <div className={styles.content} data-problem-content>
       <div className={styles.copy}>
-        <span className={styles.eyebrow} data-reveal="eyebrow"><span aria-hidden="true">✦</span> EL DESAFÍO EN LAS FERIAS HOY</span>
+        <span className={styles.eyebrow} data-reveal="eyebrow">EL DESAFÍO EN LAS FERIAS HOY</span>
         <h2 className={styles.title} data-reveal="title">Una feria llena de <span className={styles.titleAccent}>oportunidades</span> no debería sentirse difícil de navegar.</h2>
         <p className={styles.subtitle} data-reveal="subtitle">Sin una capa digital integrada, cada paso del recorrido genera fricción.</p>
       </div>
@@ -33,15 +61,48 @@ function ContentOverlay() {
         {problems.map((card) => {
           const Icon = card.icon;
           return (
-            <article className={styles.card} data-card data-tilt data-color={card.color} key={card.title}>
-              <div className={styles.cardTop}>
-                <span className={styles.cardIcon}><Icon aria-hidden="true" size={21} strokeWidth={2.5} /></span>
-                <span className={styles.cardBadge}>{card.badge}</span>
+            <article className={styles.card} data-card key={card.title}>
+              {/* Header banner con icono circular y badge */}
+              <div
+                className={`${styles.cardHeader} ${
+                  card.headerVariant === "lime" ? styles.cardHeaderLime : styles.cardHeaderNavy
+                }`}
+              >
+                <div
+                  className={`${styles.cardIconWrapper} ${
+                    card.iconVariant === "navy" ? styles.cardIconNavy : styles.cardIconWhite
+                  }`}
+                >
+                  <Icon aria-hidden="true" size={20} strokeWidth={2.4} />
+                </div>
+
+                <span
+                  className={`${styles.cardBadgePill} ${
+                    card.badgeVariant === "lime"
+                      ? styles.badgeLime
+                      : card.badgeVariant === "navy"
+                      ? styles.badgeNavy
+                      : styles.badgeWhite
+                  }`}
+                >
+                  {card.badge}
+                </span>
               </div>
-              <h3>{card.title}</h3>
-              <p className={styles.cardProblem}>{card.problem}</p>
-              <p className={styles.cardDetail}>{card.detail}</p>
-              <span className={styles.cardArrow} aria-hidden="true"><ArrowRight size={16} strokeWidth={2.6} /></span>
+
+              {/* Cuerpo de la tarjeta en fondo marfil neutro de marca */}
+              <div className={styles.cardBody}>
+                <div>
+                  <h3 className={styles.cardTitle}>{card.title}</h3>
+                  <p className={styles.cardProblemText}>{card.problem}</p>
+                </div>
+
+                <div className={styles.cardFooter}>
+                  <p className={styles.cardDetailText}>{card.detail}</p>
+                  <span className={styles.cardArrowBtn} aria-hidden="true">
+                    <ArrowRight size={15} strokeWidth={2.5} />
+                  </span>
+                </div>
+              </div>
             </article>
           );
         })}
@@ -79,6 +140,7 @@ export function FexpoParallax() {
         const enterAt = exitAt + 0.13;
         const entranceAt = 2.4;
         const total = withSolution ? entranceAt + entranceDuration + arrivalOverlap : 1.15;
+        const airshipDuration = withSolution ? exitAt + 0.25 : total;
         let disposeEntrance = () => {};
         const solution = section.querySelector<HTMLElement>("[data-solution]")!;
         solution.inert = true;
@@ -103,8 +165,8 @@ export function FexpoParallax() {
           .fromTo(layer("clouds"), { yPercent: distance(-3, -1.5), xPercent: distance(-4, -1.5) }, { yPercent: 0, xPercent: 0, duration: 1 }, 0)
           // The city starts lower, hidden behind the fair buildings, and rises as the plaza pulls back.
           .fromTo(layer("skyline"), { yPercent: distance(20, 10), scale: distance(1.06, 1.03) }, { yPercent: 0, scale: 1, duration: 1 }, 0)
-          // The airship enters from the left and settles on the right.
-          .fromTo(layer("airship"), { xPercent: distance(-520, -380), yPercent: distance(30, 20), scale: distance(0.9, 0.95) }, { xPercent: 0, yPercent: 0, scale: 1, duration: 1 }, 0)
+          // El dirigible/zepelin inicia a la izquierda y cruza al otro lado con el scroll.
+          .fromTo(layer("airship"), { xPercent: distance(-680, -500), yPercent: distance(26, 18), scale: distance(0.88, 0.92) }, { xPercent: distance(220, 420), yPercent: distance(-20, -14), scale: distance(1.04, 1.02), duration: airshipDuration, ease: "none" }, 0)
           // Plaza: starts zoomed in on the hall and pulls back, as if walking away, until the full image shows.
           .fromTo(layer("ground"), { scale: distance(1.9, 1.5) }, { scale: 1, duration: 0.9, ease: "power1.out" }, 0)
           .fromTo("[data-reveal='eyebrow']", { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.1 }, 0.18)
@@ -118,11 +180,11 @@ export function FexpoParallax() {
           .to(["[data-reveal='eyebrow']", "[data-reveal='title']", "[data-reveal='subtitle']"], { autoAlpha: 0, y: -36, duration: 0.14, stagger: 0.04 }, exitAt)
           .to("[data-card]", { autoAlpha: 0, y: -48, scale: 0.96, duration: 0.14, stagger: 0.05 }, exitAt + 0.04)
           .to("[data-problem-content]", { autoAlpha: 0, duration: 0.18 }, exitAt + 0.28)
-          // The scene keeps moving underneath: slow push-in, the city drifts up, clouds slide, the airship flies off.
+          // The scene keeps moving underneath: slow push-in, the city drifts up, clouds slide.
           .to(layer("ground"), { scale: 1.05, duration: 0.85, ease: "power1.inOut" }, exitAt)
           .to(layer("skyline"), { yPercent: -2.5, duration: 0.85 }, exitAt)
           .to(layer("clouds"), { xPercent: distance(3, 1.5), duration: 0.85 }, exitAt)
-          .to(layer("airship"), { xPercent: 190, yPercent: -20, duration: 0.7, ease: "power1.in" }, exitAt)
+
 
           // Act 2 arrives over the same scene; its cards enter once and then respond only to interaction.
           .fromTo("[data-solution]", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.02 }, enterAt)
