@@ -225,4 +225,23 @@ Se reviso fexpo-backend de nuevo. La rama local `feat/rbac-panel-auth` (y el `ma
 
 La ubicacion en el mapa (zoneId/floorId/x/y) sigue sin resolverse: se busco en todo origin/main y "zoneId"/"floorId"/"stand_locations" solo aparecen en el catalogo publico de solo lectura (`stands.repository.ts`, `stand-response.dto.ts`) y en `map-admin.controller.ts` (gestion de pisos/zonas del organizador: categories, map/versions, map/floors, map/zones) -- ningun endpoint, ni del panel del expositor ni del admin de mapa, permite asignar/editar la ubicacion de un stand especifico. Ese hueco sigue igual que antes.
 
-Conclusion: el logo YA esta listo en el backend (en origin/main, no en la rama local que el usuario tiene checked out), el frontend (fipaz-website) ahora si podria conectarse a el; la ubicacion en el mapa sigue sin soporte en ningun lado del backend. Se le informo al usuario y se le pregunto si procede a implementar el logo en el frontend ahora que esta desbloqueado.
+Conclusion: el logo YA esta listo en el backend (en origin/main, no en la rama local que el usuario tiene checked out), el frontend (fipaz-website) ahora si podria conectarse a el; la ubicacion en el mapa sigue sin soporte en ningun lado del backend. Se le informo al usuario y se le pregunto si procede a implementar el logo en el frontend ahora que esta desbloqueado. El usuario confirmo que si.
+
+### 2026-10-28T18:12:08Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+(confirmacion via AskUserQuestion: "Si, implementa el logo en el frontend")
+
+**Salida:**
+Implementado el logo del stand en fipaz-website, rama feat/mi-stand-datos-reales, contra lo que soporta `origin/main` de fexpo-backend (POST /uploads multipart + logoPath/website en PATCH /stands/:id y en GET /companies/:id/stands):
+- src/lib/api/http-client.ts: `apiRequest` ahora detecta `body instanceof FormData` y en ese caso no lo serializa a JSON ni fija `Content-Type` (el navegador pone el boundary del multipart solo); nueva funcion `apiUpload(path, formData)` que reusa toda la logica de auth/reintento-401/traduccion de errores ya existente.
+- src/lib/api/exhibitor.ts: `standSchema` ahora incluye `logoPath`/`website` (nullable, iguales a como el backend los devuelve siempre, nunca undefined); `updateStand` acepta `logoPath`/`website` en el patch; nueva `uploadLogo(file)` que arma el FormData y llama `POST /uploads`, validando la respuesta con un schema nuevo (`UploadedFile`).
+- src/components/panel/company-profile-form.tsx: campo de logo (input file oculto detras de un boton "Cambiar logo", preview de 64x64, validacion de tipo PNG/JPEG/WebP y tamaño <=5MB en cliente antes de subir, estado de "Subiendo...") y campo de texto para `website`; ambos se incluyen en el PATCH al guardar.
+- src/components/panel/mi-stand-view.tsx: muestra el logo real (si existe) en vez del icono generico de Store, y el sitio web como enlace si existe.
+- NO se implemento `categoryIds`: se verifico en el backend (map-admin.controller.ts) que el unico GET de categorias esta detras de EventAdminGuard (solo organizador); el panel del expositor no tiene forma de leer la lista de categorias del evento, asi que no hay de donde armar un selector. Queda fuera a proposito, no es un olvido.
+
+Fixtures/tests tocados para que el cambio de schema (logoPath/website ahora obligatorios aunque nullables) no rompiera nada:
+- e2e/support/fake-backend.ts: 4 sitios donde se crean objetos de stand (dos seeds de categoria, el seed principal del expositor de prueba, y el handler de creacion de stand) les faltaba logoPath/website -- se agregaron como `null`. Confirmado que el PATCH del mock hace `Object.assign(stand, input)` sin whitelist, asi que no rechaza los campos nuevos.
+- e2e/password-auth.spec.ts: el `backend.addStand({...})` de la prueba "prioriza activeEvent y permite elegir entre varios stands" tambien le faltaban esos dos campos.
+- src/lib/api/tests/exhibitor.test.cjs (nuevo): 2 tests unitarios -- `uploadLogo` envia FormData real (no JSON) sin forzar Content-Type, y `updateStand` incluye logoPath/website en el body cuando se pasan. Tuvo que fijarse `process.env.BACKEND_URL` en el test porque `getApiBaseUrl()` lo exige cuando no hay `window` (Node).
+
+Verificacion: `npx tsc --noEmit` sin errores; `npm test` 36/36 (34 previos + 2 nuevos). No se pudo correr la suite e2e de Playwright completa: `npx playwright test e2e/password-auth.spec.ts` fallo al arrancar su propio servidor porque ya hay un `next dev` corriendo en este entorno (de otra sesion), y Next se nego a levantar un segundo aunque Playwright usa el puerto 3001 por defecto, no el 3000 ocupado. No se intento matar ese proceso (podria ser de otra sesion con trabajo en curso). Queda sin confirmar el flujo end-to-end real de subida de logo contra un backend real o el fake-backend via navegador.
