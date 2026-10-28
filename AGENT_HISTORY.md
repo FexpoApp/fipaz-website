@@ -215,3 +215,14 @@ que es lo que faltaba para serrar esta issue?
 
 **Salida:**
 Se respondio con el resumen ya investigado (sin tocar codigo ni hacer nueva investigacion): lo unico pendiente para la issue #78 son dos campos que el backend (fexpo-backend) todavia no expone al panel del expositor -- el logo propio del stand (columna stands.logo_path existe en la base pero no esta en el whitelist de PATCH /stands/:id ni en ningun GET del panel, sin endpoint de subida) y la ubicacion en el mapa (zoneId/floorId/x/y de stand_locations, de solo lectura y solo visible por el endpoint publico). Todo lo demas de la issue (conectar las 5 paginas de Mi stand al backend real, sin panel-store ni mocks, con estados ADR-10) ya estaba resuelto en main desde las issues #68/#69.
+
+### 2026-10-28T18:01:48Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+verifica ahora con los cambios traidos de backedn lo nuevos cambios sigue faltan esas 2 cosas
+
+**Salida:**
+Se reviso fexpo-backend de nuevo. La rama local `feat/rbac-panel-auth` (y el `main` local, que tambien esta desactualizado) todavia NO tienen los cambios; pero `origin/main` si: commit 330ea93 "feat(storage,stands): implementar carga de archivos y campos extendidos de stand (#28)" (27 oct, cierra la issue #28) agrega exactamente lo que faltaba de logo: `logoPath`/`website`/`categoryIds` en `UpdateStandDto` y en `TABLE_COLUMNS.stands` (`panels.repository.ts`, ahora `logoPath: 'logo_path'`), en `CompanyStandResponseDto` y `CompanyStandRow` (logo_path/website/category_ids ya salen en `GET /companies/:id/stands`), y un modulo `storage` nuevo con `POST /uploads` (multipart, limite 5MB, valida MIME png/jpeg/webp) y `GET /uploads/:fileId`. Verificado leyendo el codigo real de `origin/main` (no solo el mensaje del commit).
+
+La ubicacion en el mapa (zoneId/floorId/x/y) sigue sin resolverse: se busco en todo origin/main y "zoneId"/"floorId"/"stand_locations" solo aparecen en el catalogo publico de solo lectura (`stands.repository.ts`, `stand-response.dto.ts`) y en `map-admin.controller.ts` (gestion de pisos/zonas del organizador: categories, map/versions, map/floors, map/zones) -- ningun endpoint, ni del panel del expositor ni del admin de mapa, permite asignar/editar la ubicacion de un stand especifico. Ese hueco sigue igual que antes.
+
+Conclusion: el logo YA esta listo en el backend (en origin/main, no en la rama local que el usuario tiene checked out), el frontend (fipaz-website) ahora si podria conectarse a el; la ubicacion en el mapa sigue sin soporte en ningun lado del backend. Se le informo al usuario y se le pregunto si procede a implementar el logo en el frontend ahora que esta desbloqueado.
