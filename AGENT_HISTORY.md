@@ -551,3 +551,21 @@ has los commits necesarios de los cambios que hicimos
 
 **Salida:**
 Se hicieron 8 commits en feat/jhamil-landing (sin push), separando por tema: ee3faa5 objetivo tactil del header movil, e0d31dc centrado del hero en movil, 11d0e85 reemplazo de la imagen de fondo del hero (1ra landing.png -> inicial landing.webp, cambio externo detectado en el import de HeroSection.tsx, separado del centrado porque eran dos cambios distintos en el mismo archivo), e24282e quitar el icono de la insignia "paso a paso" en HowItWorksSection.tsx (tambien externo), 1c2ff78 paleta y contraste de las 3 tarjetas de audiencia + quitar textura de puntos, e803b7e paleta de marca desde Mapa de demostracion hacia abajo (Map/MultiEvent/Contact/FinalCTA/Footer/PixelIcons), 7fc8931 rediseno de la seccion "Cada visita cuenta" (NfcSection) segun la imagen de referencia. Para separar el centrado del hero del cambio de imagen (mismo archivo, dos cambios no relacionados) se edito temporalmente el import de vuelta al PNG, se commiteo el centrado, y se restauro el import al webp para el commit del asset. Sin commits de AGENT_HISTORY.md todavia (se hace aparte, al final).
+
+### 2026-10-28T16:51:14Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+mejora lo que es favicon con el logo que se tiene en svg qu el fondo sea verde y el svg de color negro
+
+**Salida:**
+El favicon real estaba controlado por `metadata.icons.icon` en src/app/layout.tsx, apuntando a public/assets/brand/expovia-app-icon.svg -- un icono pixel-art viejo de "ExpoVia" (marca anterior al rebrand), sin relacion con el logo actual de Fexpo. Se creo public/assets/brand/fexpo-app-icon.svg reusando el path exacto del isotipo real (public/img/landing/fexpo-isotipo.svg, el mismo que usa el header de la landing), sobre un fondo Lima activa (#D5F24A, el "verde" mas cercano en la paleta de marca) con esquinas redondeadas, y el isotipo en negro (#000000) tal como se pidio explicitamente (no se sustituyo por un color de marca; aqui el usuario pidio negro literal). Se actualizo layout.tsx para apuntar al archivo nuevo. No se toco public/assets/brand/expovia-app-icon.svg porque src/components/shared/brand-mark.tsx (un componente "ExpoVia" aparte, fuera del alcance de este pedido) todavia lo usa. No se regenero src/app/favicon.ico (fallback binario para navegadores muy viejos) por falta de herramienta de conversion de imagenes en este entorno (cwebp/magick/sips no disponibles); el SVG en metadata.icons.icon es lo que los navegadores modernos usan primero.
+
+Verificado con `npx tsc --noEmit` sin errores. Archivos tocados: public/assets/brand/fexpo-app-icon.svg (nuevo), src/app/layout.tsx. Sin commits.
+
+### 2026-10-28T16:55:21Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+pero que este centrado dentro de un circulo el logo y se vea bien
+
+**Salida:**
+Se cambio el fondo de rectangulo redondeado a circulo completo (circle r=50 en un viewBox 0 0 100 100). Para centrar el isotipo dentro del circulo se intento primero calcular a mano el bounding box del path (parser propio en Node parseando M/L/C/Z) pero dio un resultado inconsistente con el viewBox original del archivo (desbordaba por ~53 unidades en x), señal de un bug en el parseo de coordenadas relativas acumuladas -- no confiable para algo que tiene que "verse bien". Se descarto ese calculo y se uso en su lugar la tecnica robusta de SVG anidado: un <svg> interior con su propio viewBox (el original, 0 0 220.69336 310, sin tocar) y x/y/width/height definiendo su viewport dentro del circulo exterior; preserveAspectRatio por defecto (xMidYMid meet) hace que el motor SVG del navegador centre y ajuste el isotipo automaticamente, sin depender de un calculo manual propio. El path y su transform interno quedan exactamente iguales al archivo original (fexpo-isotipo.svg), solo cambia el fill a negro.
+
+No se pudo renderizar/capturar el resultado para confirmarlo visualmente en este entorno (sin navegador). Archivo tocado: public/assets/brand/fexpo-app-icon.svg (layout.tsx ya apuntaba a este archivo desde el cambio anterior, no requirio editarse de nuevo). Sin commits.

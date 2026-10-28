@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     "Landing y simulación móvil para validar una nueva experiencia de ferias con mapas, NFC y recompensas.",
   applicationName: "Fexpo",
   icons: {
-    icon: "/assets/brand/expovia-app-icon.svg",
+    icon: "/assets/brand/fexpo-app-icon.svg",
   },
 };
 
