@@ -62,12 +62,12 @@ export function PixelRewardChest({ className = "w-8 h-8" }: { className?: string
   return (
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className={className}>
       {/* Cofre de premio, con esquinas redondeadas y sin el contorno navy duro del sprite original. */}
-      <rect x="4" y="12" width="24" height="16" rx="5" fill="#B984B6" />
-      <path d="M4 16C4 13.8 5.8 12 8 12H24C26.2 12 28 13.8 28 16V18H4V16Z" fill="#8357A5" />
-      <rect x="9" y="12" width="3" height="16" rx="1.5" fill="#FFC21A" opacity="0.9" />
-      <rect x="20" y="12" width="3" height="16" rx="1.5" fill="#FFC21A" opacity="0.9" />
-      <circle cx="16" cy="19" r="4" fill="#FFC21A" />
-      <circle cx="16" cy="19" r="1.4" fill="#8357A5" />
+      <rect x="4" y="12" width="24" height="16" rx="5" fill="#132D46" />
+      <path d="M4 16C4 13.8 5.8 12 8 12H24C26.2 12 28 13.8 28 16V18H4V16Z" fill="#111820" />
+      <rect x="9" y="12" width="3" height="16" rx="1.5" fill="#D5F24A" opacity="0.9" />
+      <rect x="20" y="12" width="3" height="16" rx="1.5" fill="#D5F24A" opacity="0.9" />
+      <circle cx="16" cy="19" r="4" fill="#D5F24A" />
+      <circle cx="16" cy="19" r="1.4" fill="#132D46" />
     </svg>
   );
 }
@@ -76,17 +76,17 @@ export function PixelNfcPlaque({ className = "w-10 h-10" }: { className?: string
   return (
     <svg width="40" height="40" viewBox="0 0 40 40" fill="none" className={className}>
       {/* Placa NFC: esquinas suaves, sin el borde navy duro ni el trazo en escuadra. */}
-      <rect x="3" y="3" width="34" height="34" rx="12" fill="#1677B8" />
+      <rect x="3" y="3" width="34" height="34" rx="12" fill="#132D46" />
       <rect x="8" y="8" width="24" height="24" rx="8" fill="#FFFFFF" />
       <path
         d="M15 26V14L21 26V14"
-        stroke="#1677B8"
+        stroke="#132D46"
         strokeWidth="3"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path d="M25 13C28 16 28 24 25 27" stroke="#62BE5A" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-      <path d="M28 16C29.5 18 29.5 22 28 24" stroke="#62BE5A" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      <path d="M25 13C28 16 28 24 25 27" stroke="#D5F24A" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      <path d="M28 16C29.5 18 29.5 22 28 24" stroke="#D5F24A" strokeWidth="2.5" strokeLinecap="round" fill="none" />
     </svg>
   );
 }

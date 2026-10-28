@@ -15,9 +15,23 @@ export function LandingFooter() {
         <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
           {/* Brand & tagline */}
           <div className="flex flex-col items-center gap-1 sm:items-start">
-            <span className={`${fx.lift} inline-flex`}>
-              <Image src="/img/landing/fexpo-logo.png" alt="Fexpo" width={1254} height={388} className="h-10 w-auto" />
-            </span>
+            <Link
+              href="#inicio"
+              aria-label="Fexpo, ir al inicio"
+              className="group inline-flex items-center gap-[6px] transition-transform hover:scale-105 sm:gap-2"
+            >
+              <Image
+                src="/img/landing/fexpo-isotipo.svg"
+                alt=""
+                width={221}
+                height={310}
+                unoptimized
+                className="h-[26px] w-auto sm:h-[30px]"
+              />
+              <span className="text-2xl font-bold leading-none tracking-tight text-[#132D46] sm:text-3xl">
+                fexpo
+              </span>
+            </Link>
             <p className="text-xs font-semibold text-slate-500">Explora la feria. Encuentra tu próxima conexión.</p>
           </div>
 
@@ -47,7 +61,7 @@ export function LandingFooter() {
           <div
             className={`${fx.slab} inline-flex items-center gap-1.5 rounded-full border border-black/5 bg-[var(--expo-bg)] px-3.5 py-1.5 text-xs font-bold [--slab-lift:1px] [--slab-offset:4px]`}
           >
-            <PixelStar className="h-3.5 w-3.5" />
+            <PixelStar className="h-3.5 w-3.5" color="#D5F24A" />
             Demo conceptual · 2026
           </div>
         </div>
