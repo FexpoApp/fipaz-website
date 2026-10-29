@@ -935,3 +935,89 @@ genera los commits necesarios de los cambios que hicimos
 
 **Salida:**
 Se crearon 3 commits en `feat/jhamil-landing`, agrupados por tema: `cecec39` (foto real del teléfono+NFC en `NfcSection.tsx` + `public/img/landing/landing-nfc.webp`), `895f76f` (logo del acceso sin caja blanca: `fexpo-brand.tsx` + `access-screen.tsx`) y `291905e` (aparición progresiva del hero en CSS puro: `HeroSection.tsx` + `globals.css`). Luego este commit de `docs(agent-history)`. `git status --porcelain=v1` quedó limpio. No se hizo push. `npx tsc --noEmit` sin errores.
+
+**Nota:** las entradas siguientes se registran de forma retroactiva (varios prompts de esta sesión, tras una compactación de contexto, no se fueron logueando turno por turno). Varias de ellas trabajaron en los repos hermanos `fexpo-backend` y `fexpo_database` (Docker, migraciones) y no tocaron archivos de este repo; se registran igual para no romper la cronología de la sesión, y se detalla en cada una si hubo o no cambios aquí.
+
+### 2026-10-29T05:30:00Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+corige lo que es este fonflicto y lo que sea necesasrio "Auto-merging src/components/panel/mi-stand-view.tsx\nCONFLICT (content): Merge conflict in src/components/panel/mi-stand-view.tsx\nAutomatic merge failed; fix conflicts and then commit the result."
+
+**Salida:**
+Se resolvió el conflicto de merge (main, con el PR #86, hacia `feat/mi-stand-datos-reales`) en `src/components/panel/mi-stand-view.tsx`: se conservó la lógica funcional de HEAD (imagen de logo condicional, link de sitio web) y se aplicó la paleta de marca del lado entrante (`#132D46`/`#D5F24A`/`#F5F4EF`/`#626D78`) en vez de los azules legacy (`#0878f9` y variantes). Verificado sin marcadores de conflicto restantes y `npx tsc --noEmit` limpio. Commit de merge `4c9f364`. Se dejó anotado (sin tocar) que `#0878f9` sigue en `assign-stand-modal.tsx`, `expositores-list.tsx`, `zonas-categorias-view.tsx` y `gamificacion-view.tsx`, fuera de alcance de este conflicto.
+
+### 2026-10-29T05:31:00Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+[pegó la issue de GitHub #78 "Conectar Mi stand con datos reales del backend — Fase 1 hoja de ruta (ADR-11)" con sus 5 objetivos] ya cumple toda la tarea esta isue
+
+**Salida:**
+Solo investigación, sin cambios de código. Se revisaron `exhibitor.ts`, `stands.ts`, `exhibitor-context.tsx`, `exhibitor-state.tsx`, `company-profile-form.tsx`, `visitas-view.tsx`, `qr-stand-view.tsx`, `metricas-stand-view.tsx`, `panel-shell.tsx` y `http-client.ts`. Se reportaron dos brechas: (1) `getCheckins` usaba `apiGet` (solo primera página) en vez de `apiGetAll`; (2) faltan `location`/`categories` (Mapa #28) en `ExhibitorStand`. El resto de los 5 objetivos (T-01, PATCH con logo, QR real, ADR-10) ya estaban cumplidos.
+
+### 2026-10-29T05:32:00Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+ok cual podemos areglar ya que el backend me traje nuevos cambios [eligió "Paginación real de check-ins" vía AskUserQuestion]
+
+**Salida:**
+`src/lib/api/exhibitor.ts`: `getCheckins` cambiado de `apiGet` a `apiGetAll`. `src/components/panel/visitas-view.tsx`: se quitó el aviso fijo "Mostrando los 200 registros más recientes...". `src/components/panel/metricas-stand-view.tsx`: se quitó la frase "a partir de hasta 200 check-ins recientes" de la descripción. Sin commit en este momento.
+
+### 2026-10-29T05:40:00Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+me salio esto No pudimos cargar tu stand [errores Zod de Zod en logoPath/website: "expected string, received undefined"]
+
+**Salida:**
+`src/lib/api/exhibitor.ts`: se agregó el helper `nullableString()` (`z.string().nullish().transform((v) => v ?? null)`) y se aplicó a `description`/`logoPath`/`website`/`contactEmail` (`companySchema`) y `description`/`logoPath`/`website`/`activityHighlight`/`promotionHighlight` (`standSchema`), porque el backend empezó a omitir esas claves en vez de mandar `null` explícito. Tipos exportados (`ExhibitorCompany`/`ExhibitorStand`) sin cambios. `npx tsc --noEmit` limpio.
+
+### 2026-10-29T05:45:00Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+esto me salio a subir lo que es la imagen El servidor no pudo procesar la solicitud. Intenta nuevamente en unos minutos.
+
+**Salida:**
+Sin cambios en este repo. Diagnóstico y fix en los repos hermanos: faltaba la tabla `public.uploaded_files` en la base local (migración nueva en `fexpo_database`, ver su historial si aplica) — el código de `fexpo-backend` (PR #28) ya la esperaba pero nunca se migró.
+
+### 2026-10-29T05:50:00Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+ok ya que tengo que probar de la issue para que termine ya esa tarea?
+
+**Salida:**
+Sin cambios de código. Se armó un checklist de verificación manual para los 5 objetivos de la issue #78, aclarando que "Mapa #28" (ubicación/categorías) queda fuera de alcance de esta issue.
+
+### 2026-10-29T05:52:00Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+pero lo que es piso zona lo tomamos desde el panel admin
+
+**Salida:**
+Sin cambios de código. Se confirmó que ubicación/zona es responsabilidad de la issue #28 (panel admin), no de la #78, y se señaló que esa asignación tampoco existe todavía en el panel admin de este repo (`assign-stand-modal.tsx`/`zonas-categorias-view.tsx` no cubren posición en el mapa).
+
+### 2026-10-29T05:55:00Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+si probalo
+
+**Salida:**
+Sin cambios de código en este repo. Se probó el flujo completo contra el backend real (usuario de prueba `qa-mistand@fexpo.test`, luego borrado): T-01, PATCH+logo y QR OK; check-ins confirmó que el backend no paginaba (`LIMIT 200` fijo en `fexpo-backend`, sin `meta`), por lo que el cambio de `apiGet`→`apiGetAll` de este repo no alcanzaba a resolver el objetivo 3 de la issue.
+
+### 2026-10-29T05:58:00Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+con cual cuenta isiste la prueba paseme usuario y contraseña / si recrealo
+
+**Salida:**
+Sin cambios de código. Se recreó y dejó persistente el usuario de prueba `qa-mistand@fexpo.test` (contraseña `Prueba1234!`, rol `company_admin` de la empresa sembrada "Cafe Altiplano") en la base local, para que el usuario pueda entrar al panel.
+
+### 2026-10-29T06:00:00Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+pasemos a areglarlo lo que falta en el backend
+
+**Salida:**
+Sin cambios en este repo. El arreglo fue en `fexpo-backend` (`src/panels/panels.repository.ts`/`panels.service.ts`/`panels.controller.ts`): la ruta `GET /stands/:standId/check-ins` pasó de un `LIMIT 200` fijo a paginación real con `page`/`limit`/`meta` (mismo patrón que `leads.repository.ts`). Verificado con tests unitarios del backend y pruebas manuales con `curl` (page 1/2, `meta.totalPages`). El `apiGetAll` de este repo (ya ajustado en un turno anterior) ahora sí recorre esas páginas de verdad.
+
+### 2026-10-29T06:20:00Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+prueba que funciones bien / pero dejalo las pruebas para ver que isiste
+
+**Salida:**
+Sin cambios de código. Se corrió de nuevo la batería de pruebas manuales contra el backend (stands, check-ins paginados, KPIs, QR) y se sembraron 25 check-ins de prueba adicionales en el stand A-01 de "Cafe Altiplano" (quedaron a propósito, sin borrar, para que el usuario los vea en vivo en `/panel/visitas`).
+
+### 2026-10-29T06:27:26Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+ok has los commit corespondientes parra terminar la issue
+
+**Salida:**
+2 commits en `feat/mi-stand-datos-reales`: `329debe` (`nullableString()` tolerante a campos ausentes) y `66d33bf` (`apiGetAll` para check-ins + se quitan los avisos fijos de "200" en Visitas/Métricas). Luego este commit de `docs(agent-history)`. `npx tsc --noEmit` limpio. Sin push. Las correcciones de backend/DB de los prompts anteriores se commitearon por separado en `fexpo-backend` y `fexpo_database`.
