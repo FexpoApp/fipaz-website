@@ -828,3 +828,10 @@ Se corrigió el botón de cuenta en la esquina superior derecha del panel. `src/
 
 **Salida:**
 Se mejoró el modo oscuro de `/acceso` en `src/components/auth/access-screen.tsx` y `src/app/dark-theme.css`. Se identificaron el enlace «Volver al inicio» y la descripción con gris oscuro sobre fondo oscuro en escritorio; ahora usan texto claro, hover/foco lima y un fondo azul con degradado sutil. Se aclararon bordes, marcadores y estado de foco de los campos; el modo claro conserva sus estilos. Se inspeccionaron capturas y estilos calculados en Chrome con Playwright a 390, 912 y 1440 px; se comprobó la legibilidad de ambos temas y los estados de hover/foco. Un intento de recortar el margen blanco del botón oficial de Google ocultó su texto en móvil; se revirtió y se conservó el botón completo. `pnpm exec tsc --noEmit`, ESLint del componente y `git diff --check` pasaron. Se eliminaron el script y las capturas temporales.
+
+### 2026-10-29T00:24:47Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+http://localhost:3000/acceso quiero que el boton de google sea con bordes redondeados no cuadrado
+
+**Salida:**
+Se cambió el botón oficial de Google de `/acceso` a la forma `pill` mediante una prop en `src/components/auth/google-sign-in-button.tsx`, aplicada desde `src/components/auth/access-screen.tsx`. `src/app/globals.css` redondea también el iframe exterior solo para esa forma, porque el SDK deja una franja blanca de 10 px alrededor del botón; se conservó el texto completo en móvil. La pantalla de registro mantiene la forma anterior. Se revisó la referencia oficial de Google para confirmar la opción `shape: "pill"`. En Chrome con Playwright se inspeccionaron capturas del acceso claro y oscuro a 390 px y oscuro a 1440 px, y se confirmó que el iframe tiene bordes redondeados y que su texto es visible. `pnpm exec tsc --noEmit`, ESLint de los componentes y `git diff --check` terminaron sin errores. Se eliminaron script y capturas temporales.

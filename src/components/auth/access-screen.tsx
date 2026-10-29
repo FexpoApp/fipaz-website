@@ -202,7 +202,7 @@ export function AccessScreen({ panel }: AccessScreenProps) {
                         <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" /> Validando tu cuenta…
                       </div>
                     ) : (
-                      <GoogleSignInButton onCredential={(credential) => void handleCredential(credential)} />
+                      <GoogleSignInButton shape="pill" onCredential={(credential) => void handleCredential(credential)} />
                     )}
                   </div>
 

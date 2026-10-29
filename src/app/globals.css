@@ -693,3 +693,7 @@ a {
   -webkit-text-fill-color: #0f1b5c;
   box-shadow: 0 0 0 1000px #fff inset;
 }
+
+.google-sign-in-pill iframe {
+  border-radius: 9999px;
+}
