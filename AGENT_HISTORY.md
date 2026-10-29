@@ -835,3 +835,54 @@ http://localhost:3000/acceso quiero que el boton de google sea con bordes redond
 
 **Salida:**
 Se cambió el botón oficial de Google de `/acceso` a la forma `pill` mediante una prop en `src/components/auth/google-sign-in-button.tsx`, aplicada desde `src/components/auth/access-screen.tsx`. `src/app/globals.css` redondea también el iframe exterior solo para esa forma, porque el SDK deja una franja blanca de 10 px alrededor del botón; se conservó el texto completo en móvil. La pantalla de registro mantiene la forma anterior. Se revisó la referencia oficial de Google para confirmar la opción `shape: "pill"`. En Chrome con Playwright se inspeccionaron capturas del acceso claro y oscuro a 390 px y oscuro a 1440 px, y se confirmó que el iframe tiene bordes redondeados y que su texto es visible. `pnpm exec tsc --noEmit`, ESLint de los componentes y `git diff --check` terminaron sin errores. Se eliminaron script y capturas temporales.
+
+### 2026-10-29T01:59:47Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Nota:** las siguientes entradas (hasta la de "genera los commits necesarios...") se registran de forma retroactiva en un solo lote: esta sesión arrancó desde un resumen de compactación y el registro turno a turno no se reanudó hasta ahora. Reconstruidas fielmente a partir de la conversación.
+
+**Prompt:**
+en esta seccion de EXPERIENCIA INTERACTIVA · DEMOSTRACIÓN quiero que en la card donde esta el celular y nfc lo remplacen por esta imagen [imagen adjunta: C:\proyectos 2026\fipaz proyecto\fipaz-website\public\img\landing\landing-nfc.webp] que es esa en esta card Explora la feria a tu ritmo. cambialo pero que sus bordes de abajo de la imagen se integre con un suavizado
+
+**Salida:**
+En `src/components/landing/NfcSection.tsx`, tarjeta "Explora la feria a tu ritmo.": se reemplazó el mockup CSS (div "fexpo" + `PixelNfcPlaque`) por `next/image` apuntando a `public/img/landing/landing-nfc.webp` (ya existente en el repo), con `object-contain` y un `mask-image`/`-webkit-mask-image` en gradiente (`black 65% → transparent 100%`) para difuminar el borde inferior hacia el navy de la tarjeta. Se quitaron los imports `Smartphone` y `PixelNfcPlaque`, ya sin uso. `npx tsc --noEmit` sin errores.
+
+### 2026-10-29T01:59:52Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+[imagen adjunta de referencia] pero que esa imagen se integre bien de la mejor maneraque se ponga bien y no este chiquito /impeccable
+
+**Salida:**
+Se invocó la skill `impeccable` (modo narrow-refinement, sin PRODUCT.md). Diagnóstico: `landing-nfc.webp` tiene fondo blanco sólido (no transparente), por lo que el `mask-image` de la entrada anterior dejaba un rectángulo blanco chocando contra el navy, además de verse diminuta (112×128px). Se intentó quitar el fondo subiendo la imagen a Canva (`create-upload-url` + `curl` + `remove-background`), pero esa función requiere plan de pago y no se pudo usar. Se optó por una "ficha de foto": panel blanco `rounded-2xl` con la imagen en `object-contain`, sombra con offset+blur real y `rotate-2`, agrandada a 176×128px (sm) / 192×144px (lg), con `data-fx-depth="22"` para heredar el parallax de scroll ya existente (`depthLayers`). `npx tsc --noEmit` limpio y el detector mecánico de `impeccable detect` no reportó hallazgos. No se pudo verificar visualmente (sin herramienta de navegador en la sesión).
+
+### 2026-10-29T01:59:57Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+no osea no me modifque ni le pongas cosas yo solo quiero que [imagen adjunta] esa imagen se agrende para esa card y quede de la mejor manera no quiero que la encuadres
+
+**Salida:**
+Se revirtió el panel blanco/sombra/rotación de la entrada anterior en `src/components/landing/NfcSection.tsx`: ahora es solo la imagen (`next/image`, sin contenedor ni fondo propio) agrandada a 192×144px (sm) / 240×176px (lg) — casi el doble del tamaño original — con `object-contain` para no recortar nada. Se mantuvo `data-fx-depth="22"`. `npx tsc --noEmit` sin errores.
+
+### 2026-10-29T02:00:02Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+lo que es la seccion de acceso lo que es el logo en modo mobile que se vea bien el logo que no este dentro de una caja cerado que se adapte bien al entorno aregla eso
+
+**Salida:**
+En `src/components/shared/fexpo-brand.tsx` se agregó una prop `variant: "navy" | "white"` (default `"navy"`, sin cambios para los demás usos del componente en panel/footer/legal/registro). Con `"white"` aplica `brightness-0 invert` a la imagen del logo (PNG navy embebido en `Fexpo-logo.svg`, sin versión clara existente) y pone el texto "fexpo" en blanco. En `src/components/auth/access-screen.tsx` se quitó la caja blanca (`rounded-2xl bg-white px-4 py-2.5 shadow-...`) que envolvía el logo en móvil/tablet y se usó `<FexpoBrand variant="white" />` directo sobre el degradado navy de esa sección. `npx tsc --noEmit` sin errores.
+
+### 2026-10-29T02:00:07Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+que la primera seccion de la landing que es "Explora. Conecta. Vive Fexpo. La app para ferias que ya tenemos. Explora stands y rutas, haz check-in con NFC y suma puntos en cada visita. Probar demo / Ver el panel / Conoce más / Explora el mapa / Haz check-in con NFC / Completa misiones / Canjea premios" has que salga rapido el texto que no salga tarde que tenga su apariecion normal
+
+**Salida:**
+En `src/components/landing/HeroSection.tsx` se quitó la animación de entrada de Framer Motion (`motion.h1`/`motion.p`/`motion.div` con `initial`/`animate`/`transition` y delays de 50–200ms) del heading, subtítulo, CTAs y chips de features: Framer Motion aplica el estado `initial` (opacity:0) de forma síncrona en el render, así que el texto quedaba invisible en el HTML hasta que React hidrataba, lo que en conexiones/dispositivos lentos se sentía como una aparición tardía. Se convirtieron a elementos planos (`h1`, `p`, `div`) y se quitó el import `motion` de `motion/react`. `npx tsc --noEmit` sin errores.
+
+### 2026-10-29T02:00:12Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+pero que tenga movimiento de aparecion progresivo
+
+**Salida:**
+Se reintrodujo la aparición progresiva del Hero pero como animación CSS pura en vez de JS: en `src/app/globals.css` se agregó la clase `.hero-rise` (reutiliza el `@keyframes access-rise` ya existente para `/acceso`, con su propia variable `--hero-delay`). En `src/components/landing/HeroSection.tsx` se aplicó `hero-rise` al heading, subtítulo, CTAs y chips con delays escalonados de 0/70/140/210ms vía `style={{ "--hero-delay": "...ms" } as CSSProperties}`. Al ser CSS, la animación corre en cuanto el navegador pinta el HTML (no espera hidratación de React), evitando el efecto de "sale tarde" sin perder el movimiento; `prefers-reduced-motion: reduce` ya la desactiva mediante la regla global existente en `globals.css`, sin necesidad de una regla adicional.
+
+### 2026-10-29T02:00:17Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+genera los commits necesarios de los cambios que hicimos
+
+**Salida:**
+Se crearon 3 commits en `feat/jhamil-landing`, agrupados por tema: `cecec39` (foto real del teléfono+NFC en `NfcSection.tsx` + `public/img/landing/landing-nfc.webp`), `895f76f` (logo del acceso sin caja blanca: `fexpo-brand.tsx` + `access-screen.tsx`) y `291905e` (aparición progresiva del hero en CSS puro: `HeroSection.tsx` + `globals.css`). Luego este commit de `docs(agent-history)`. `git status --porcelain=v1` quedó limpio. No se hizo push. `npx tsc --noEmit` sin errores.
