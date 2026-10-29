@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useRef } from "react";
+import Image from "next/image";
 import { gsap } from "gsap";
-import { PixelNfcPlaque } from "./PixelIcons";
-import { Zap, Map, Search, Wifi, BarChart3, Smartphone, MapPin, FlaskConical, CheckCircle2, Circle, Gift, ChevronRight } from "lucide-react";
+import { Zap, Map, Search, Wifi, BarChart3, MapPin, FlaskConical, CheckCircle2, Circle, Gift, ChevronRight } from "lucide-react";
 import { DEMO_FIXTURE } from "@/data/demo-fixture";
 import { headingFont } from "./fonts";
 import { UI_OUT, depthLayers, revealHeading, useScrollFx } from "./scroll-fx";
@@ -160,14 +160,15 @@ export function NfcSection() {
                 </div>
 
                 {/* Phone + NFC illustration */}
-                <div className="relative hidden h-32 w-28 shrink-0 sm:block">
-                  <div className="absolute inset-x-3 inset-y-0 flex flex-col items-center justify-center gap-2 rounded-[22px] border border-white/15 bg-white/5">
-                    <Smartphone aria-hidden="true" className="h-5 w-5 text-white/35" />
-                    <span className="text-base font-bold text-white">fexpo</span>
-                  </div>
-                  <span className="absolute -top-2 -right-1 rotate-6 drop-shadow-[0_8px_14px_rgba(0,0,0,0.35)]">
-                    <PixelNfcPlaque className="h-14 w-14" />
-                  </span>
+                <div data-fx-depth="22" className="relative hidden h-36 w-48 shrink-0 sm:block lg:h-44 lg:w-60">
+                  <Image
+                    src="/img/landing/landing-nfc.webp"
+                    alt=""
+                    aria-hidden="true"
+                    fill
+                    sizes="240px"
+                    className="object-contain"
+                  />
                 </div>
               </div>
 
