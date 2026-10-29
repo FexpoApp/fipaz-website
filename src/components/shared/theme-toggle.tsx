@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import { Moon, Sun } from "lucide-react";
 
 const THEME_KEY = "fexpo-theme";
@@ -17,21 +17,6 @@ function getTheme() {
 
 export function ThemeToggle() {
   const theme = useSyncExternalStore(subscribe, getTheme, () => "light");
-
-  useEffect(() => {
-    const preference = window.matchMedia("(prefers-color-scheme: dark)");
-    const followSystem = () => {
-      try {
-        if (window.localStorage.getItem(THEME_KEY)) return;
-      } catch {
-        // La preferencia del sistema sigue disponible sin almacenamiento local.
-      }
-      document.documentElement.dataset.theme = preference.matches ? "dark" : "light";
-      window.dispatchEvent(new Event(THEME_EVENT));
-    };
-    preference.addEventListener("change", followSystem);
-    return () => preference.removeEventListener("change", followSystem);
-  }, []);
 
   function toggleTheme() {
     const next = getTheme() === "dark" ? "light" : "dark";

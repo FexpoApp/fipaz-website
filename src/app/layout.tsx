@@ -44,7 +44,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: "try{var t=localStorage.getItem('fexpo-theme');document.documentElement.dataset.theme=t==='dark'||t!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}catch(e){document.documentElement.dataset.theme=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}" }} />
+        <script dangerouslySetInnerHTML={{ __html: "try{var t=localStorage.getItem('fexpo-theme');document.documentElement.dataset.theme=t==='dark'?'dark':'light'}catch(e){document.documentElement.dataset.theme='light'}" }} />
       </head>
       <body className="min-h-full flex flex-col">{children}<ThemeToggle /></body>
     </html>
