@@ -1,52 +1,17 @@
-"use client";
-
-import React from "react";
 import Link from "next/link";
-import { motion } from "motion/react";
-import { ArrowRight, Home, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 
 export function FeedbackSuccess() {
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="mx-auto max-w-xl rounded-3xl border-3 border-[var(--expo-navy)] bg-white p-8 text-center shadow-[10px_10px_0_var(--expo-navy)] my-8"
-    >
-      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border-3 border-[var(--expo-navy)] bg-[var(--expo-yellow)] shadow-[3px_3px_0_var(--expo-navy)]">
-        <CheckCircle2 className="h-10 w-10 text-[var(--expo-navy)]" />
+    <section className="mx-auto max-w-[760px] rounded-[20px] border border-[#E2E0D8] bg-white p-6 shadow-[0_12px_28px_rgb(19_45_70_/_5%)] sm:p-10" aria-labelledby="feedback-complete-title">
+      <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#D5F24A] text-[#132D46]"><Check aria-hidden="true" className="h-7 w-7" /></span>
+      <p className="mt-7 text-xs font-medium uppercase tracking-[0.12em] text-[#626D78]">Encuesta completada</p>
+      <h2 id="feedback-complete-title" className="mt-3 text-balance text-3xl font-bold leading-tight text-[#132D46] sm:text-4xl">Gracias por completar la encuesta.</h2>
+      <p className="mt-4 max-w-xl text-base leading-7 text-[#626D78]">Esta versión de demostración no guarda ni envía las respuestas. Puedes seguir explorando fexpo.</p>
+      <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+        <Link href="/demo" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#132D46] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#111820]">Explorar la demo <ArrowRight aria-hidden="true" className="h-4 w-4" /></Link>
+        <Link href="/" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[#E2E0D8] bg-white px-5 py-3 text-sm font-medium text-[#132D46] transition-colors hover:bg-[#F5F4EF]">Volver al inicio</Link>
       </div>
-
-      <div className="mt-6">
-        <span className="font-mono text-xs font-black uppercase text-[var(--expo-blue)] tracking-wider">
-          ✦ TRANSMISIÓN EXITOSA ✦
-        </span>
-
-        <h2 className="mt-2 text-3xl font-black text-[var(--expo-navy)]">
-          ¡Gracias por ayudarnos a mejorar ExpoVia!
-        </h2>
-
-        <p className="mt-3 text-base text-slate-600 font-medium">
-          Tus respuestas anónimas han sido registradas y nos ayudarán a perfeccionar la experiencia antes de nuestra siguiente prueba de campo.
-        </p>
-      </div>
-
-      <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-        <Link
-          href="/demo"
-          className="inline-flex w-full sm:w-auto items-center justify-center gap-2 border-3 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-6 py-3.5 text-base font-black text-[var(--expo-navy)] shadow-[4px_4px_0_var(--expo-navy)] transition-all hover:-translate-y-0.5 hover:bg-[#FFE066]"
-        >
-          <span>Volver a la demo</span>
-          <ArrowRight className="h-5 w-5 stroke-[3]" />
-        </Link>
-
-        <Link
-          href="/"
-          className="inline-flex w-full sm:w-auto items-center justify-center gap-2 border-3 border-[var(--expo-navy)] bg-white px-6 py-3.5 text-base font-bold text-[var(--expo-navy)] shadow-[4px_4px_0_var(--expo-navy)] transition-all hover:-translate-y-0.5 hover:bg-slate-50"
-        >
-          <Home className="h-4 w-4" />
-          <span>Volver al inicio</span>
-        </Link>
-      </div>
-    </motion.div>
+    </section>
   );
 }

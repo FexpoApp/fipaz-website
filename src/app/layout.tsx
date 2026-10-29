@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import "./dark-theme.css";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
 
 const poppins = localFont({
   src: [
@@ -31,8 +33,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  colorScheme: "light",
-  themeColor: "#1677b8",
+  themeColor: "#132D46",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -40,8 +41,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="es"
       className={`${poppins.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: "try{var t=localStorage.getItem('fexpo-theme');document.documentElement.dataset.theme=t==='dark'?'dark':'light'}catch(e){document.documentElement.dataset.theme='light'}" }} />
+      </head>
+      <body className="min-h-full flex flex-col">{children}<ThemeToggle /></body>
     </html>
   );
 }

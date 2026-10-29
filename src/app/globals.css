@@ -23,6 +23,7 @@
   --expo-bg: #f5f4ef;
   --expo-card: #ffffff;
   --expo-line: #e2e0d8;
+  --access-surface: #fff;
 
   /* Motion curves shared by CSS and GSAP ("uiOut" in landing/scroll-fx.ts). */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -683,6 +684,13 @@ a {
   animation-delay: var(--access-delay, 0ms);
 }
 
+/* Hero copy: the same progressive rise, but pure CSS so it plays the instant the page paints
+   instead of waiting on JS hydration (a JS-driven entrance left the text invisible until then). */
+.hero-rise {
+  animation: access-rise 520ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  animation-delay: var(--hero-delay, 0ms);
+}
+
 .access-settle {
   animation: access-settle 900ms cubic-bezier(0.23, 1, 0.32, 1) both;
 }
@@ -691,4 +699,8 @@ a {
 .access-field:-webkit-autofill:focus {
   -webkit-text-fill-color: #0f1b5c;
   box-shadow: 0 0 0 1000px #fff inset;
+}
+
+.google-sign-in-pill iframe {
+  border-radius: 9999px;
 }

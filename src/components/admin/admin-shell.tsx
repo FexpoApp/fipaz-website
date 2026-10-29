@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import Image from "next/image";
+import { FexpoBrand } from "@/components/shared/fexpo-brand";
 import Link from "next/link";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { Drawer } from "vaul";
@@ -120,29 +120,29 @@ function AdminNavList({ onNavigate }: { onNavigate?: () => void }) {
 
 function AdminNavbar({ onMenuClick, onLogout, demoModules }: { onMenuClick: () => void; onLogout: () => void; demoModules: boolean }) {
   return (
-    <header className="sticky top-0 z-30 flex h-[82px] items-center justify-between gap-3 border-b border-[#e5edf8] bg-white/95 px-4 backdrop-blur-md sm:px-7 lg:px-9">
+    <header className="sticky top-0 z-30 flex h-[82px] items-center justify-between gap-3 border-b border-[#e2e0d8] bg-white/95 px-4 backdrop-blur-md sm:px-7 lg:px-9">
       <div className="flex min-w-0 items-center gap-3">
         <button
           type="button"
           onClick={onMenuClick}
           aria-label="Abrir navegación de administración"
-          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#dfe8f5] text-[#314b78] hover:bg-[#f1f6fd] lg:hidden"
+          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#e2e0d8] text-[#132D46] hover:bg-[#F5F4EF] lg:hidden"
         >
           <Menu aria-hidden="true" className="h-5 w-5" />
         </button>
-        <Link href="/panel" aria-label="Fexpo, volver al panel" className="lg:hidden"><Image src="/img/landing/fexpo-logo.png" alt="Fexpo" width={104} height={32} priority className="h-auto w-[104px]" /></Link>
+        <Link href="/panel" aria-label="fexpo, volver al panel" className="lg:hidden"><FexpoBrand compact /></Link>
         <div className="panel-surface hidden items-center gap-3 px-4 py-2.5 sm:flex">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#eaf3ff] text-[#0878f9]"><Lock aria-hidden="true" className="h-5 w-5" /></span>
-          <span><span className="block text-sm font-extrabold text-[#17254a]">Administración</span><span className="block text-xs font-medium text-[#7185aa]">Gestión de stands y eventos</span></span>
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#D5F24A] text-[#132D46]"><Lock aria-hidden="true" className="h-5 w-5" /></span>
+          <span><span className="block text-sm font-extrabold text-[#132D46]">Administración</span><span className="block text-xs font-medium text-[#626D78]">Gestión de stands y eventos</span></span>
         </div>
       </div>
 
       <div className="flex shrink-0 items-center gap-4">
-        <Link href="/panel" className="inline-flex items-center gap-1 text-xs font-bold text-[#0878f9] hover:underline">
+        <Link href="/panel" className="inline-flex items-center gap-1 text-xs font-bold text-[#132D46] hover:underline">
           <ArrowLeft aria-hidden="true" className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Volver al panel</span><span className="sm:hidden">Panel</span>
         </Link>
         {!demoModules && (
-          <button type="button" onClick={onLogout} className="hidden text-xs font-bold text-[#667da3] hover:text-[#0878f9] sm:inline">
+          <button type="button" onClick={onLogout} className="hidden text-xs font-bold text-[#626D78] hover:text-[#132D46] sm:inline">
             Cerrar sesión
           </button>
         )}
@@ -155,14 +155,14 @@ function AdminSidebar() {
   return (
     <aside
       aria-label="Navegación de administración"
-      className="panel-sidebar sticky top-0 hidden h-dvh w-[268px] shrink-0 flex-col border-r border-[#e5edf8] bg-white px-5 pb-6 pt-7 lg:flex"
+      className="panel-sidebar sticky top-0 hidden h-dvh w-[268px] shrink-0 flex-col border-r border-[#e2e0d8] bg-[#F5F4EF] px-5 pb-6 pt-7 lg:flex"
     >
-      <Link href="/panel" aria-label="Fexpo, volver al panel" className="mb-11 inline-flex w-fit items-center px-2"><Image src="/img/landing/fexpo-logo.png" alt="Fexpo" width={160} height={48} priority className="h-auto w-[148px]" /></Link>
-      <p className="mb-3 px-4 text-[10px] font-extrabold uppercase tracking-[0.17em] text-[#96a6c1]">Administración</p>
+      <Link href="/panel" aria-label="fexpo, volver al panel" className="mb-11 inline-flex w-fit items-center px-2"><FexpoBrand /></Link>
+      <p className="mb-3 px-4 text-[10px] font-extrabold uppercase tracking-[0.17em] text-[#626D78]">Administración</p>
       <nav aria-label="Módulos de administración" className="min-h-0 flex-1 overflow-y-auto pr-1">
         <AdminNavList />
       </nav>
-      <Link href="/panel" className="panel-nav-link mt-5 border-t border-[#e8eef7] pt-4"><ArrowLeft aria-hidden="true" className="h-[18px] w-[18px]" />Volver al panel</Link>
+      <Link href="/panel" className="panel-nav-link mt-5 border-t border-[#e2e0d8] pt-4"><ArrowLeft aria-hidden="true" className="h-[18px] w-[18px]" />Volver al panel</Link>
     </aside>
   );
 }
@@ -172,11 +172,11 @@ function AdminMobileDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
     <Drawer.Root direction="left" open={open} onOpenChange={onOpenChange}>
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 z-40 bg-black/40 lg:hidden" />
-        <Drawer.Content className="fixed inset-y-0 left-0 z-50 flex w-[85vw] max-w-xs flex-col gap-6 overflow-y-auto border-r border-[#e5edf8] bg-white p-5 outline-none lg:hidden">
+        <Drawer.Content className="fixed inset-y-0 left-0 z-50 flex w-[85vw] max-w-xs flex-col gap-6 overflow-y-auto border-r border-[#e2e0d8] bg-[#F5F4EF] p-5 outline-none lg:hidden">
           <Drawer.Title className="sr-only">Navegación de administración</Drawer.Title>
           <Drawer.Description className="sr-only">Módulos del panel de administración</Drawer.Description>
-          <Link href="/panel" onClick={() => onOpenChange(false)} aria-label="Fexpo, volver al panel"><Image src="/img/landing/fexpo-logo.png" alt="Fexpo" width={140} height={42} className="h-auto w-[140px]" /></Link>
-          <p className="-mb-4 px-3 text-[10px] font-extrabold uppercase tracking-[0.17em] text-[#96a6c1]">Administración</p>
+          <Link href="/panel" onClick={() => onOpenChange(false)} aria-label="fexpo, volver al panel"><FexpoBrand /></Link>
+          <p className="-mb-4 px-3 text-[10px] font-extrabold uppercase tracking-[0.17em] text-[#626D78]">Administración</p>
           <nav aria-label="Módulos de administración">
             <AdminNavList onNavigate={() => onOpenChange(false)} />
           </nav>
@@ -256,7 +256,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
   return (
     <ToastProvider>
-      <div className="fexpo-panel flex min-h-dvh bg-[#f4f8fd]">
+      <div className="fexpo-panel flex min-h-dvh bg-[#F5F4EF]">
         <a
           href="#admin-content"
           className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-lg focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:font-black focus:text-[var(--expo-navy)]"

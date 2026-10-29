@@ -17,12 +17,14 @@ interface GoogleSignInButtonProps {
   onCredential: (credential: string) => void;
   /** Client ID web de Google. Por defecto, `NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID`. */
   clientId?: string;
+  shape?: "rectangular" | "pill";
 }
 
 /** Botón oficial "Continuar con Google". Entrega el `idToken` que el backend valida en `POST /auth/google`. */
 export function GoogleSignInButton({
   onCredential,
   clientId = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID ?? "",
+  shape = "rectangular",
 }: GoogleSignInButtonProps) {
   const [scriptReady, setScriptReady] = useState(false);
   const [buttonHost, setButtonHost] = useState<HTMLDivElement | null>(null);
@@ -39,10 +41,10 @@ export function GoogleSignInButton({
     });
     window.google.accounts.id.renderButton(buttonHost, {
       // Google solo admite anchos de 200 a 400 px; se ajusta al contenedor para que ocupe todo el ancho de la tarjeta.
-      theme: "outline", size: "large", shape: "rectangular", text: "continue_with", locale: "es",
+      theme: "outline", size: "large", shape, text: "continue_with", locale: "es",
       width: Math.min(400, Math.max(200, Math.round(buttonHost.clientWidth) || 320)),
     });
-  }, [scriptReady, buttonHost, clientId]);
+  }, [scriptReady, buttonHost, clientId, shape]);
 
   return (
     <>
@@ -51,7 +53,7 @@ export function GoogleSignInButton({
         // Aparece con un fundido cuando Google termina de dibujar el botón, en lugar de "saltar" a la vista.
         <div
           ref={setButtonHost}
-          className={`flex min-h-11 w-full items-center justify-center transition-opacity duration-200 ease-out ${rendered ? "opacity-100" : "opacity-0"}`}
+          className={`flex min-h-11 w-full items-center justify-center transition-opacity duration-200 ease-out ${shape === "pill" ? "google-sign-in-pill" : ""} ${rendered ? "opacity-100" : "opacity-0"}`}
         />
       ) : (
         <p className="rounded-xl bg-amber-50 p-3 text-xs font-bold text-amber-800">

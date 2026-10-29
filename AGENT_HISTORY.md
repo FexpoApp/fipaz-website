@@ -819,3 +819,119 @@ En `LandingFooter.tsx`: se quito una linea en blanco muerta (resto de un bloque 
 
 **Salida:**
 En `LandingFooter.tsx`: se cambio el contenedor de `flex flex-col items-center justify-between gap-7 sm:flex-row` (que en desktop separaba el logo a la izquierda y los enlaces a la derecha, con un hueco grande en medio) a `flex flex-col items-center gap-7` sin el `sm:flex-row`, dejando logo, enlaces y copyright centrados en columna en todos los tamaños de pantalla. Verificado con `npx tsc --noEmit` sin errores.
+
+### 2026-10-28T21:49:10Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+para lo qu es el aparatdo de panel mejora la linea visual con le branding que esta en C:\proyectos 2026\fipaz proyecto\fipaz-website\Doc\branding\Fexpo · Guía de marca · v1.0.md con eso mejora lo que son los panel de expositor que se vea bien que siga las tipografias que se tiene en fonts y que los logos antiguos se cambien que se ponga el nuevo
+
+**Salida:**
+Se revisaron la guía `Doc/branding/Fexpo · Guía de marca · v1.0.md` y las guías locales de Next.js para CSS, imágenes y fuentes. Se renovó el panel del expositor con azul feria, marfil, lima activa y Poppins local: navegación, cabecera, superficies, formularios, resumen, tarjetas de métricas, gráfica y ficha del stand. Se creó `src/components/shared/fexpo-brand.tsx` como firma horizontal de una tinta con el símbolo vectorial y el nombre en minúsculas; se cambió a azul el SVG `public/img/landing/Fexpo-logo.svg` y se reemplazó el PNG antiguo en panel, administración, acceso, registro y páginas legales. También se actualizó `BrandMark` y el `themeColor`, y se añadió un estado vacío claro a la gráfica. Archivos principales: `src/app/panel/panel-theme.css`, `src/components/panel/{panel-sidebar,panel-navbar,panel-mobile-drawer,panel-page-header,panel-dashboard-client,metric-card,metricas-stand-view,mi-stand-view,panel-visits-chart,panel-account-menu}.tsx`, `src/components/admin/admin-shell.tsx`, `src/components/auth/access-screen.tsx`, `src/components/registration/RegistrationForm.tsx`, `src/components/legal/LegalPage.tsx`, `src/components/shared/{fexpo-brand,brand-mark}.tsx`, `src/app/layout.tsx` y este historial. Verificado con `npx tsc --noEmit` y `git diff --check` sin errores; lint de archivos modificados sin errores, con una advertencia preexistente en `admin-shell.tsx` (`useEffect`/`activeCompany`). La ejecución inicial de Playwright en 3001 no pudo iniciar otro `next dev` porque ya corría uno en 3000; al reutilizar 3000 pasó el flujo real de acceso simulado del expositor. Capturas temporales verificaron escritorio y móvil (390/320 px), firma horizontal de al menos 160 px y ausencia de desborde; los archivos temporales se eliminaron. Una corrida amplia de lint también mostró tres errores preexistentes en `assign-stand-modal.tsx`, `gamificacion-view.tsx` y `visitas-view.tsx`, fuera del cambio final.
+
+### 2026-10-28T22:18:25Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+has los commit corespondientes de lo que isiste y mejora con la branding lo que es el apartado de http://localhost:3000/feedback y lo que es la seccion de http://localhost:3000/privacidad y terminos mejora eso y has los commit corespondientes
+
+**Salida:**
+Se registró el trabajo previo del panel y la marca en el commit `1e9d668 feat(panel): alinear panel expositor con branding fexpo`. Se rediseñaron `/feedback`, `/privacidad` y `/terminos` según la guía de marca: cabeceras azul feria con símbolo, acentos lima, fondos marfil, tipografía Poppins local, tarjetas de lectura y pie compartido con la nueva firma fexpo. Se actualizaron `src/app/feedback/{page,layout}.tsx`, `src/components/feedback/{FeedbackForm,FeedbackHeader,FeedbackSuccess,feedback.module.css}`, `src/components/legal/{LegalPage,LegalToc,legal.module.css}` y se creó `src/components/shared/fexpo-page-footer.tsx`. La encuesta ahora identifica claramente el modo de demostración y no afirma guardar ni enviar respuestas; el texto sustantivo de privacidad y términos se conservó. Se revisaron las guías locales de Next.js para estilos, layouts y metadatos. Verificado con ESLint, `git diff --check`, `npx next typegen` y `npx tsc --noEmit`; TypeScript detectó inicialmente tipos de rutas generados desfasados tras añadir el layout y pasó después de regenerarlos. En navegador se verificaron escritorio y móvil, el flujo de validación y finalización de la encuesta, la navegación entre documentos legales y la ausencia de desborde a 320, 390 y 768 px. Las capturas y scripts temporales de verificación se eliminaron. Los cambios de estas páginas y este historial quedaron registrados en un segundo commit.
+
+### 2026-10-28T23:12:54Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+en otra rama estate haciendo el modo dark con lo que es la landing y las otras seciones que quede bien el modo dark con lo que es el branding que se tiene de la mejor manera
+
+**Salida:**
+Se creó la rama `feat/fexpo-dark-mode` desde `feat/jhamil-landing`. Se revisó `Doc/branding/Fexpo · Guía de marca · v1.0.md` y la guía local de CSS de Next.js. Se creó `src/components/shared/theme-toggle.tsx` y `src/app/dark-theme.css`; el tema se aplica antes de hidratar, sigue la preferencia del sistema si no hay elección guardada y recuerda la elección en `localStorage`. Se actualizaron `src/app/{layout,page,globals.css}`, la landing (`HeroSection.tsx`), la firma compartida (`fexpo-brand.tsx`), acceso (`access-screen.tsx`), registro (`RegistrationForm.tsx`), páginas legales (`LegalPage.tsx`), mapa (`map.module.css`) y demo móvil (`MobileDemo.tsx`, `mobile-demo.module.css`). Se usaron superficies azul profundo, texto claro y lima para acciones, con el símbolo fexpo en blanco sobre fondos oscuros; se mejoró el contraste de la escena de “Cómo funciona”, formularios, paneles y mapa. La demo móvil sigue el tema del sitio en la opción “Sitio” y conserva sus opciones propias Claro/Oscuro; se reemplazó su marca de letra F por el isotipo y el nombre en minúsculas. Se verificó con `npx tsc --noEmit`, ESLint de los TSX afectados y `git diff --check`, todos sin errores. En Chrome con Playwright se revisaron landing, feedback, privacidad, términos, acceso, registro y demo en modo oscuro; se probaron cambio de tema, persistencia, preferencia del sistema, enlaces legales, opciones de la demo y ausencia de desborde horizontal a 320, 390, 768 y 1280 px. El primer intento de Playwright no encontró su Chromium descargado; se usó Chrome instalado. Los scripts y capturas temporales se eliminaron. Los cambios se registraron en esta rama.
+
+### 2026-10-28T23:37:44Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+C:\Users\ASUS_TUF\AppData\Local\Temp\orca-paste-1793230637077-a0eaba70-5b45-42c8-b00f-86b3b2b10799.png que paso con la landing esa seccion soluiona el modo dark
+
+**Salida:**
+Se revisó la captura: el título claro quedaba sobre el velo blanco del hero. En `src/components/landing/HeroSection.tsx`, `src/app/globals.css` y `src/app/dark-theme.css` se unificaron los colores del texto, la opacidad de la imagen y los velos móvil y escritorio mediante variables del tema en `#inicio`, para que cambien juntos. Se verificó el cambio claro → oscuro → claro en Chrome con Playwright; en escritorio el velo pasa de blanco a azul profundo y el título de azul a claro. En móvil se confirmó el velo oscuro, el texto legible y la ausencia de desborde horizontal. `pnpm exec tsc --noEmit`, ESLint del componente y `git diff --check` terminaron sin errores. El intento de iniciar otro servidor de desarrollo encontró el puerto 3000 ocupado por el servidor existente; se usó ese servidor. Se eliminaron el script y las capturas temporales.
+
+### 2026-10-28T23:47:00Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+<image name=[Image #1] path="C:\Users\ASUS_TUF\AppData\Local\Temp\orca-paste-1793231162574-896764b9-7230-4406-af80-cdd55fae0f44.png">
+pero modificaste lo que es el modo claro [Image #1] ahora ya no esta como era antes
+
+**Salida:**
+Se comparó la captura con el hero en la rama `feat/fexpo-dark-mode`: faltaba el velo blanco del modo claro. En `src/components/landing/HeroSection.tsx` se restauraron como valores de respaldo en el propio componente los degradados claros originales, los colores del título y subtítulo y la opacidad de la imagen. El modo oscuro sigue tomando sus valores del mismo selector de `src/app/dark-theme.css`. Se retiraron de `src/app/globals.css` las reglas del hero que hacían depender el modo claro de otra hoja CSS. En Chrome con Playwright se verificó a escala 125 % el ciclo claro inicial → oscuro → claro y se inspeccionaron capturas y estilos calculados: el claro recupera el velo blanco y el oscuro conserva el velo azul con texto legible. `pnpm exec tsc --noEmit`, ESLint del componente y `git diff --check` terminaron sin errores. Se eliminaron script y capturas temporales.
+
+### 2026-10-28T23:55:54Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+ok lo que es los hover en el heder y en el footer se hacen desaparecer en el modo dark
+
+**Salida:**
+Se corrigió el contraste de los enlaces de navegación de `src/components/landing/LandingHeader.tsx` y `src/components/landing/LandingFooter.tsx` en modo oscuro. Se añadieron identificadores semánticos a esos componentes y reglas específicas en `src/app/dark-theme.css`: hover y foco visible del encabezado usan fondo azul y texto lima; los enlaces del pie usan texto lima; el botón del menú móvil conserva texto claro sobre fondo azul. Se comprobó con Chrome y Playwright que los enlaces de escritorio y móvil tienen los colores esperados en hover y que el hover del modo claro sigue usando azul de marca y marfil. `pnpm exec tsc --noEmit`, ESLint de ambos componentes y `git diff --check` terminaron sin errores. El primer script de verificación intentó pasar el cursor sobre un enlace de escritorio oculto en móvil y agotó el tiempo; se corrigió el selector del script, la verificación pasó y el script temporal se eliminó.
+
+### 2026-10-29T00:01:53Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+en el panel lo que es ariba a la derecha el no se nota lo que es el nombre osea esta en otro color oscuro por el modo dark
+
+**Salida:**
+Se corrigió el botón de cuenta en la esquina superior derecha del panel. `src/components/panel/panel-account-menu.tsx` recibió la clase específica `panel-account-trigger`; `src/app/dark-theme.css` usa esa clase para mostrar el nombre con `--panel-ink` claro, ajustar el borde y mantener contraste sobre fondo azul al pasar el cursor o enfocar. El modo claro conserva los colores anteriores. Se ejecutó una prueba temporal de Playwright con backend simulado: inicio de sesión, color del botón normal y en hover, apertura del menú y color en modo claro; pasó. También pasaron `pnpm exec tsc --noEmit`, ESLint del componente y `git diff --check`. Se eliminó la prueba temporal.
+
+### 2026-10-29T00:11:16Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+<image name=[Image #1] path="C:\Users\ASUS_TUF\AppData\Local\Temp\orca-paste-1793232617180-0b4962ce-f028-425d-bb84-f3c20cddb2a4.png">
+[Image #1] mejora su modo dark de login que se vea de la mejor manera posble y visble lo que no queda claro
+
+**Salida:**
+Se mejoró el modo oscuro de `/acceso` en `src/components/auth/access-screen.tsx` y `src/app/dark-theme.css`. Se identificaron el enlace «Volver al inicio» y la descripción con gris oscuro sobre fondo oscuro en escritorio; ahora usan texto claro, hover/foco lima y un fondo azul con degradado sutil. Se aclararon bordes, marcadores y estado de foco de los campos; el modo claro conserva sus estilos. Se inspeccionaron capturas y estilos calculados en Chrome con Playwright a 390, 912 y 1440 px; se comprobó la legibilidad de ambos temas y los estados de hover/foco. Un intento de recortar el margen blanco del botón oficial de Google ocultó su texto en móvil; se revirtió y se conservó el botón completo. `pnpm exec tsc --noEmit`, ESLint del componente y `git diff --check` pasaron. Se eliminaron el script y las capturas temporales.
+
+### 2026-10-29T00:24:47Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+http://localhost:3000/acceso quiero que el boton de google sea con bordes redondeados no cuadrado
+
+**Salida:**
+Se cambió el botón oficial de Google de `/acceso` a la forma `pill` mediante una prop en `src/components/auth/google-sign-in-button.tsx`, aplicada desde `src/components/auth/access-screen.tsx`. `src/app/globals.css` redondea también el iframe exterior solo para esa forma, porque el SDK deja una franja blanca de 10 px alrededor del botón; se conservó el texto completo en móvil. La pantalla de registro mantiene la forma anterior. Se revisó la referencia oficial de Google para confirmar la opción `shape: "pill"`. En Chrome con Playwright se inspeccionaron capturas del acceso claro y oscuro a 390 px y oscuro a 1440 px, y se confirmó que el iframe tiene bordes redondeados y que su texto es visible. `pnpm exec tsc --noEmit`, ESLint de los componentes y `git diff --check` terminaron sin errores. Se eliminaron script y capturas temporales.
+
+### 2026-10-29T01:59:47Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Nota:** las siguientes entradas (hasta la de "genera los commits necesarios...") se registran de forma retroactiva en un solo lote: esta sesión arrancó desde un resumen de compactación y el registro turno a turno no se reanudó hasta ahora. Reconstruidas fielmente a partir de la conversación.
+
+**Prompt:**
+en esta seccion de EXPERIENCIA INTERACTIVA · DEMOSTRACIÓN quiero que en la card donde esta el celular y nfc lo remplacen por esta imagen [imagen adjunta: C:\proyectos 2026\fipaz proyecto\fipaz-website\public\img\landing\landing-nfc.webp] que es esa en esta card Explora la feria a tu ritmo. cambialo pero que sus bordes de abajo de la imagen se integre con un suavizado
+
+**Salida:**
+En `src/components/landing/NfcSection.tsx`, tarjeta "Explora la feria a tu ritmo.": se reemplazó el mockup CSS (div "fexpo" + `PixelNfcPlaque`) por `next/image` apuntando a `public/img/landing/landing-nfc.webp` (ya existente en el repo), con `object-contain` y un `mask-image`/`-webkit-mask-image` en gradiente (`black 65% → transparent 100%`) para difuminar el borde inferior hacia el navy de la tarjeta. Se quitaron los imports `Smartphone` y `PixelNfcPlaque`, ya sin uso. `npx tsc --noEmit` sin errores.
+
+### 2026-10-29T01:59:52Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+[imagen adjunta de referencia] pero que esa imagen se integre bien de la mejor maneraque se ponga bien y no este chiquito /impeccable
+
+**Salida:**
+Se invocó la skill `impeccable` (modo narrow-refinement, sin PRODUCT.md). Diagnóstico: `landing-nfc.webp` tiene fondo blanco sólido (no transparente), por lo que el `mask-image` de la entrada anterior dejaba un rectángulo blanco chocando contra el navy, además de verse diminuta (112×128px). Se intentó quitar el fondo subiendo la imagen a Canva (`create-upload-url` + `curl` + `remove-background`), pero esa función requiere plan de pago y no se pudo usar. Se optó por una "ficha de foto": panel blanco `rounded-2xl` con la imagen en `object-contain`, sombra con offset+blur real y `rotate-2`, agrandada a 176×128px (sm) / 192×144px (lg), con `data-fx-depth="22"` para heredar el parallax de scroll ya existente (`depthLayers`). `npx tsc --noEmit` limpio y el detector mecánico de `impeccable detect` no reportó hallazgos. No se pudo verificar visualmente (sin herramienta de navegador en la sesión).
+
+### 2026-10-29T01:59:57Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+no osea no me modifque ni le pongas cosas yo solo quiero que [imagen adjunta] esa imagen se agrende para esa card y quede de la mejor manera no quiero que la encuadres
+
+**Salida:**
+Se revirtió el panel blanco/sombra/rotación de la entrada anterior en `src/components/landing/NfcSection.tsx`: ahora es solo la imagen (`next/image`, sin contenedor ni fondo propio) agrandada a 192×144px (sm) / 240×176px (lg) — casi el doble del tamaño original — con `object-contain` para no recortar nada. Se mantuvo `data-fx-depth="22"`. `npx tsc --noEmit` sin errores.
+
+### 2026-10-29T02:00:02Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+lo que es la seccion de acceso lo que es el logo en modo mobile que se vea bien el logo que no este dentro de una caja cerado que se adapte bien al entorno aregla eso
+
+**Salida:**
+En `src/components/shared/fexpo-brand.tsx` se agregó una prop `variant: "navy" | "white"` (default `"navy"`, sin cambios para los demás usos del componente en panel/footer/legal/registro). Con `"white"` aplica `brightness-0 invert` a la imagen del logo (PNG navy embebido en `Fexpo-logo.svg`, sin versión clara existente) y pone el texto "fexpo" en blanco. En `src/components/auth/access-screen.tsx` se quitó la caja blanca (`rounded-2xl bg-white px-4 py-2.5 shadow-...`) que envolvía el logo en móvil/tablet y se usó `<FexpoBrand variant="white" />` directo sobre el degradado navy de esa sección. `npx tsc --noEmit` sin errores.
+
+### 2026-10-29T02:00:07Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+que la primera seccion de la landing que es "Explora. Conecta. Vive Fexpo. La app para ferias que ya tenemos. Explora stands y rutas, haz check-in con NFC y suma puntos en cada visita. Probar demo / Ver el panel / Conoce más / Explora el mapa / Haz check-in con NFC / Completa misiones / Canjea premios" has que salga rapido el texto que no salga tarde que tenga su apariecion normal
+
+**Salida:**
+En `src/components/landing/HeroSection.tsx` se quitó la animación de entrada de Framer Motion (`motion.h1`/`motion.p`/`motion.div` con `initial`/`animate`/`transition` y delays de 50–200ms) del heading, subtítulo, CTAs y chips de features: Framer Motion aplica el estado `initial` (opacity:0) de forma síncrona en el render, así que el texto quedaba invisible en el HTML hasta que React hidrataba, lo que en conexiones/dispositivos lentos se sentía como una aparición tardía. Se convirtieron a elementos planos (`h1`, `p`, `div`) y se quitó el import `motion` de `motion/react`. `npx tsc --noEmit` sin errores.
+
+### 2026-10-29T02:00:12Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+pero que tenga movimiento de aparecion progresivo
+
+**Salida:**
+Se reintrodujo la aparición progresiva del Hero pero como animación CSS pura en vez de JS: en `src/app/globals.css` se agregó la clase `.hero-rise` (reutiliza el `@keyframes access-rise` ya existente para `/acceso`, con su propia variable `--hero-delay`). En `src/components/landing/HeroSection.tsx` se aplicó `hero-rise` al heading, subtítulo, CTAs y chips con delays escalonados de 0/70/140/210ms vía `style={{ "--hero-delay": "...ms" } as CSSProperties}`. Al ser CSS, la animación corre en cuanto el navegador pinta el HTML (no espera hidratación de React), evitando el efecto de "sale tarde" sin perder el movimiento; `prefers-reduced-motion: reduce` ya la desactiva mediante la regla global existente en `globals.css`, sin necesidad de una regla adicional.
+
+### 2026-10-29T02:00:17Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+genera los commits necesarios de los cambios que hicimos
+
+**Salida:**
+Se crearon 3 commits en `feat/jhamil-landing`, agrupados por tema: `cecec39` (foto real del teléfono+NFC en `NfcSection.tsx` + `public/img/landing/landing-nfc.webp`), `895f76f` (logo del acceso sin caja blanca: `fexpo-brand.tsx` + `access-screen.tsx`) y `291905e` (aparición progresiva del hero en CSS puro: `HeroSection.tsx` + `globals.css`). Luego este commit de `docs(agent-history)`. `git status --porcelain=v1` quedó limpio. No se hizo push. `npx tsc --noEmit` sin errores.

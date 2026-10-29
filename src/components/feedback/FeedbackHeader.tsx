@@ -1,39 +1,26 @@
-"use client";
-
-import React from "react";
 import Link from "next/link";
-import { PixelLogo, PixelStar } from "../landing/PixelIcons";
 import { ArrowLeft } from "lucide-react";
+import { FexpoBrand } from "@/components/shared/fexpo-brand";
+import styles from "./feedback.module.css";
 
 export function FeedbackHeader() {
   return (
-    <header className="border-b-2 border-[var(--expo-line)] bg-white py-6">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6">
-        <div className="flex items-center justify-between">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 font-bold text-slate-600 transition-colors hover:text-[var(--expo-blue)]"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span>Volver al inicio</span>
+    <header>
+      <div className="border-b border-[#E2E0D8] bg-white">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+          <Link href="/" aria-label="fexpo, ir al inicio" className="inline-flex shrink-0"><FexpoBrand /></Link>
+          <Link href="/" className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-[#626D78] transition-colors hover:text-[#132D46]">
+            <ArrowLeft aria-hidden="true" className="h-4 w-4" />
+            <span className="hidden sm:inline">Volver al inicio</span>
+            <span className="sm:hidden">Inicio</span>
           </Link>
-
-          <PixelLogo />
         </div>
-
-        <div className="mt-8 text-center sm:text-left">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-[var(--expo-yellow)] px-3 py-1 font-mono text-xs font-black text-[var(--expo-navy)] border-2 border-[var(--expo-navy)] shadow-[2px_2px_0_var(--expo-navy)] mb-3">
-            <PixelStar className="w-3.5 h-3.5" />
-            FEEDBACK ANÓNIMO
-          </div>
-
-          <h1 className="text-3xl font-black tracking-tight text-[var(--expo-navy)] sm:text-5xl">
-            Tu experiencia puede mejorar ExpoVia.
-          </h1>
-
-          <p className="mt-3 text-base sm:text-lg text-slate-600 font-medium max-w-2xl">
-            Esta es una simulación temprana. Queremos saber qué funcionó, qué te confundió y qué deberíamos priorizar en las siguientes versiones.
-          </p>
+      </div>
+      <div className={styles.hero}>
+        <div className="relative mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+          <p className="text-xs font-medium uppercase tracking-[0.12em] text-[#D5F24A]">Tu opinión cuenta · Demostración</p>
+          <h1 className="mt-4 max-w-3xl text-balance text-[clamp(2.3rem,5vw,4.2rem)] font-bold leading-[1.08] tracking-tight text-white">Ayúdanos a mejorar la experiencia en la feria.</h1>
+          <p className="mt-5 max-w-2xl text-base leading-7 text-white/80 sm:text-lg">Cuéntanos qué te resultó útil y qué cambiarías de fexpo. Completar esta encuesta toma unos minutos.</p>
         </div>
       </div>
     </header>
