@@ -1,14 +1,17 @@
 import { z } from "zod";
 
-import { apiDelete, apiGet, apiPatch, apiPost } from "@/lib/api/http-client";
+import { apiDelete, apiGet, apiGetAll, apiPatch, apiPost, apiUpload } from "@/lib/api/http-client";
+
+/** El backend omite estos campos cuando no tienen valor, en vez de mandar `null`. */
+const nullableString = () => z.string().nullish().transform((value) => value ?? null);
 
 const companySchema = z.object({
   id: z.string().uuid(),
   displayName: z.string(),
-  description: z.string().nullable(),
-  logoPath: z.string().nullable(),
-  website: z.string().nullable(),
-  contactEmail: z.string().nullable(),
+  description: nullableString(),
+  logoPath: nullableString(),
+  website: nullableString(),
+  contactEmail: nullableString(),
 });
 
 const standSchema = z.object({
@@ -18,12 +21,23 @@ const standSchema = z.object({
   eventName: z.string(),
   boothCode: z.string(),
   displayName: z.string(),
-  description: z.string().nullable(),
+  description: nullableString(),
+  logoPath: nullableString(),
+  website: nullableString(),
   tags: z.array(z.string()),
-  activityHighlight: z.string().nullable(),
-  promotionHighlight: z.string().nullable(),
+  activityHighlight: nullableString(),
+  promotionHighlight: nullableString(),
   visitPoints: z.number(),
   status: z.string(),
+});
+
+const uploadedFileSchema = z.object({
+  id: z.string().uuid(),
+  path: z.string(),
+  url: z.string(),
+  fileName: z.string(),
+  mimeType: z.string(),
+  size: z.number(),
 });
 
 const kpisSchema = z.object({
@@ -54,6 +68,7 @@ const updatedRecordSchema = z.object({ id: z.string().uuid() }).passthrough();
 
 export type ExhibitorCompany = z.infer<typeof companySchema>;
 export type ExhibitorStand = z.infer<typeof standSchema>;
+export type UploadedFile = z.infer<typeof uploadedFileSchema>;
 export type CompanyKpis = z.infer<typeof kpisSchema>;
 export type StandCheckin = z.infer<typeof checkinSchema>;
 export type IssuedStandQr = z.infer<typeof issuedQrSchema>;
@@ -82,11 +97,19 @@ export const exhibitorApi = {
     tags?: string[];
     activityHighlight?: string | null;
     promotionHighlight?: string | null;
+    logoPath?: string | null;
+    website?: string | null;
   }): Promise<{ id: string }> {
     return updatedRecordSchema.parse(await apiPatch(`/stands/${encodeURIComponent(standId)}`, patch));
   },
+  /** Sube una imagen (PNG/JPEG/WebP, máx. 5 MB) y devuelve su ruta para usar como `logoPath`. */
+  async uploadLogo(file: File): Promise<UploadedFile> {
+    const formData = new FormData();
+    formData.append("file", file);
+    return uploadedFileSchema.parse(await apiUpload("/uploads", formData));
+  },
   async getCheckins(standId: string): Promise<StandCheckin[]> {
-    return z.array(checkinSchema).parse(await apiGet(`/stands/${encodeURIComponent(standId)}/check-ins`));
+    return z.array(checkinSchema).parse(await apiGetAll(`/stands/${encodeURIComponent(standId)}/check-ins`));
   },
   async issueQr(standId: string, ttlSeconds: number, maxScans: number): Promise<IssuedStandQr> {
     return issuedQrSchema.parse(await apiPost(`/stands/${encodeURIComponent(standId)}/qr`, { ttlSeconds, maxScans }));

@@ -38,7 +38,8 @@ export interface BackendErrorResponseDto {
 type QueryValue = string | number | boolean | undefined;
 
 export interface RequestOptions {
-  body?: unknown;
+  /** Un `FormData` se envía tal cual (multipart), sin serializar ni fijar `Content-Type`. */
+  body?: unknown | FormData;
   query?: Record<string, QueryValue>;
   /** Mensaje para un 404 sin código propio, p. ej. "No encontramos la dinámica solicitada.". */
   notFoundMessage?: string;
@@ -183,8 +184,10 @@ export async function apiRequest<T>(
   path: string,
   { body, query, notFoundMessage }: RequestOptions = {},
 ): Promise<ApiResult<T>> {
+  const isFormData = body instanceof FormData;
   const headers: Record<string, string> = { Accept: "application/json" };
-  if (body !== undefined) headers["Content-Type"] = "application/json";
+  // Para FormData, el navegador fija Content-Type con el boundary del multipart; fijarlo a mano lo rompe.
+  if (body !== undefined && !isFormData) headers["Content-Type"] = "application/json";
   const token = accessTokenProvider();
 
   const send = (accessToken: string | null) => {
@@ -193,7 +196,7 @@ export async function apiRequest<T>(
     return fetch(buildUrl(path, query), {
       method,
       headers: requestHeaders,
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body: body === undefined ? undefined : isFormData ? body : JSON.stringify(body),
       cache: "no-store",
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
@@ -264,6 +267,11 @@ export async function apiGetAll<T>(path: string, options: ReadOptions = {}): Pro
 
 export async function apiPost<T>(path: string, body?: unknown, options: ReadOptions = {}): Promise<T> {
   return (await apiRequest<T>("POST", path, { ...options, body })).data;
+}
+
+/** POST multipart (subida de archivos). `formData` se envía tal cual, sin serializar a JSON. */
+export async function apiUpload<T>(path: string, formData: FormData, options: ReadOptions = {}): Promise<T> {
+  return (await apiRequest<T>("POST", path, { ...options, body: formData })).data;
 }
 
 export async function apiPut<T>(path: string, body?: unknown, options: ReadOptions = {}): Promise<T> {

@@ -62,11 +62,6 @@ function VisitsForStand({ standId }: { standId: string }) {
         <p className="pixel-card p-5 text-sm text-slate-600">Aún no hay visitas registradas en este stand.</p>
       ) : (
         <>
-          {visits.length >= 200 && (
-            <div role="status" className="mb-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
-              Mostrando los 200 registros más recientes confirmados por el servidor.
-            </div>
-          )}
           <div className="pixel-card divide-y divide-[var(--expo-line)] overflow-hidden">
             {paginatedVisits.map((visit) => (
               <div key={visit.id} className="flex items-center justify-between gap-3 px-4 py-3">
