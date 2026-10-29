@@ -135,14 +135,15 @@ export function AccessScreen({ panel }: AccessScreenProps) {
   const loading = !hydrated || (verification === "checking" && !!session) || (checked && !!session && !!target);
 
   return (
-    <div className="min-h-dvh bg-white text-[#0f1b5c] antialiased">
+    <div className="access-page min-h-dvh bg-white text-[#0f1b5c] antialiased">
       <main className="grid min-h-dvh lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
         <section className="relative flex flex-col bg-white lg:items-center lg:justify-center lg:bg-white lg:px-16 lg:py-20">
           {/* Móvil y tablet: banda de color con ola; en escritorio el contenedor desaparece (lg:contents) y solo queda el texto. */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-[#0a6cf0] via-[#2f5ff0] to-[#6b4df0] px-6 pb-16 pt-20 text-white sm:px-12 lg:contents lg:text-[#0f1b5c]">
+          <div className="relative overflow-hidden bg-gradient-to-br from-[#132D46] via-[#1c3a50] to-[#111820] px-6 pb-16 pt-20 text-white sm:px-12 lg:contents lg:text-[#0f1b5c]">
             <Link
               href="/"
               aria-label="Volver al inicio"
+              data-access-back
               className="absolute left-3 top-3 inline-flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-medium text-white transition-colors duration-150 ease-out hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white lg:left-12 lg:top-6 lg:text-slate-600 lg:hover:bg-transparent lg:hover:text-[var(--expo-blue)] lg:focus-visible:outline-[var(--expo-blue)] sm:left-6 sm:top-4"
             >
               <ArrowLeft aria-hidden="true" className="h-5 w-5 lg:h-4 lg:w-4" />
@@ -151,7 +152,7 @@ export function AccessScreen({ panel }: AccessScreenProps) {
 
             <svg aria-hidden="true" viewBox="0 0 390 60" preserveAspectRatio="none" className="pointer-events-none absolute inset-x-0 bottom-0 h-12 w-full lg:hidden">
               <path d="M0 34C70 6 150 2 230 24S350 48 390 18V60H0Z" fill="white" fillOpacity="0.18" />
-              <path d="M0 46C80 20 170 26 250 40S350 52 390 36V60H0Z" fill="white" />
+              <path d="M0 46C80 20 170 26 250 40S350 52 390 36V60H0Z" fill="var(--access-surface)" />
             </svg>
 
             <header className="mx-auto w-full max-w-[25rem] text-center">
@@ -162,7 +163,7 @@ export function AccessScreen({ panel }: AccessScreenProps) {
                 Bienvenido a <span className="lg:text-[#D5F24A]">fexpo</span>
               </h1>
               <h2 className="sr-only">{copy.title}</h2>
-              <p {...rise(60)} className="access-rise mx-auto mt-2 max-w-xs text-balance text-base text-white/90 sm:text-lg lg:mt-3 lg:text-slate-600">{copy.description}</p>
+              <p {...rise(60)} data-access-description className="access-rise mx-auto mt-2 max-w-xs text-balance text-base text-white/90 sm:text-lg lg:mt-3 lg:text-slate-600">{copy.description}</p>
             </header>
           </div>
 
@@ -201,7 +202,7 @@ export function AccessScreen({ panel }: AccessScreenProps) {
                         <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" /> Validando tu cuenta…
                       </div>
                     ) : (
-                      <GoogleSignInButton onCredential={(credential) => void handleCredential(credential)} />
+                      <GoogleSignInButton shape="pill" onCredential={(credential) => void handleCredential(credential)} />
                     )}
                   </div>
 

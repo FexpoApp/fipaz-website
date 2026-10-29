@@ -78,3 +78,17 @@
 .embedded .muted,.embedded .result small { color:var(--m-secondary); }
 .embedded .command { background:var(--m-soft); color:var(--m-primaryText); border-color:var(--m-border); border-radius:10px; min-height:44px; }
 .embedded .svg { color:#25382e; }
+
+/* El mapa mantiene un lienzo claro de referencia, mientras controles y fichas siguen el tema oscuro. */
+:global(html[data-theme="dark"]) .root:not(.embedded) { background:#0f1d2b; color:#f1f4ef; font-family:var(--font-poppins),Arial,sans-serif; }
+:global(html[data-theme="dark"]) .root:not(.embedded) :is(.header,.footer,.panel,.sheet) { background:#172a3a; color:#f1f4ef; border-color:#34495b; }
+:global(html[data-theme="dark"]) .root:not(.embedded) :is(.muted,.result small) { color:#bdcbd5; }
+:global(html[data-theme="dark"]) .root:not(.embedded) .demoNotice { background:#293b29; border-color:#d5f24a; color:#f1f4ef; }
+:global(html[data-theme="dark"]) .root:not(.embedded) :is(.select,.iconButton,.tabs button,.result,.search) { background:#203649; color:#f1f4ef; border-color:#34495b; }
+:global(html[data-theme="dark"]) .root:not(.embedded) .tabs { border-color:#34495b; }
+:global(html[data-theme="dark"]) .root:not(.embedded) :is(.iconButton[aria-pressed="true"],.tabs button[aria-pressed="true"],.result:hover) { background:#304d5e; }
+:global(html[data-theme="dark"]) .root:not(.embedded) .canvas { background:#f5f4ef; color:#132d46; }
+:global(html[data-theme="dark"]) .root:not(.embedded) .zoom { background:#f5f4ef; color:#132d46; }
+:global(html[data-theme="dark"]) .root:not(.embedded) .command { background:#d5f24a; color:#132d46; border-color:#d5f24a; }
+:global(html[data-theme="dark"]) .root:not(.embedded) .exhibitorDialog { background:#172a3a; color:#f1f4ef; border-color:#34495b; }
+:global(html[data-theme="dark"]) .embedded .svg { color:#f1f4ef; fill:#f1f4ef; }

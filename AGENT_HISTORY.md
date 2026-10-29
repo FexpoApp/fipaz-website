@@ -784,3 +784,54 @@ has los commit corespondientes de lo que isiste y mejora con la branding lo que 
 
 **Salida:**
 Se registró el trabajo previo del panel y la marca en el commit `1e9d668 feat(panel): alinear panel expositor con branding fexpo`. Se rediseñaron `/feedback`, `/privacidad` y `/terminos` según la guía de marca: cabeceras azul feria con símbolo, acentos lima, fondos marfil, tipografía Poppins local, tarjetas de lectura y pie compartido con la nueva firma fexpo. Se actualizaron `src/app/feedback/{page,layout}.tsx`, `src/components/feedback/{FeedbackForm,FeedbackHeader,FeedbackSuccess,feedback.module.css}`, `src/components/legal/{LegalPage,LegalToc,legal.module.css}` y se creó `src/components/shared/fexpo-page-footer.tsx`. La encuesta ahora identifica claramente el modo de demostración y no afirma guardar ni enviar respuestas; el texto sustantivo de privacidad y términos se conservó. Se revisaron las guías locales de Next.js para estilos, layouts y metadatos. Verificado con ESLint, `git diff --check`, `npx next typegen` y `npx tsc --noEmit`; TypeScript detectó inicialmente tipos de rutas generados desfasados tras añadir el layout y pasó después de regenerarlos. En navegador se verificaron escritorio y móvil, el flujo de validación y finalización de la encuesta, la navegación entre documentos legales y la ausencia de desborde a 320, 390 y 768 px. Las capturas y scripts temporales de verificación se eliminaron. Los cambios de estas páginas y este historial quedaron registrados en un segundo commit.
+
+### 2026-10-28T23:12:54Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+en otra rama estate haciendo el modo dark con lo que es la landing y las otras seciones que quede bien el modo dark con lo que es el branding que se tiene de la mejor manera
+
+**Salida:**
+Se creó la rama `feat/fexpo-dark-mode` desde `feat/jhamil-landing`. Se revisó `Doc/branding/Fexpo · Guía de marca · v1.0.md` y la guía local de CSS de Next.js. Se creó `src/components/shared/theme-toggle.tsx` y `src/app/dark-theme.css`; el tema se aplica antes de hidratar, sigue la preferencia del sistema si no hay elección guardada y recuerda la elección en `localStorage`. Se actualizaron `src/app/{layout,page,globals.css}`, la landing (`HeroSection.tsx`), la firma compartida (`fexpo-brand.tsx`), acceso (`access-screen.tsx`), registro (`RegistrationForm.tsx`), páginas legales (`LegalPage.tsx`), mapa (`map.module.css`) y demo móvil (`MobileDemo.tsx`, `mobile-demo.module.css`). Se usaron superficies azul profundo, texto claro y lima para acciones, con el símbolo fexpo en blanco sobre fondos oscuros; se mejoró el contraste de la escena de “Cómo funciona”, formularios, paneles y mapa. La demo móvil sigue el tema del sitio en la opción “Sitio” y conserva sus opciones propias Claro/Oscuro; se reemplazó su marca de letra F por el isotipo y el nombre en minúsculas. Se verificó con `npx tsc --noEmit`, ESLint de los TSX afectados y `git diff --check`, todos sin errores. En Chrome con Playwright se revisaron landing, feedback, privacidad, términos, acceso, registro y demo en modo oscuro; se probaron cambio de tema, persistencia, preferencia del sistema, enlaces legales, opciones de la demo y ausencia de desborde horizontal a 320, 390, 768 y 1280 px. El primer intento de Playwright no encontró su Chromium descargado; se usó Chrome instalado. Los scripts y capturas temporales se eliminaron. Los cambios se registraron en esta rama.
+
+### 2026-10-28T23:37:44Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+C:\Users\ASUS_TUF\AppData\Local\Temp\orca-paste-1793230637077-a0eaba70-5b45-42c8-b00f-86b3b2b10799.png que paso con la landing esa seccion soluiona el modo dark
+
+**Salida:**
+Se revisó la captura: el título claro quedaba sobre el velo blanco del hero. En `src/components/landing/HeroSection.tsx`, `src/app/globals.css` y `src/app/dark-theme.css` se unificaron los colores del texto, la opacidad de la imagen y los velos móvil y escritorio mediante variables del tema en `#inicio`, para que cambien juntos. Se verificó el cambio claro → oscuro → claro en Chrome con Playwright; en escritorio el velo pasa de blanco a azul profundo y el título de azul a claro. En móvil se confirmó el velo oscuro, el texto legible y la ausencia de desborde horizontal. `pnpm exec tsc --noEmit`, ESLint del componente y `git diff --check` terminaron sin errores. El intento de iniciar otro servidor de desarrollo encontró el puerto 3000 ocupado por el servidor existente; se usó ese servidor. Se eliminaron el script y las capturas temporales.
+
+### 2026-10-28T23:47:00Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+<image name=[Image #1] path="C:\Users\ASUS_TUF\AppData\Local\Temp\orca-paste-1793231162574-896764b9-7230-4406-af80-cdd55fae0f44.png">
+pero modificaste lo que es el modo claro [Image #1] ahora ya no esta como era antes
+
+**Salida:**
+Se comparó la captura con el hero en la rama `feat/fexpo-dark-mode`: faltaba el velo blanco del modo claro. En `src/components/landing/HeroSection.tsx` se restauraron como valores de respaldo en el propio componente los degradados claros originales, los colores del título y subtítulo y la opacidad de la imagen. El modo oscuro sigue tomando sus valores del mismo selector de `src/app/dark-theme.css`. Se retiraron de `src/app/globals.css` las reglas del hero que hacían depender el modo claro de otra hoja CSS. En Chrome con Playwright se verificó a escala 125 % el ciclo claro inicial → oscuro → claro y se inspeccionaron capturas y estilos calculados: el claro recupera el velo blanco y el oscuro conserva el velo azul con texto legible. `pnpm exec tsc --noEmit`, ESLint del componente y `git diff --check` terminaron sin errores. Se eliminaron script y capturas temporales.
+
+### 2026-10-28T23:55:54Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+ok lo que es los hover en el heder y en el footer se hacen desaparecer en el modo dark
+
+**Salida:**
+Se corrigió el contraste de los enlaces de navegación de `src/components/landing/LandingHeader.tsx` y `src/components/landing/LandingFooter.tsx` en modo oscuro. Se añadieron identificadores semánticos a esos componentes y reglas específicas en `src/app/dark-theme.css`: hover y foco visible del encabezado usan fondo azul y texto lima; los enlaces del pie usan texto lima; el botón del menú móvil conserva texto claro sobre fondo azul. Se comprobó con Chrome y Playwright que los enlaces de escritorio y móvil tienen los colores esperados en hover y que el hover del modo claro sigue usando azul de marca y marfil. `pnpm exec tsc --noEmit`, ESLint de ambos componentes y `git diff --check` terminaron sin errores. El primer script de verificación intentó pasar el cursor sobre un enlace de escritorio oculto en móvil y agotó el tiempo; se corrigió el selector del script, la verificación pasó y el script temporal se eliminó.
+
+### 2026-10-29T00:01:53Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+en el panel lo que es ariba a la derecha el no se nota lo que es el nombre osea esta en otro color oscuro por el modo dark
+
+**Salida:**
+Se corrigió el botón de cuenta en la esquina superior derecha del panel. `src/components/panel/panel-account-menu.tsx` recibió la clase específica `panel-account-trigger`; `src/app/dark-theme.css` usa esa clase para mostrar el nombre con `--panel-ink` claro, ajustar el borde y mantener contraste sobre fondo azul al pasar el cursor o enfocar. El modo claro conserva los colores anteriores. Se ejecutó una prueba temporal de Playwright con backend simulado: inicio de sesión, color del botón normal y en hover, apertura del menú y color en modo claro; pasó. También pasaron `pnpm exec tsc --noEmit`, ESLint del componente y `git diff --check`. Se eliminó la prueba temporal.
+
+### 2026-10-29T00:11:16Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+<image name=[Image #1] path="C:\Users\ASUS_TUF\AppData\Local\Temp\orca-paste-1793232617180-0b4962ce-f028-425d-bb84-f3c20cddb2a4.png">
+[Image #1] mejora su modo dark de login que se vea de la mejor manera posble y visble lo que no queda claro
+
+**Salida:**
+Se mejoró el modo oscuro de `/acceso` en `src/components/auth/access-screen.tsx` y `src/app/dark-theme.css`. Se identificaron el enlace «Volver al inicio» y la descripción con gris oscuro sobre fondo oscuro en escritorio; ahora usan texto claro, hover/foco lima y un fondo azul con degradado sutil. Se aclararon bordes, marcadores y estado de foco de los campos; el modo claro conserva sus estilos. Se inspeccionaron capturas y estilos calculados en Chrome con Playwright a 390, 912 y 1440 px; se comprobó la legibilidad de ambos temas y los estados de hover/foco. Un intento de recortar el margen blanco del botón oficial de Google ocultó su texto en móvil; se revirtió y se conservó el botón completo. `pnpm exec tsc --noEmit`, ESLint del componente y `git diff --check` pasaron. Se eliminaron el script y las capturas temporales.
+
+### 2026-10-29T00:24:47Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+http://localhost:3000/acceso quiero que el boton de google sea con bordes redondeados no cuadrado
+
+**Salida:**
+Se cambió el botón oficial de Google de `/acceso` a la forma `pill` mediante una prop en `src/components/auth/google-sign-in-button.tsx`, aplicada desde `src/components/auth/access-screen.tsx`. `src/app/globals.css` redondea también el iframe exterior solo para esa forma, porque el SDK deja una franja blanca de 10 px alrededor del botón; se conservó el texto completo en móvil. La pantalla de registro mantiene la forma anterior. Se revisó la referencia oficial de Google para confirmar la opción `shape: "pill"`. En Chrome con Playwright se inspeccionaron capturas del acceso claro y oscuro a 390 px y oscuro a 1440 px, y se confirmó que el iframe tiene bordes redondeados y que su texto es visible. `pnpm exec tsc --noEmit`, ESLint de los componentes y `git diff --check` terminaron sin errores. Se eliminaron script y capturas temporales.

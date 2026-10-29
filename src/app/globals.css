@@ -23,6 +23,7 @@
   --expo-bg: #f5f4ef;
   --expo-card: #ffffff;
   --expo-line: #e2e0d8;
+  --access-surface: #fff;
 
   /* Motion curves shared by CSS and GSAP ("uiOut" in landing/scroll-fx.ts). */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -691,4 +692,8 @@ a {
 .access-field:-webkit-autofill:focus {
   -webkit-text-fill-color: #0f1b5c;
   box-shadow: 0 0 0 1000px #fff inset;
+}
+
+.google-sign-in-pill iframe {
+  border-radius: 9999px;
 }

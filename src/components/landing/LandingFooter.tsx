@@ -27,7 +27,7 @@ export function LandingFooter() {
   useScrollFx(root, playFooter);
 
   return (
-    <footer ref={root} className="border-t border-[var(--expo-line)] bg-white py-12 text-[var(--expo-navy)]">
+    <footer ref={root} data-landing-footer className="border-t border-[var(--expo-line)] bg-white py-12 text-[var(--expo-navy)]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center gap-7">
           {/* Brand & tagline */}

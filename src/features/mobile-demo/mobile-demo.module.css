@@ -41,3 +41,5 @@
 .venueScene{display:flex}.pavilions{height:auto;flex:1}
 
 .returnLink{text-align:center;font-size:12px;color:var(--m-primaryText);min-height:44px;display:grid;place-items:center}
+
+.brandMark img,.receiptBrand>b img{width:20px;height:26px;object-fit:contain;filter:brightness(0) invert(1)}

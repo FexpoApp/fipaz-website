@@ -76,7 +76,7 @@ export function LegalPage({ title, updatedAt, intro, sections, current }: LegalP
                 <span aria-hidden="true" className="flex h-9 min-w-9 items-center justify-center rounded-lg bg-[#D5F24A] text-xs font-semibold text-[#132D46]">{String(index + 1).padStart(2, "0")}</span>
                 <h2 className="pt-0.5 text-balance text-xl font-semibold leading-snug text-[#132D46] sm:text-2xl">{section.title}</h2>
               </div>
-              <div className={`${styles.prose} mt-4 space-y-4 text-[15px] leading-7 text-[#626D78] sm:text-base`}>{section.body}</div>
+              <div data-legal-prose className={`${styles.prose} mt-4 space-y-4 text-[15px] leading-7 text-[#626D78] sm:text-base`}>{section.body}</div>
             </section>
           ))}
 
