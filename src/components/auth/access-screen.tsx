@@ -156,8 +156,8 @@ export function AccessScreen({ panel }: AccessScreenProps) {
             </svg>
 
             <header className="mx-auto w-full max-w-[25rem] text-center">
-              <span {...rise(0)} className="access-rise mx-auto mb-5 inline-flex rounded-2xl bg-white px-4 py-2.5 shadow-[0_8px_24px_-10px_rgba(15,27,92,0.55)] lg:hidden">
-                <FexpoBrand />
+              <span {...rise(0)} className="access-rise mx-auto mb-5 inline-flex lg:hidden">
+                <FexpoBrand variant="white" />
               </span>
               <h1 {...rise(0)} className="access-rise text-balance text-[2rem] font-extrabold leading-[1.1] tracking-tight sm:text-4xl lg:text-[2.5rem] lg:leading-[1.05]">
                 Bienvenido a <span className="lg:text-[#D5F24A]">fexpo</span>
