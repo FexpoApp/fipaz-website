@@ -259,6 +259,16 @@ html[data-theme="dark"] .fexpo-panel .panel-nav-link[aria-current="page"] {
   color: #fff;
 }
 
+html[data-theme="dark"] .fexpo-panel .panel-account-trigger {
+  border-color: var(--panel-border);
+  color: var(--panel-ink);
+}
+
+html[data-theme="dark"] .fexpo-panel .panel-account-trigger:is(:hover, :focus-visible) {
+  background-color: #284156;
+  color: var(--panel-ink);
+}
+
 html[data-theme="dark"] .fexpo-panel .panel-hero {
   background: #132d46;
   color: #fff;

@@ -813,3 +813,10 @@ ok lo que es los hover en el heder y en el footer se hacen desaparecer en el mod
 
 **Salida:**
 Se corrigió el contraste de los enlaces de navegación de `src/components/landing/LandingHeader.tsx` y `src/components/landing/LandingFooter.tsx` en modo oscuro. Se añadieron identificadores semánticos a esos componentes y reglas específicas en `src/app/dark-theme.css`: hover y foco visible del encabezado usan fondo azul y texto lima; los enlaces del pie usan texto lima; el botón del menú móvil conserva texto claro sobre fondo azul. Se comprobó con Chrome y Playwright que los enlaces de escritorio y móvil tienen los colores esperados en hover y que el hover del modo claro sigue usando azul de marca y marfil. `pnpm exec tsc --noEmit`, ESLint de ambos componentes y `git diff --check` terminaron sin errores. El primer script de verificación intentó pasar el cursor sobre un enlace de escritorio oculto en móvil y agotó el tiempo; se corrigió el selector del script, la verificación pasó y el script temporal se eliminó.
+
+### 2026-10-29T00:01:53Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+en el panel lo que es ariba a la derecha el no se nota lo que es el nombre osea esta en otro color oscuro por el modo dark
+
+**Salida:**
+Se corrigió el botón de cuenta en la esquina superior derecha del panel. `src/components/panel/panel-account-menu.tsx` recibió la clase específica `panel-account-trigger`; `src/app/dark-theme.css` usa esa clase para mostrar el nombre con `--panel-ink` claro, ajustar el borde y mantener contraste sobre fondo azul al pasar el cursor o enfocar. El modo claro conserva los colores anteriores. Se ejecutó una prueba temporal de Playwright con backend simulado: inicio de sesión, color del botón normal y en hover, apertura del menú y color en modo claro; pasó. También pasaron `pnpm exec tsc --noEmit`, ESLint del componente y `git diff --check`. Se eliminó la prueba temporal.
