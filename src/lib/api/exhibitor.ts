@@ -2,13 +2,16 @@ import { z } from "zod";
 
 import { apiDelete, apiGet, apiPatch, apiPost, apiUpload } from "@/lib/api/http-client";
 
+/** El backend omite estos campos cuando no tienen valor, en vez de mandar `null`. */
+const nullableString = () => z.string().nullish().transform((value) => value ?? null);
+
 const companySchema = z.object({
   id: z.string().uuid(),
   displayName: z.string(),
-  description: z.string().nullable(),
-  logoPath: z.string().nullable(),
-  website: z.string().nullable(),
-  contactEmail: z.string().nullable(),
+  description: nullableString(),
+  logoPath: nullableString(),
+  website: nullableString(),
+  contactEmail: nullableString(),
 });
 
 const standSchema = z.object({
@@ -18,12 +21,12 @@ const standSchema = z.object({
   eventName: z.string(),
   boothCode: z.string(),
   displayName: z.string(),
-  description: z.string().nullable(),
-  logoPath: z.string().nullable(),
-  website: z.string().nullable(),
+  description: nullableString(),
+  logoPath: nullableString(),
+  website: nullableString(),
   tags: z.array(z.string()),
-  activityHighlight: z.string().nullable(),
-  promotionHighlight: z.string().nullable(),
+  activityHighlight: nullableString(),
+  promotionHighlight: nullableString(),
   visitPoints: z.number(),
   status: z.string(),
 });
