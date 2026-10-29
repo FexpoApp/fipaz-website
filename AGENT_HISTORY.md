@@ -820,3 +820,11 @@ en el panel lo que es ariba a la derecha el no se nota lo que es el nombre osea 
 
 **Salida:**
 Se corrigió el botón de cuenta en la esquina superior derecha del panel. `src/components/panel/panel-account-menu.tsx` recibió la clase específica `panel-account-trigger`; `src/app/dark-theme.css` usa esa clase para mostrar el nombre con `--panel-ink` claro, ajustar el borde y mantener contraste sobre fondo azul al pasar el cursor o enfocar. El modo claro conserva los colores anteriores. Se ejecutó una prueba temporal de Playwright con backend simulado: inicio de sesión, color del botón normal y en hover, apertura del menú y color en modo claro; pasó. También pasaron `pnpm exec tsc --noEmit`, ESLint del componente y `git diff --check`. Se eliminó la prueba temporal.
+
+### 2026-10-29T00:11:16Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Codex (GPT-6)
+**Prompt:**
+<image name=[Image #1] path="C:\Users\ASUS_TUF\AppData\Local\Temp\orca-paste-1793232617180-0b4962ce-f028-425d-bb84-f3c20cddb2a4.png">
+[Image #1] mejora su modo dark de login que se vea de la mejor manera posble y visble lo que no queda claro
+
+**Salida:**
+Se mejoró el modo oscuro de `/acceso` en `src/components/auth/access-screen.tsx` y `src/app/dark-theme.css`. Se identificaron el enlace «Volver al inicio» y la descripción con gris oscuro sobre fondo oscuro en escritorio; ahora usan texto claro, hover/foco lima y un fondo azul con degradado sutil. Se aclararon bordes, marcadores y estado de foco de los campos; el modo claro conserva sus estilos. Se inspeccionaron capturas y estilos calculados en Chrome con Playwright a 390, 912 y 1440 px; se comprobó la legibilidad de ambos temas y los estados de hover/foco. Un intento de recortar el margen blanco del botón oficial de Google ocultó su texto en móvil; se revirtió y se conservó el botón completo. `pnpm exec tsc --noEmit`, ESLint del componente y `git diff --check` pasaron. Se eliminaron el script y las capturas temporales.

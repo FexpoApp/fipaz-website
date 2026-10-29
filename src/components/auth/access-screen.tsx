@@ -143,6 +143,7 @@ export function AccessScreen({ panel }: AccessScreenProps) {
             <Link
               href="/"
               aria-label="Volver al inicio"
+              data-access-back
               className="absolute left-3 top-3 inline-flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-medium text-white transition-colors duration-150 ease-out hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white lg:left-12 lg:top-6 lg:text-slate-600 lg:hover:bg-transparent lg:hover:text-[var(--expo-blue)] lg:focus-visible:outline-[var(--expo-blue)] sm:left-6 sm:top-4"
             >
               <ArrowLeft aria-hidden="true" className="h-5 w-5 lg:h-4 lg:w-4" />
@@ -162,7 +163,7 @@ export function AccessScreen({ panel }: AccessScreenProps) {
                 Bienvenido a <span className="lg:text-[#D5F24A]">fexpo</span>
               </h1>
               <h2 className="sr-only">{copy.title}</h2>
-              <p {...rise(60)} className="access-rise mx-auto mt-2 max-w-xs text-balance text-base text-white/90 sm:text-lg lg:mt-3 lg:text-slate-600">{copy.description}</p>
+              <p {...rise(60)} data-access-description className="access-rise mx-auto mt-2 max-w-xs text-balance text-base text-white/90 sm:text-lg lg:mt-3 lg:text-slate-600">{copy.description}</p>
             </header>
           </div>
 

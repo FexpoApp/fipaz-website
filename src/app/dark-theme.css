@@ -157,6 +157,47 @@ html[data-theme="dark"] .access-page [class~="lg:text-[#0f1b5c]"] {
   color: var(--dark-text);
 }
 
+html[data-theme="dark"] .access-page {
+  background-color: #102334;
+  color: var(--dark-text);
+}
+
+html[data-theme="dark"] .access-page > main > section {
+  background: radial-gradient(circle at 10% 0%, rgb(130 181 227 / 12%), transparent 42%),
+    linear-gradient(155deg, #172d3f, #102334 76%);
+}
+
+html[data-theme="dark"] .access-page [data-access-back] {
+  color: #c9d7e0;
+}
+
+html[data-theme="dark"] .access-page [data-access-back]:is(:hover, :focus-visible) {
+  background-color: #2a4155;
+  color: #d5f24a;
+}
+
+html[data-theme="dark"] .access-page [data-access-description] {
+  color: #c9d7e0;
+}
+
+html[data-theme="dark"] .access-page .access-field {
+  border-color: #526a7d;
+  color: var(--dark-text);
+}
+
+html[data-theme="dark"] .access-page .access-field::placeholder {
+  color: #b6c4ce;
+}
+
+html[data-theme="dark"] .access-page .access-field:hover {
+  border-color: #7890a2;
+}
+
+html[data-theme="dark"] .access-page .access-field:focus {
+  border-color: #d5f24a;
+  box-shadow: 0 0 0 4px rgb(213 242 74 / 16%);
+}
+
 html[data-theme="dark"] .registration-page {
   background: radial-gradient(circle at 12% 50%, #173047, #0b1723 60%);
   color: var(--dark-text);
