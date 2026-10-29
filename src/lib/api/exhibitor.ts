@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { apiDelete, apiGet, apiPatch, apiPost, apiUpload } from "@/lib/api/http-client";
+import { apiDelete, apiGet, apiGetAll, apiPatch, apiPost, apiUpload } from "@/lib/api/http-client";
 
 /** El backend omite estos campos cuando no tienen valor, en vez de mandar `null`. */
 const nullableString = () => z.string().nullish().transform((value) => value ?? null);
@@ -109,7 +109,7 @@ export const exhibitorApi = {
     return uploadedFileSchema.parse(await apiUpload("/uploads", formData));
   },
   async getCheckins(standId: string): Promise<StandCheckin[]> {
-    return z.array(checkinSchema).parse(await apiGet(`/stands/${encodeURIComponent(standId)}/check-ins`));
+    return z.array(checkinSchema).parse(await apiGetAll(`/stands/${encodeURIComponent(standId)}/check-ins`));
   },
   async issueQr(standId: string, ttlSeconds: number, maxScans: number): Promise<IssuedStandQr> {
     return issuedQrSchema.parse(await apiPost(`/stands/${encodeURIComponent(standId)}/qr`, { ttlSeconds, maxScans }));
