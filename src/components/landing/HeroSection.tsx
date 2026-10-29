@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "motion/react";
+import type { CSSProperties } from "react";
 import { ArrowRight, ChevronDown, Compass, Gift, Smartphone, Award } from "lucide-react";
 import { headingFont } from "./fonts";
 import heroImage from "../../../public/img/landing/inicial landing.webp";
@@ -63,12 +63,9 @@ export function HeroSection() {
       <div className="relative mx-auto grid w-full max-w-7xl items-center gap-6 px-5 sm:px-10 lg:grid-cols-12 lg:gap-8 lg:px-8">
         <div className="mx-auto max-w-xl text-center sm:max-w-2xl sm:text-left lg:col-span-7 lg:mx-0">
           {/* Heading with Poppins and Lime activa accent underline */}
-          <motion.h1
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: 0.05 }}
-            style={{ color: "var(--hero-heading, #132D46)" }}
-            className={`${headingFont.className} text-center text-[2.65rem] leading-[1.02] font-bold tracking-tight sm:text-left sm:text-6xl sm:leading-[1.02] lg:text-7xl xl:text-8xl`}
+          <h1
+            style={{ color: "var(--hero-heading, #132D46)", "--hero-delay": "0ms" } as CSSProperties}
+            className={`${headingFont.className} hero-rise text-center text-[2.65rem] leading-[1.02] font-bold tracking-tight sm:text-left sm:text-6xl sm:leading-[1.02] lg:text-7xl xl:text-8xl`}
           >
             Explora. <br />
             Conecta. <br />
@@ -76,25 +73,20 @@ export function HeroSection() {
               Vive Fexpo.
               <span className="absolute bottom-0 left-0 -z-10 h-2 sm:h-2.5 w-full rounded-full bg-[#D5F24A]" />
             </span>
-          </motion.h1>
+          </h1>
 
           {/* Subtitle */}
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: 0.1 }}
-            style={{ color: "var(--hero-copy, #334155)" }}
-            className="mx-auto mt-5 max-w-xl text-center text-[15px] leading-relaxed font-normal sm:mx-0 sm:mt-6 sm:text-left sm:text-base lg:text-lg"
+          <p
+            style={{ color: "var(--hero-copy, #334155)", "--hero-delay": "70ms" } as CSSProperties}
+            className="hero-rise mx-auto mt-5 max-w-xl text-center text-[15px] leading-relaxed font-normal sm:mx-0 sm:mt-6 sm:text-left sm:text-base lg:text-lg"
           >
             La app para ferias que ya tenemos. Explora stands y rutas, haz check-in con NFC y suma puntos en cada visita.
-          </motion.p>
+          </p>
 
           {/* CTAs: Probar demo (Lima) / Ver el panel (Azul feria) / Conoce más (Blanco) */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: 0.15 }}
-            className="mt-6 grid max-w-md grid-cols-2 gap-3 sm:mt-7 sm:flex sm:max-w-none sm:flex-row sm:items-center sm:gap-4 lg:justify-start"
+          <div
+            style={{ "--hero-delay": "140ms" } as CSSProperties}
+            className="hero-rise mt-6 grid max-w-md grid-cols-2 gap-3 sm:mt-7 sm:flex sm:max-w-none sm:flex-row sm:items-center sm:gap-4 lg:justify-start"
           >
             {/* 1. Probar demo */}
             <Link
@@ -121,14 +113,12 @@ export function HeroSection() {
               <span className="whitespace-nowrap">Conoce más</span>
               <ChevronDown className="h-4 w-4 stroke-[2.5]" />
             </a>
-          </motion.div>
+          </div>
 
           {/* Feature pills */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: 0.2 }}
-            className="mt-6 grid max-w-md grid-cols-2 gap-2.5 sm:mt-8 sm:max-w-2xl sm:grid-cols-4 sm:gap-3 lg:mx-0"
+          <div
+            style={{ "--hero-delay": "210ms" } as CSSProperties}
+            className="hero-rise mt-6 grid max-w-md grid-cols-2 gap-2.5 sm:mt-8 sm:max-w-2xl sm:grid-cols-4 sm:gap-3 lg:mx-0"
           >
             {benefits.map((item) => (
               <div
@@ -143,7 +133,7 @@ export function HeroSection() {
                 </span>
               </div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>
